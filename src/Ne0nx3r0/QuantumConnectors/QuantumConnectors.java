@@ -1,6 +1,7 @@
 package Ne0nx3r0.QuantumConnectors;
 
 import java.io.File;
+import org.bukkit.util.config.Configuration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.event.Event.Priority;
@@ -17,6 +18,9 @@ import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import java.util.Random;
 import org.bukkit.Location;
+import com.nijiko.permissions.PermissionHandler;
+import com.nijikokun.bukkit.Permissions.Permissions;
+import org.bukkit.plugin.Plugin;
 
 public class QuantumConnectors extends JavaPlugin{
     private final QuantumConnectorsBlockListener blockListener = new QuantumConnectorsBlockListener(this);
@@ -24,9 +28,13 @@ public class QuantumConnectors extends JavaPlugin{
 
     public static Map<String,Integer> circuitTypes = new HashMap<String,Integer>();
 
+    public static PermissionHandler permissionHandler;
+
     public static CircuitManager circuits;
 
     private static int AUTO_SAVE_ID = -1;
+
+    public static boolean USING_PERMISSIONS = false;
 
     public int typeQuantum = 0;
     public int typeOn = 1;
@@ -35,18 +43,18 @@ public class QuantumConnectors extends JavaPlugin{
     public int typeReverse = 4;
     public int typeRandom = 5;
 
-    //configurables
+//Configurables
     private int MAX_CHAIN_LINKS = 3;
-    private int AUTOSAVE_INTERVAL = 5 * 60 * 20;//minutes*seconds/minute*ticks/second
+    private int AUTOSAVE_INTERVAL = 10;//specified here in minutes
 
     public void onEnable(){
-        //register events
+//Register events
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvent(Event.Type.REDSTONE_CHANGE, blockListener, Priority.Normal, this);
         pm.registerEvent(Event.Type.BLOCK_BREAK, blockListener, Priority.Normal, this);
         pm.registerEvent(Event.Type.PLAYER_INTERACT, playerListener, Priority.Normal, this);
 
-        //setup circuits
+//Setup circuits
         circuitTypes.put("quantum",typeQuantum);
         circuitTypes.put("on",typeOn);
         circuitTypes.put("off",typeOff);
@@ -54,14 +62,36 @@ public class QuantumConnectors extends JavaPlugin{
         circuitTypes.put("reverse",typeReverse);
         circuitTypes.put("random",typeRandom);
 
-        //setup circuit manager
+//Setup circuit manager
         circuits = new CircuitManager(new File(this.getDataFolder(),"circuits.yml"),this);
 
-        //scheduled saves
+//Configuration
+        Configuration config = new Configuration(new File(this.getDataFolder(),"config.yml"));
+
+        int iMaxChainLinks = config.getInt("max_chain_links",-1);
+        if(iMaxChainLinks == -1){
+            iMaxChainLinks = MAX_CHAIN_LINKS;
+            config.setProperty("max_chain_links",iMaxChainLinks);
+        }
+        MAX_CHAIN_LINKS = iMaxChainLinks;
+
+        int iAutoSaveInterval = config.getInt("autosave_minutes",-1);
+        if(iAutoSaveInterval == -1){
+            iAutoSaveInterval = AUTOSAVE_INTERVAL;
+            config.setProperty("autosave_minutes",iAutoSaveInterval);
+        }
+        AUTOSAVE_INTERVAL = iAutoSaveInterval*60*20;//convert to minutes
+
+        config.save();
+
+//Scheduled saves
         AUTO_SAVE_ID = getServer().getScheduler().scheduleSyncRepeatingTask(
             this,autosaveCircuits,AUTOSAVE_INTERVAL,AUTOSAVE_INTERVAL);
 
-        //enabled msg
+//Permissions
+        setupPermissions();
+
+//Enabled msg
         PluginDescriptionFile pdfFile = this.getDescription();
         System.out.println("[Quantum Connectors] version " + pdfFile.getVersion() + " ENABLED");
     }
@@ -102,6 +132,11 @@ public class QuantumConnectors extends JavaPlugin{
             }
         }else if(args[0] != null){
             if(circuitTypes.containsKey(args[0])){
+                if(!permissionHandler.has(pSender, "QuantumConnectors.create."+args[0])){
+                    msg(pSender,ChatColor.RED+"You don't have permission to create the "+args[0]+" circuit!");
+                    return true;
+                }
+
                 playerListener.pendingCircuits.put(pSender,circuitTypes.get(args[0]));
 
                 msg(pSender,"Circuit is ready to be created!");
@@ -171,8 +206,12 @@ public class QuantumConnectors extends JavaPlugin{
                 }
             }
 
-            if(chain < MAX_CHAIN_LINKS && circuits.circuitExists(bReceiver.getLocation())){
-                activateCircuit(bReceiver.getLocation(),current,chain+1);
+            //allow zero to be infinite
+            if(MAX_CHAIN_LINKS > 0){
+                chain++;
+            }
+            if(chain <= MAX_CHAIN_LINKS && circuits.circuitExists(bReceiver.getLocation())){
+                activateCircuit(bReceiver.getLocation(),current,chain);
             }
         }else{
             circuits.removeCircuit(lSender);
@@ -239,4 +278,16 @@ public class QuantumConnectors extends JavaPlugin{
             circuits.Save();
         }
     };
+
+    private void setupPermissions() {
+        Plugin permissionsPlugin = this.getServer().getPluginManager().getPlugin("Permissions");
+
+        if (this.permissionHandler == null) {
+            if(permissionsPlugin != null){
+                USING_PERMISSIONS = true;
+                this.permissionHandler = ((Permissions) permissionsPlugin).getHandler();
+                System.out.println("[QuantumConnectors] Integrtaed with Permissions");
+            }
+        }
+    }
 }

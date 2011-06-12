@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.HashMap;
 import org.bukkit.Material;
 import org.bukkit.Location;
-import org.bukkit.block.Sign;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.block.Block;
@@ -30,12 +29,15 @@ public class QuantumConnectorsPlayerListener extends PlayerListener {
             return;
         }
 
-        if(event.getItem() != null && event.getClickedBlock() != null
+        //holding redstone, clicked a block, and has a pending circuit from /qc
+        if(event.getItem() != null
         && event.getItem().getType() == Material.REDSTONE
+        && event.getClickedBlock() != null
         && pendingCircuits.containsKey(event.getPlayer())){
             Player player = event.getPlayer();
             Block block = event.getClickedBlock();
 
+            //setting up a sender
             if(!pendingSenders.containsKey(player)){
                 if(plugin.circuits.isValidSender(block)){
                     if(plugin.circuits.circuitExists(block.getLocation())){
@@ -61,7 +63,7 @@ public class QuantumConnectorsPlayerListener extends PlayerListener {
                     plugin.msg(player,ChatColor.RED+"Invalid sender!");
                     plugin.msg(player,ChatColor.YELLOW+"Senders: "+ChatColor.WHITE+plugin.circuits.getValidSendersString());
                 }
-            }else{
+            }else{//setting up a receiver
                 if(plugin.circuits.isValidReceiver(block)){
                     plugin.circuits.addCircuit(
                         pendingSenders.get(player),
@@ -82,6 +84,8 @@ public class QuantumConnectorsPlayerListener extends PlayerListener {
                 }
             }
         }
+
+        //trigger for using wood/trap doors as senders
         else if(event.getClickedBlock() != null
         && plugin.circuits.circuitExists(event.getClickedBlock().getLocation())){
             Block block = event.getClickedBlock();
