@@ -67,6 +67,8 @@ public class QuantumConnectors extends JavaPlugin{
 
 //Configuration
         Configuration config = new Configuration(new File(this.getDataFolder(),"config.yml"));
+        
+        config.load();
 
         int iMaxChainLinks = config.getInt("max_chain_links",-1);
         if(iMaxChainLinks == -1){
