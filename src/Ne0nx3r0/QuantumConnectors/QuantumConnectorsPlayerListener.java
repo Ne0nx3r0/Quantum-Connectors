@@ -83,8 +83,8 @@ public class QuantumConnectorsPlayerListener extends PlayerListener {
                         }
 
                         plugin.circuits.addCircuit(
-                            pendingSenders.get(player),
                             bOtherPiece.getLocation(),
+                            event.getClickedBlock().getLocation(),
                             pendingCircuits.get(player)
                         );
                     }

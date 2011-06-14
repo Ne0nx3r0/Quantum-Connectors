@@ -312,7 +312,7 @@ public class QuantumConnectors extends JavaPlugin{
             if(permissionsPlugin != null){
                 USING_PERMISSIONS = true;
                 this.permissionHandler = ((Permissions) permissionsPlugin).getHandler();
-                System.out.println("[QuantumConnectors] Integrtaed with Permissions");
+                System.out.println("[Quantum Connectors] Integrated with Permissions");
             }
         }
     }

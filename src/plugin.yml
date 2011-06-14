@@ -1,6 +1,6 @@
 name: Quantum Connectors
 main: Ne0nx3r0.QuantumConnectors.QuantumConnectors
-version: 0.3
+version: 0.3.1
 author: Ne0nx3r0
 commands:
   qc:
