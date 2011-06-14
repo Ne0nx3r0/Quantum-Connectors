@@ -132,7 +132,7 @@ public class QuantumConnectors extends JavaPlugin{
             }
         }else if(args[0] != null){
             if(circuitTypes.containsKey(args[0])){
-                if(!this.USING_PERMISSIONS || !permissionHandler.has(pSender, "QuantumConnectors.create."+args[0])){
+                if(this.USING_PERMISSIONS && !permissionHandler.has(pSender, "QuantumConnectors.create."+args[0])){
                     msg(pSender,ChatColor.RED+"You don't have permission to create the "+args[0]+" circuit!");
                     return true;
                 }
