@@ -132,7 +132,7 @@ public class QuantumConnectors extends JavaPlugin{
             }
         }else if(args[0] != null){
             if(circuitTypes.containsKey(args[0])){
-                if(!permissionHandler.has(pSender, "QuantumConnectors.create."+args[0])){
+                if(!this.USING_PERMISSIONS || !permissionHandler.has(pSender, "QuantumConnectors.create."+args[0])){
                     msg(pSender,ChatColor.RED+"You don't have permission to create the "+args[0]+" circuit!");
                     return true;
                 }
@@ -211,7 +211,8 @@ public class QuantumConnectors extends JavaPlugin{
                 chain++;
             }
             if(chain <= MAX_CHAIN_LINKS && circuits.circuitExists(bReceiver.getLocation())){
-                activateCircuit(bReceiver.getLocation(),current,chain);
+                activateCircuit(bReceiver.getLocation(),getBlockCurrent(bReceiver),chain);
+                //pass an array of the locations used so far instead of the chain count, so it can't loop
             }
         }else{
             circuits.removeCircuit(lSender);
@@ -219,14 +220,39 @@ public class QuantumConnectors extends JavaPlugin{
 
     }
 
-    private static void setOn(Block block){
+    public int getBlockCurrent(Block bReceiver){
+        Material mBlock = bReceiver.getType();
+        int iData = (int) bReceiver.getData();
+
+        bReceiver.getBlockPower();
+
+        if(mBlock == Material.LEVER
+        || mBlock == Material.POWERED_RAIL){
+            if((iData&0x08) == 0x08){
+                return 15;
+            }else{
+                return 0;
+            }
+        }else if(mBlock == Material.IRON_DOOR_BLOCK 
+        || mBlock == Material.WOODEN_DOOR
+        || mBlock == Material.TRAP_DOOR){
+            if((iData&0x04) == 0x04){
+                return 15;
+            }else{
+                return 0;
+            }
+        }
+        return bReceiver.getBlockPower();
+    }
+
+    private void setOn(Block block){
         setReceiver(block,true);
     }
-    private static void setOff(Block block){
+    private void setOff(Block block){
         setReceiver(block,false);
     }
 
-    private static void setReceiver(Block block,boolean on){
+    private void setReceiver(Block block,boolean on){
         Material mBlock = block.getType();
         int iData = (int) block.getData();
 

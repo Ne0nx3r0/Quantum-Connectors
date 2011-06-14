@@ -9,6 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 
 public class QuantumConnectorsPlayerListener extends PlayerListener {
     private final QuantumConnectors plugin;
@@ -71,6 +72,23 @@ public class QuantumConnectorsPlayerListener extends PlayerListener {
                         pendingCircuits.get(player)
                     );
 
+                    if(event.getClickedBlock().getType() == Material.WOODEN_DOOR){
+                        Block bOtherPiece;
+                        int iData = (int) event.getClickedBlock().getData();
+
+                        if((iData&0x08) == 0x08){
+                            bOtherPiece = block.getFace(BlockFace.DOWN);
+                        }else{
+                            bOtherPiece = block.getFace(BlockFace.UP);
+                        }
+
+                        plugin.circuits.addCircuit(
+                            pendingSenders.get(player),
+                            bOtherPiece.getLocation(),
+                            pendingCircuits.get(player)
+                        );
+                    }
+
                     pendingSenders.remove(player);
                     pendingCircuits.remove(player);
 
@@ -91,14 +109,7 @@ public class QuantumConnectorsPlayerListener extends PlayerListener {
             Block block = event.getClickedBlock();
 
             if(block.getType() == Material.WOODEN_DOOR || block.getType() == Material.TRAP_DOOR){
-                int iCurrent = 0;
-
-                int iData = (int) block.getData();
-                if((iData&0x04) == 0x04){
-                    iCurrent = 15;
-                }
-
-                plugin.activateCircuit(event.getClickedBlock().getLocation(),iCurrent);
+                plugin.activateCircuit(event.getClickedBlock().getLocation(),plugin.getBlockCurrent(block));
             }
         }
     }
