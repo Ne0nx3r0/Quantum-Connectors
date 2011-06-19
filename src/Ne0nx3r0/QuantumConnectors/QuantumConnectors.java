@@ -10,7 +10,6 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
-import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
@@ -21,6 +20,7 @@ import org.bukkit.Location;
 import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
 import org.bukkit.plugin.Plugin;
+import java.util.HashMap;
 
 public class QuantumConnectors extends JavaPlugin{
     private final QuantumConnectorsBlockListener blockListener = new QuantumConnectorsBlockListener(this);
@@ -188,7 +188,11 @@ public class QuantumConnectors extends JavaPlugin{
                 }
             }else if(iType == typeToggle){
                 if(current > 0){
-                    setOn(bReceiver);
+                    if(getBlockCurrent(bReceiver) > 0){
+                        setOff(bReceiver);
+                    }else{
+                        setOn(bReceiver);
+                    }
                 }
             }else if(iType == typeReverse){
                 if(current > 0){

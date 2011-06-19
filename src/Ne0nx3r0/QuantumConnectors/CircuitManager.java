@@ -27,7 +27,7 @@ public final class CircuitManager{
         yml.load();
 
         Load();
-    }//TODO: Backup circuits.yml before loading, or possibly before saving...
+    }
 
     public void addCircuit(Location lSender,Location lReceiver,int iType){
         circuits.put(lSender,new Circuit(iType,lReceiver));
