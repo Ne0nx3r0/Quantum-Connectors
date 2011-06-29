@@ -141,7 +141,8 @@ public final class CircuitManager{
 
             if(isValidSender(lSender.getBlock()) 
             && isValidReceiver(lReceiver.getBlock())
-            && plugin.circuitTypes.containsValue(iType)){
+            && plugin.circuitTypes.containsValue(iType)
+			&& !lReceiver.toString().equals(lSender.toString())){
                 addCircuit(lSender,lReceiver,iType);
             }else{
                 System.out.println("[QuantumConnectors] Removing invalid circuit.");
