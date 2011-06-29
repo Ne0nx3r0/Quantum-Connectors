@@ -65,7 +65,7 @@ public class QuantumConnectorsPlayerListener extends PlayerListener {
                     plugin.msg(player,ChatColor.YELLOW+"Senders: "+ChatColor.WHITE+plugin.circuits.getValidSendersString());
                 }
             }else{//setting up a receiver
-                if(!pendingSenders.get(player).toString().equals(event.getClickedBlock().getLocation().toString())) {
+                if(pendingSenders.get(player).toString().equals(event.getClickedBlock().getLocation().toString())) {
                     plugin.msg(player, ChatColor.YELLOW+"Receiver can not be the same as sender!");
                 }else if (plugin.circuits.isValidReceiver(block)) {
                     plugin.circuits.addCircuit(
