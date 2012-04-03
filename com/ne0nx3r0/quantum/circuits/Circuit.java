@@ -6,26 +6,27 @@ import org.bukkit.Location;
 
 public class Circuit{
     //aka location, type
-    private Map<Location,Integer> receivers;
+    private Map<Location,Receiver> receivers;
     
     public Circuit(){
-        receivers = new HashMap<Location,Integer>();
+        receivers = new HashMap<Location,Receiver>();
     }
-    public Circuit(Map<Location,Integer> map){
+    public Circuit(Map<Location,Receiver> map){
         receivers = map;
     }
 
-    public void addReceiver(Location loc,int type){
-        receivers.put(loc,new Integer(type));
+    public void addReceiver(Location loc,int type,int delay){
+        receivers.put(loc,new Receiver(type,delay));
     }
-    public void setReceivers(Map<Location,Integer> map){
+    
+    public void setReceivers(Map<Location,Receiver> map){
         receivers = map;
     }
     
     public Boolean getReceiver(Location loc){
         return receivers.containsKey(loc);
     }
-    public Map<Location, Integer> getReceivers(){
+    public Map<Location, Receiver> getReceivers(){
         return receivers;
     }
     

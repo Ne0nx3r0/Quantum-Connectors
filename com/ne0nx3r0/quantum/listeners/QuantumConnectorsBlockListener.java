@@ -29,15 +29,5 @@ public class QuantumConnectorsBlockListener implements Listener {
         if (QuantumConnectors.circuitManager.circuitExists(l)) { // Breaking Sender
             QuantumConnectors.circuitManager.removeCircuit(l);
         }
-        /*  TODO: Consider whether this is worthwhile to keep
-         *  It looks short, but this checks EVERY receiver of EVERY circuit EVERY time a block is broken
-         *  Probably is more effecient to only check receivers when the circuit is activated
-         *  WorldEdit/etc wont fire this event for changes anyway
-         * 
-         * else if(QuantumConnectors.circuits.receiverExists(l)){ // Breaking receiver
-            QuantumConnectors.circuits.removeReceiver(l);
-        }
-        * */
-
     }
 }

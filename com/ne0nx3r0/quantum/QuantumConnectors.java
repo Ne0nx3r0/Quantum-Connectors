@@ -33,14 +33,15 @@ public class QuantumConnectors extends JavaPlugin{
     public static CircuitManager circuitManager;
     
 //Configurables
-    public int MAX_CHAIN_LINKS = 3;
-    private int AUTOSAVE_INTERVAL = 10;//specified here in minutes
+    public static int MAX_CHAIN_LINKS = 3;
+    private static int AUTOSAVE_INTERVAL = 30;//specified here in minutes
     private static int AUTO_SAVE_ID = -1;
     
 //Holders
     public static Map<Player, Circuit> tempCircuits;
     public static Map<Player, Location> tempCircuitLocations;
     public static Map<Player, Integer> tempCircuitTypes;
+    public static Map<Player, Integer> tempCircuitDelays;
     
     @Override
     public void onDisable(){
@@ -66,6 +67,7 @@ public class QuantumConnectors extends JavaPlugin{
         tempCircuits = new HashMap<Player, Circuit>();
         tempCircuitLocations = new HashMap<Player, Location>();
         tempCircuitTypes = new HashMap<Player, Integer>();
+        tempCircuitDelays = new HashMap<Player, Integer>();
         
     //Register qc command
         getCommand("qc").setExecutor(new QuantumConnectorsCommandExecutor(this));   

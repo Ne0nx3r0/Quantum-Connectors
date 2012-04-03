@@ -117,6 +117,24 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
                     player,
                     QuantumConnectors.circuitTypes.get(args[0])
                     );
+            
+            if(args.length > 1){
+                int iDelay = 0;
+                
+                try { 
+                    iDelay = Integer.parseInt(args[1]);
+                }
+                catch (NumberFormatException e){
+                    iDelay = -1;
+                }      
+                
+                if(iDelay < 0 || iDelay > 15){
+                    iDelay = 0;
+                    plugin.msg(player,ChatColor.RED + "Invalid delay time, assuming no delay");  
+                }
+
+                QuantumConnectors.tempCircuitDelays.put(player,iDelay);
+            }
                 
             //Player has no pending circuit
                 if(!QuantumConnectors.tempCircuits.containsKey(player)){

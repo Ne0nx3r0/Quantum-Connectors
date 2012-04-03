@@ -2,6 +2,7 @@ package com.ne0nx3r0.quantum.listeners;
 
 import com.ne0nx3r0.quantum.QuantumConnectors;
 import com.ne0nx3r0.quantum.circuits.Circuit;
+import com.ne0nx3r0.quantum.circuits.CircuitManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -42,9 +43,9 @@ public class QuantumConnectorsPlayerListener implements Listener{
         //Setting up a sender
             if(!QuantumConnectors.tempCircuits.containsKey(player)){
             //Is this a valid block to act as a sender?
-                if(QuantumConnectors.circuitManager.isValidSender(block)){
+                if(CircuitManager.isValidSender(block)){
                 //There is already a circuit there  
-                    if(QuantumConnectors.circuitManager.circuitExists(block.getLocation())) {
+                    if(CircuitManager.circuitExists(block.getLocation())) {
                         plugin.msg(player, ChatColor.YELLOW + "A circuit already sends from this location!");
                         plugin.msg(player, "You can break the block to remove it.");
                     }
@@ -68,16 +69,17 @@ public class QuantumConnectorsPlayerListener implements Listener{
                     plugin.msg(player, ChatColor.YELLOW + "A block cannot be the sender AND the receiver!");
                 }
             //Player clicked a valid receiver block
-                else if(QuantumConnectors.circuitManager.isValidReceiver(block)){
+                else if(CircuitManager.isValidReceiver(block)){
                     
                 //Only allow circuits in the same world, sorry multiworld QCircuits :(
                     if(QuantumConnectors.tempCircuitLocations.get(player).getWorld().equals(event.getClickedBlock().getWorld())){
                     //Add the receiver to our new/found circuit
                         QuantumConnectors.tempCircuits.get(player).addReceiver(
                             event.getClickedBlock().getLocation(),//lLocation
-                            QuantumConnectors.tempCircuitTypes.get(player)//iType
+                            QuantumConnectors.tempCircuitTypes.get(player),//iType
+                            QuantumConnectors.tempCircuitDelays.get(player)//iDelay
                         );
-
+                        
                         plugin.msg(player, "Added a receiver!" +ChatColor.YELLOW + " ('/qc done', or add more receivers)");
                     }
                 //Receiver was in a different world

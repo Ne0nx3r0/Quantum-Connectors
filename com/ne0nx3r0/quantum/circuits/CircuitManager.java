@@ -15,13 +15,13 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.CraftWorld;
 
-public class CircuitManager{
-    private final QuantumConnectors plugin;
+public final class CircuitManager{
+    private static QuantumConnectors plugin;
     
     //Lookup/Storage for circuits, and subsequently their receivers
     private static Map<World,Map<Location, Circuit>> worlds = new HashMap<World,Map<Location, Circuit>>();
     
-    private Material[] validSenders = new Material[]{
+    private static Material[] validSenders = new Material[]{
         Material.LEVER,
         Material.REDSTONE_WIRE,
         Material.STONE_BUTTON,
@@ -29,26 +29,34 @@ public class CircuitManager{
         Material.WOOD_PLATE,
         Material.REDSTONE_TORCH_OFF,
         Material.REDSTONE_TORCH_ON,
+        Material.REDSTONE_LAMP_OFF,
+        Material.REDSTONE_LAMP_ON,
+        Material.DIODE_BLOCK_OFF,
+        Material.DIODE_BLOCK_ON,//TODO: Test repeaters
         Material.IRON_DOOR_BLOCK,
         Material.WOODEN_DOOR,
         Material.TRAP_DOOR,
         Material.POWERED_RAIL,
+        //TODO: Add chests?
     };
-    private Material[] validReceivers = new Material[]{
+    private static Material[] validReceivers = new Material[]{
         Material.LEVER,
         Material.IRON_DOOR_BLOCK,
         Material.WOODEN_DOOR,
         Material.TRAP_DOOR,
         Material.POWERED_RAIL,
-        //Material.PISTON_BASE,
-        //Material.PISTON_STICKY_BASE,
-        //TODO: Add redstone lamps
+        Material.REDSTONE_TORCH_OFF,
+        Material.REDSTONE_TORCH_ON,//TODO: Test torches/lamps send & receive
+        Material.REDSTONE_LAMP_OFF,
+        Material.REDSTONE_LAMP_ON,
+        Material.PISTON_BASE,
+        Material.PISTON_STICKY_BASE,//TODO: Test pistons, for the hell of it.
         Material.TNT
     };
     
 // Main
     public CircuitManager(final QuantumConnectors qc){
-        this.plugin = qc;
+        CircuitManager.plugin = qc;
         
         for(World world: plugin.getServer().getWorlds()){
             loadWorld(world);
@@ -56,7 +64,7 @@ public class CircuitManager{
     }
 
 // Sender/Receiver checks
-    public boolean isValidSender(Block block) {
+    public static boolean isValidSender(Block block) {
         Material mBlock = block.getType();
         for (int i = 0; i < validSenders.length; i++) {
             if (mBlock == validSenders[i]) {
@@ -76,7 +84,7 @@ public class CircuitManager{
         return msg;
     }
 
-    public boolean isValidReceiver(Block block) {
+    public static boolean isValidReceiver(Block block) {
         Material mBlock = block.getType();
         for (int i = 0; i < validReceivers.length; i++) {
             if (mBlock == validReceivers[i]) {
@@ -103,56 +111,58 @@ public class CircuitManager{
         worlds.get(circuitLocation.getWorld()).put(circuitLocation, newCircuit);
     }
     
-    public boolean circuitExists(Location circuitLocation){
+    public static boolean circuitExists(Location circuitLocation){
         return worlds.get(circuitLocation.getWorld()).containsKey(circuitLocation);
     } 
     
-    public Circuit getCircuit(Location circuitLocation){
+    public static Circuit getCircuit(Location circuitLocation){
         return worlds.get(circuitLocation.getWorld()).get(circuitLocation);
     }
     
-    public void removeCircuit(Location circuitLocation) {
+    public static void removeCircuit(Location circuitLocation) {
         if(circuitExists(circuitLocation)){
             worlds.get(circuitLocation.getWorld()).remove(circuitLocation);
         }
     }
     
 // Circuit activation    
-    public void activateCircuit(Location lSender, int current){
+    public static void activateCircuit(Location lSender, int current){
         activateCircuit(lSender, current, 0);
     }
-    public void activateCircuit(Location lSender, int current, int chain){
+    public static void activateCircuit(Location lSender, int current, int chain){
         Circuit circuit = getCircuit(lSender);
-        Map<Location,Integer> receivers = circuit.getReceivers();
+        Map<Location,Receiver> receivers = circuit.getReceivers();
         
         if(!receivers.isEmpty()){
             int iType;
+            int iDelay;
             
             for(Location r : receivers.keySet()){
-                iType = receivers.get(r).intValue();
+                iType = receivers.get(r).type;
+                iDelay = receivers.get(r).delay;
 
                 Block b = r.getBlock();
 
-                if (isValidReceiver(b)) {
+                if (isValidReceiver(b)){
                     if (iType == CircuitTypes.QUANTUM.getId()) {
-                        setReceiver(b, current > 0 ? true : false);
+                        setReceiver(b, current > 0 ? true : false,iDelay);
                     } else if (iType == CircuitTypes.ON.getId()) {
                         if (current > 0) {
-                            setReceiver(b, true);
+                            setReceiver(b, true,iDelay);
                         }
                     } else if (iType == CircuitTypes.OFF.getId()) {
                         if (current > 0) {
-                            setReceiver(b, false);
+                            setReceiver(b, false,iDelay);
                         }
                     } else if (iType == CircuitTypes.TOGGLE.getId()) {
                         if (current > 0) {
-                            setReceiver(b, getBlockCurrent(b) > 0 ? false : true);
+                            setReceiver(b, getBlockCurrent(b) > 0 ? false : true,iDelay);
                         }
                     } else if (iType == CircuitTypes.REVERSE.getId()) {
-                        setReceiver(b, current > 0 ? false : true);
+                        setReceiver(b, current > 0 ? false : true,iDelay);
                     } else if (iType == CircuitTypes.RANDOM.getId()) {
                         if (current > 0) {
-                            setReceiver(b, new Random().nextBoolean() ? true : false);
+                            setReceiver(b, new Random().nextBoolean() ? true : false,iDelay);
                         }
                     }
 
@@ -160,10 +170,10 @@ public class CircuitManager{
                         circuit.delReceiver(r);
                     }
 
-                    if (plugin.MAX_CHAIN_LINKS > 0) { //allow zero to be infinite
+                    if (QuantumConnectors.MAX_CHAIN_LINKS > 0) { //allow zero to be infinite
                         chain++;
                     }
-                    if (chain <= plugin.MAX_CHAIN_LINKS && circuitExists(b.getLocation())) {
+                    if (chain <= QuantumConnectors.MAX_CHAIN_LINKS && circuitExists(b.getLocation())) {
                         activateCircuit(b.getLocation(), getBlockCurrent(b), chain);
                     }
                 }else{
@@ -172,8 +182,23 @@ public class CircuitManager{
             }
         } 
     }
+    
+    private static class DelayedSetReceiver implements Runnable{
+        private final Block block;
+        private final boolean on;
+
+        DelayedSetReceiver(Block block, boolean on){
+            this.block = block;
+            this.on = on;
+        }
         
-    public int getBlockCurrent(Block b) {
+        @Override
+        public void run(){
+            setReceiver(block,on);
+        }
+    }
+
+    public static int getBlockCurrent(Block b) {
         Material mBlock = b.getType();
         int iData = (int) b.getData();
 
@@ -188,8 +213,19 @@ public class CircuitManager{
 
         return b.getBlockPower();
     }
-
-    private void setReceiver(Block block, boolean on) {
+    
+    private static void setReceiver(Block block, boolean on,int iDelay){
+        if(iDelay == 0){
+            setReceiver(block,on);
+        }else{
+            plugin.getServer().getScheduler().scheduleAsyncDelayedTask(
+                plugin,
+                new DelayedSetReceiver(block,on),
+                iDelay * 20); 
+        }
+    }
+    
+    private static void setReceiver(Block block, boolean on){
         Material mBlock = block.getType();
         int iData = (int) block.getData();
 
@@ -270,6 +306,14 @@ public class CircuitManager{
             if (on) {
                 block.setType(Material.REDSTONE_TORCH_ON);
             }
+        } else if (mBlock == Material.REDSTONE_LAMP_ON) {
+            if (!on) {
+                block.setType(Material.REDSTONE_LAMP_OFF);
+            }
+        } else if (mBlock == Material.REDSTONE_LAMP_OFF) {
+            if (on) {
+                block.setType(Material.REDSTONE_LAMP_ON);
+            }
         }
     }
 
@@ -295,7 +339,7 @@ public class CircuitManager{
             Map<String,Object> tempReceiverObj;
             ArrayList tempReceiverObjs;
             Circuit currentCircuit;
-            Map<Location,Integer> currentRecivers;
+            Map<Location,Receiver> currentReceivers;
 
             Map<Location,Circuit> currentWorldCircuits = worlds.get(world);
             
@@ -309,18 +353,19 @@ public class CircuitManager{
                 tempCircuitObj.put("y",cLoc.getBlockY());
                 tempCircuitObj.put("z",cLoc.getBlockZ());
 
-                currentRecivers = currentCircuit.getReceivers();
+                currentReceivers = currentCircuit.getReceivers();
 
                 tempReceiverObjs = new ArrayList();
-                for(Location rLoc : currentRecivers.keySet()){
+                for(Location rLoc : currentReceivers.keySet()){
                     tempReceiverObj = new HashMap<String,Object>();
                     
                     tempReceiverObj.put("x",rLoc.getBlockX());
                     tempReceiverObj.put("y",rLoc.getBlockY());
                     tempReceiverObj.put("z",rLoc.getBlockZ());
 
-                    tempReceiverObj.put("t",currentRecivers.get(rLoc).intValue());
-
+                    tempReceiverObj.put("t",currentReceivers.get(rLoc).type);
+                    tempReceiverObj.put("d",currentReceivers.get(rLoc).delay);
+                    
                     tempReceiverObjs.add(tempReceiverObj);
                 }
 
@@ -391,7 +436,9 @@ public class CircuitManager{
                     (Integer) tempReceiverObj.get("x"),
                     (Integer) tempReceiverObj.get("y"),
                     (Integer) tempReceiverObj.get("z")),
-                    (Integer) tempReceiverObj.get("t"));
+                    (Integer) tempReceiverObj.get("t"),
+                    (tempReceiverObj.get("d") == null ? 0 : (Integer) tempReceiverObj.get("d")));
+                //lazy convertor... Nobody should actually have the v2 of this yml in production yet anyway.
             }
 
             // Verify there is at least one valid receiver
