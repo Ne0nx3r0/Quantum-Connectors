@@ -49,6 +49,10 @@ public class CircuitManager{
 // Main
     public CircuitManager(final QuantumConnectors qc){
         this.plugin = qc;
+        
+        for(World world: plugin.getServer().getWorlds()){
+            loadWorld(world);
+        }
     }
 
 // Sender/Receiver checks
