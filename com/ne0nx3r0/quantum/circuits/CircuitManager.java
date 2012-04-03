@@ -56,7 +56,7 @@ public class CircuitManager{
             try {
                 ymlFile.createNewFile();
             } catch(IOException ex) {
-                plugin.error("Could not create circuits.yml");
+                plugin.error("Could not create "+ymlFile.getName());
             }
         }
         
@@ -142,24 +142,24 @@ public class CircuitManager{
             
         //TODO: Better Location verification
         // For now we just make sure the sender & receiver worlds are valid
-            if(plugin.getServer().getWorld((String) tempCircuitObj.get("w")) != null){
+            //if(plugin.getServer().getWorld((String) tempCircuitObj.get("w")) != null){
                 for(int i = 0; i < tempReceiverObjs.size(); i++) {
                     tempReceiverObj = (Map<String, Object>) tempReceiverObjs.get(i);
 
                 //Make sure the receiver too has a valid world
-                    if(plugin.getServer().getWorld((String) tempReceiverObj.get("w")) != null){
+                    //if(plugin.getServer().getWorld((String) tempReceiverObj.get("w")) != null){
                         tempCircuit.addReceiver(new Location(
                             plugin.getServer().getWorld((String) tempReceiverObj.get("w")),
                             (Integer) tempReceiverObj.get("x"),
                             (Integer) tempReceiverObj.get("y"),
                             (Integer) tempReceiverObj.get("z")),
                             (Integer) tempReceiverObj.get("t"));
-                    }
+                    //}
                     
                 //Receiver was did not validate
-                    else{
-                        plugin.log("Removed a '"+(String) tempReceiverObj.get("w")+" circuit: world doesn't exist");
-                    }
+                    //else{
+                    //    plugin.log("Removed a '"+(String) tempReceiverObj.get("w")+" circuit: world doesn't exist");
+                    //}
                 }
 
             // Verify there is at least one valid receiver
@@ -175,12 +175,12 @@ public class CircuitManager{
                 else{
                     plugin.log("Removed a '"+(String) tempCircuitObj.get("w")+"' circuit: no valid receivers.");
                 }
-            }
+            //}
 
         //Circuit world didn't exist
-            else{
-                plugin.log("Removed a '"+(String) tempCircuitObj.get("w")+"' circuit: world doesn't exist");
-            }
+            //else{
+            //    plugin.log("Removed a '"+(String) tempCircuitObj.get("w")+"' circuit: world doesn't exist");
+            //}
         }
     }
     
