@@ -5,7 +5,6 @@ import com.ne0nx3r0.quantum.circuits.Circuit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -23,11 +22,11 @@ public class QuantumConnectorsPlayerListener implements Listener{
     public void onPlayerInteract(PlayerInteractEvent event){   
 
     //Clicked on a block that has a quantum circuit (sender) attached
-        if (event.getClickedBlock() != null && QuantumConnectors.circuits.circuitExists(event.getClickedBlock().getLocation())) {
+        if (event.getClickedBlock() != null && QuantumConnectors.circuitManager.circuitExists(event.getClickedBlock().getLocation())) {
             Block block = event.getClickedBlock();
 
             if (block.getType() == Material.WOODEN_DOOR || block.getType() == Material.TRAP_DOOR) {
-                QuantumConnectors.circuits.activateCircuit(event.getClickedBlock().getLocation(), QuantumConnectors.circuits.getBlockCurrent(block));
+                QuantumConnectors.circuitManager.activateCircuit(event.getClickedBlock().getLocation(), QuantumConnectors.circuitManager.getBlockCurrent(block));
             }
         }
         
@@ -43,9 +42,9 @@ public class QuantumConnectorsPlayerListener implements Listener{
         //Setting up a sender
             if(!QuantumConnectors.tempCircuits.containsKey(player)){
             //Is this a valid block to act as a sender?
-                if(QuantumConnectors.circuits.isValidSender(block)){
+                if(QuantumConnectors.circuitManager.isValidSender(block)){
                 //There is already a circuit there  
-                    if(QuantumConnectors.circuits.circuitExists(block.getLocation())) {
+                    if(QuantumConnectors.circuitManager.circuitExists(block.getLocation())) {
                         plugin.msg(player, ChatColor.YELLOW + "A circuit already sends from this location!");
                         plugin.msg(player, "You can break the block to remove it.");
                     }
@@ -59,7 +58,7 @@ public class QuantumConnectorsPlayerListener implements Listener{
             //Invalid sender
                 else{
                     plugin.msg(player, ChatColor.RED + "Invalid sender!");
-                    plugin.msg(player, ChatColor.YELLOW + "Senders: " + ChatColor.WHITE + QuantumConnectors.circuits.getValidSendersString());
+                    plugin.msg(player, ChatColor.YELLOW + "Senders: " + ChatColor.WHITE + QuantumConnectors.circuitManager.getValidSendersString());
                 }
             }
         //Adding a receiver
@@ -69,20 +68,27 @@ public class QuantumConnectorsPlayerListener implements Listener{
                     plugin.msg(player, ChatColor.YELLOW + "A block cannot be the sender AND the receiver!");
                 }
             //Player clicked a valid receiver block
-                else if(QuantumConnectors.circuits.isValidReceiver(block)){
+                else if(QuantumConnectors.circuitManager.isValidReceiver(block)){
                     
-                //Add the receiver to our new/found circuit
-                    QuantumConnectors.tempCircuits.get(player).addReceiver(
-                        event.getClickedBlock().getLocation(),//lLocation
-                        QuantumConnectors.tempCircuitTypes.get(player)//iType
-                    );
-                    
-                    plugin.msg(player, "Added a receiver!" +ChatColor.YELLOW + " ('/qc done', or add more receivers)");
+                //Only allow circuits in the same world, sorry multiworld QCircuits :(
+                    if(QuantumConnectors.tempCircuitLocations.get(player).getWorld().equals(event.getClickedBlock().getWorld())){
+                    //Add the receiver to our new/found circuit
+                        QuantumConnectors.tempCircuits.get(player).addReceiver(
+                            event.getClickedBlock().getLocation(),//lLocation
+                            QuantumConnectors.tempCircuitTypes.get(player)//iType
+                        );
+
+                        plugin.msg(player, "Added a receiver!" +ChatColor.YELLOW + " ('/qc done', or add more receivers)");
+                    }
+                //Receiver was in a different world
+                    else{
+                        plugin.msg(player,ChatColor.RED + "Receivers must be in the same world as their sender! Sorry :|");
+                    }
                 }
             //Player clicked an invalid receiver block
                 else{
                     plugin.msg(player, ChatColor.RED + "Invalid receiver!");
-                    plugin.msg(player, ChatColor.YELLOW + "Receivers: " + ChatColor.WHITE + QuantumConnectors.circuits.getValidReceiversString());            
+                    plugin.msg(player, ChatColor.YELLOW + "Receivers: " + ChatColor.WHITE + QuantumConnectors.circuitManager.getValidReceiversString());            
                     plugin.msg(player, "('/qc done' if you are finished)");
                 }
             }

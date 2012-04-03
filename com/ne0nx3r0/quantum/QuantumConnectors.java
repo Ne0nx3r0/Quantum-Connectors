@@ -1,13 +1,12 @@
 package com.ne0nx3r0.quantum;
 
-import java.io.File;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import com.ne0nx3r0.quantum.circuits.Circuit;
 import com.ne0nx3r0.quantum.circuits.CircuitManager;
 import com.ne0nx3r0.quantum.circuits.CircuitTypes;
 import com.ne0nx3r0.quantum.listeners.QuantumConnectorsBlockListener;
 import com.ne0nx3r0.quantum.listeners.QuantumConnectorsPlayerListener;
+import com.ne0nx3r0.quantum.listeners.QuantumConnectorsWorldListener;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -25,12 +24,13 @@ public class QuantumConnectors extends JavaPlugin{
 //Register events
     private final QuantumConnectorsPlayerListener playerListener = new QuantumConnectorsPlayerListener(this);
     private final QuantumConnectorsBlockListener blockListener = new QuantumConnectorsBlockListener(this);
+    private final QuantumConnectorsWorldListener worldListener = new QuantumConnectorsWorldListener(this);
     
 //List of circuit types
     public static Map<String, Integer> circuitTypes = new HashMap<String, Integer>();
 
 //Circuit Manager
-    public static CircuitManager circuits;
+    public static CircuitManager circuitManager;
     
 //Configurables
     public int MAX_CHAIN_LINKS = 3;
@@ -44,7 +44,7 @@ public class QuantumConnectors extends JavaPlugin{
     
     @Override
     public void onDisable(){
-        circuits.save();
+        circuitManager.saveAllWorlds();
         
         log("Disabled");
     }
@@ -60,7 +60,7 @@ public class QuantumConnectors extends JavaPlugin{
         }
         
     //Create a circuit manager
-        circuits = new CircuitManager(new File(this.getDataFolder(),"circuits_v2.yml"),this);
+        circuitManager = new CircuitManager(this);
         
     //Initialize holders
         tempCircuits = new HashMap<Player, Circuit>();
@@ -75,9 +75,10 @@ public class QuantumConnectors extends JavaPlugin{
         
         pm.registerEvents(playerListener, this);
         pm.registerEvents(blockListener, this);
+        pm.registerEvents(worldListener, this);
         
     //Schedule saves
-        AUTOSAVE_INTERVAL = AUTOSAVE_INTERVAL*60*20;//convert to minutes
+        AUTOSAVE_INTERVAL = AUTOSAVE_INTERVAL * 60 * 20;//convert to minutes
         
         AUTO_SAVE_ID = getServer().getScheduler().scheduleSyncRepeatingTask(
             this,
@@ -108,7 +109,7 @@ public class QuantumConnectors extends JavaPlugin{
     //Scheduled save mechanism
     private Runnable autosaveCircuits = new Runnable() {
         public void run() {
-            circuits.save();
+            circuitManager.saveAllWorlds();
         }
     };
 }

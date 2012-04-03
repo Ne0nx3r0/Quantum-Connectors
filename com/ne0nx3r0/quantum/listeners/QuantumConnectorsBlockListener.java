@@ -18,16 +18,16 @@ public class QuantumConnectorsBlockListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW)
     public void onBlockRedstoneChange(BlockRedstoneEvent event) {
-        if (QuantumConnectors.circuits.circuitExists(event.getBlock().getLocation())) {
-            QuantumConnectors.circuits.activateCircuit(event.getBlock().getLocation(), event.getNewCurrent());
+        if (QuantumConnectors.circuitManager.circuitExists(event.getBlock().getLocation())) {
+            QuantumConnectors.circuitManager.activateCircuit(event.getBlock().getLocation(), event.getNewCurrent());
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
         Location l = event.getBlock().getLocation();
-        if (QuantumConnectors.circuits.circuitExists(l)) { // Breaking Sender
-            QuantumConnectors.circuits.removeCircuit(l);
+        if (QuantumConnectors.circuitManager.circuitExists(l)) { // Breaking Sender
+            QuantumConnectors.circuitManager.removeCircuit(l);
         }
         /*  TODO: Consider whether this is worthwhile to keep
          *  It looks short, but this checks EVERY receiver of EVERY circuit EVERY time a block is broken

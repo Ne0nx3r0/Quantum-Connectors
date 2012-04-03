@@ -68,7 +68,7 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
                     && !QuantumConnectors.tempCircuits.get(player).getReceivers().isEmpty()){
                     //PHEW!
                         
-                        plugin.circuits.addCircuit(
+                        plugin.circuitManager.addCircuit(
                                 QuantumConnectors.tempCircuitLocations.get(player),
                                 QuantumConnectors.tempCircuits.get(player)); 
                         
@@ -81,7 +81,7 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
                             Block bOtherPiece = bDoor.getRelative((iData & 0x08) == 0x08 ? BlockFace.DOWN : BlockFace.UP);
 
                             //TODO: Clone instead of reference the circuit?
-                            QuantumConnectors.circuits.addCircuit(
+                            QuantumConnectors.circuitManager.addCircuit(
                                     bOtherPiece.getLocation(), 
                                     QuantumConnectors.tempCircuits.get(player));                            
                         }
