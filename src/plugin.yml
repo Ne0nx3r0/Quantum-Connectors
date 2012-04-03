@@ -1,7 +1,0 @@
-name: Quantum Connectors
-main: Ne0nx3r0.QuantumConnectors.QuantumConnectors
-version: 0.3.4
-author: Ne0nx3r0
-commands:
-  qc:
-    description: Quantum Connector Commands
