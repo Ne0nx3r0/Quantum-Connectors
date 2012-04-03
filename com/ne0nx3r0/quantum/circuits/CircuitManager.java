@@ -347,6 +347,9 @@ public class CircuitManager{
     }
 
     public void loadWorld(World world){
+        //at least create a blank holder
+        worlds.put(world,new HashMap<Location,Circuit>());
+        
         File ymlFile = new File(plugin.getDataFolder(),world.getName()+".circuits.yml");
         
         plugin.log("Loading "+ymlFile.getName()+"...");
