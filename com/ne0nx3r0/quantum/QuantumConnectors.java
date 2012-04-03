@@ -10,6 +10,7 @@ import com.ne0nx3r0.quantum.listeners.QuantumConnectorsBlockListener;
 import com.ne0nx3r0.quantum.listeners.QuantumConnectorsPlayerListener;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -19,7 +20,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class QuantumConnectors extends JavaPlugin{    
 //Grab the logger
-    public static final Logger log = Logger.getLogger("Minecraft");
+    public static final Logger logger = Logger.getLogger("Minecraft");
     
 //Register events
     private final QuantumConnectorsPlayerListener playerListener = new QuantumConnectorsPlayerListener(this);
@@ -45,7 +46,7 @@ public class QuantumConnectors extends JavaPlugin{
     public void onDisable(){
         circuits.save();
         
-        log.info("[QuantumConnectors] Disabled");
+        log("Disabled");
     }
     
     @Override
@@ -85,11 +86,23 @@ public class QuantumConnectors extends JavaPlugin{
             AUTOSAVE_INTERVAL);
         
     //All done!
-        log.info("[QuantumConnectors] Enabled");
+        log("Enabled");
     }	
     
     public void msg(Player player, String sMessage) {
         player.sendMessage(ChatColor.LIGHT_PURPLE + "[QC] " + ChatColor.WHITE + sMessage);
+    }
+
+//Generic wrappers for console messages
+    public void log(Level level,String sMessage){
+        if(!sMessage.equals(""))
+            logger.log(level,"[QuantumConnectors] " + sMessage);
+    }
+    public void log(String sMessage){
+        log(Level.INFO,sMessage);
+    }
+    public void error(String sMessage){
+        log(Level.WARNING,sMessage);
     }
     
     //Scheduled save mechanism

@@ -56,7 +56,7 @@ public class CircuitManager{
             try {
                 ymlFile.createNewFile();
             } catch(IOException ex) {
-                qc.log.info("Could not create circuits.yml");
+                plugin.error("Could not create circuits.yml");
             }
         }
         
@@ -68,7 +68,7 @@ public class CircuitManager{
     
 // Persistence 
     public void save(){
-        plugin.log.info("[QuantumConnectors] Saving "+this.ymlfile.getName()+"...");
+        plugin.log("Saving "+this.ymlfile.getName()+"...");
         
         List<Object> tempCircuits = new ArrayList<Object>();
         
@@ -111,22 +111,26 @@ public class CircuitManager{
         }
         
         yml.set("circuits", tempCircuits);
+        yml.set("fileVersion","2");
         
         try {
             yml.save(ymlfile);
+            
+            plugin.log(this.ymlfile.getName()+" Saved!");
         } catch(IOException IO) {
-            plugin.log.info("Failed to save "+this.ymlfile.getName());
-        }
-        
-        plugin.log.info("[QuantumConnectors] "+this.ymlfile.getName()+" Saved!");
+            plugin.error("Failed to save "+this.ymlfile.getName());
+        }        
     }
     
     public void load(){
-        plugin.log.info("Loading "+this.ymlfile.getName()+"...");
+        plugin.log("Loading "+this.ymlfile.getName()+"...");
 
         List<Map<String,Object>> tempCircuits = (List<Map<String,Object>>) yml.get("circuits");
 
-        if(tempCircuits == null) return;
+        if(tempCircuits == null){
+            plugin.log("No circuits found in "+this.ymlfile.getName());
+            return;
+        }
         
         Map<String,Object> tempReceiverObj;
         ArrayList tempReceiverObjs = null;
@@ -134,25 +138,49 @@ public class CircuitManager{
         Circuit tempCircuit = null;
         for(Map<String,Object> tempCircuitObj : tempCircuits){
             tempCircuit = new Circuit();
-
             tempReceiverObjs = (ArrayList) tempCircuitObj.get("r");
-            for(int i = 0; i < tempReceiverObjs.size(); i++) {
-                tempReceiverObj = (Map<String, Object>) tempReceiverObjs.get(i);
+            
+        //TODO: Better Location verification
+        // For now we just make sure the sender & receiver worlds are valid
+            if(plugin.getServer().getWorld((String) tempCircuitObj.get("w")) != null){
+                for(int i = 0; i < tempReceiverObjs.size(); i++) {
+                    tempReceiverObj = (Map<String, Object>) tempReceiverObjs.get(i);
 
-                tempCircuit.addReceiver(new Location(
-                    plugin.getServer().getWorld((String) tempReceiverObj.get("w")),
-                    (Integer) tempReceiverObj.get("x"),
-                    (Integer) tempReceiverObj.get("y"),
-                    (Integer) tempReceiverObj.get("z")),
-                    (Integer) tempReceiverObj.get("t"));
-            }          
+                //Make sure the receiver too has a valid world
+                    if(plugin.getServer().getWorld((String) tempReceiverObj.get("w")) != null){
+                        tempCircuit.addReceiver(new Location(
+                            plugin.getServer().getWorld((String) tempReceiverObj.get("w")),
+                            (Integer) tempReceiverObj.get("x"),
+                            (Integer) tempReceiverObj.get("y"),
+                            (Integer) tempReceiverObj.get("z")),
+                            (Integer) tempReceiverObj.get("t"));
+                    }
+                    
+                //Receiver was did not validate
+                    else{
+                        plugin.log("Removed a '"+(String) tempReceiverObj.get("w")+" circuit: world doesn't exist");
+                    }
+                }
 
-            circuits.put(new Location(
-                    plugin.getServer().getWorld((String) tempCircuitObj.get("w")),
-                    (Integer) tempCircuitObj.get("x"),
-                    (Integer) tempCircuitObj.get("y"),
-                    (Integer) tempCircuitObj.get("z")
-                ),tempCircuit);
+            // Verify there is at least one valid receiver
+                if(!tempCircuit.getReceivers().isEmpty()){
+                    circuits.put(new Location(
+                            plugin.getServer().getWorld((String) tempCircuitObj.get("w")),
+                            (Integer) tempCircuitObj.get("x"),
+                            (Integer) tempCircuitObj.get("y"),
+                            (Integer) tempCircuitObj.get("z")
+                        ),tempCircuit); 
+                }
+            // No valid receivers for this circuit
+                else{
+                    plugin.log("Removed a '"+(String) tempCircuitObj.get("w")+"' circuit: no valid receivers.");
+                }
+            }
+
+        //Circuit world didn't exist
+            else{
+                plugin.log("Removed a '"+(String) tempCircuitObj.get("w")+"' circuit: world doesn't exist");
+            }
         }
     }
     

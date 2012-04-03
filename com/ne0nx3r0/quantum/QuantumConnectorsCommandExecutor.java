@@ -20,7 +20,7 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String alias, String[] args) {
         if (!(cs instanceof Player)){
-            System.out.println("You can't run this from the console!");
+            plugin.log("You can't run this from the console!");
         }
         
         Player player = (Player) cs;
