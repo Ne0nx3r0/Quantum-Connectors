@@ -114,7 +114,7 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
                     if(iDelay < 0 || iDelay > QuantumConnectors.MAX_DELAY_TIME){
                         iDelay = 0;
                         
-                        plugin.msg(player,ChatColor.RED + "Invalid delay time, assuming no delay");  
+                        plugin.msg(player,ChatColor.RED + "Invalid delay time (min:0 max:"+QuantumConnectors.MAX_DELAY_TIME+", assuming no delay");  
                     }
                 }
                 

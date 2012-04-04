@@ -195,8 +195,8 @@ public final class CircuitManager{
                     if (QuantumConnectors.MAX_CHAIN_LINKS > 0) { //allow zero to be infinite
                         chain++;
                     }
-                    if (chain <= QuantumConnectors.MAX_CHAIN_LINKS && circuitExists(b.getLocation())) {
-                        activateCircuit(b.getLocation(), getBlockCurrent(b), chain);
+                    if(chain <= QuantumConnectors.MAX_CHAIN_LINKS && circuitExists(b.getLocation())){
+                        activateCircuit(r.location, getBlockCurrent(b), chain);
                     }
                 }else{
                     circuit.delReceiver(r);
@@ -452,10 +452,10 @@ public final class CircuitManager{
             tempCircuit = new Circuit();
             tempReceiverObjs = (ArrayList) tempCircuitObj.get("r");
             
-        //TODO: Location verification
+        //TODO: circuit/receiver verification
             for(int i = 0; i < tempReceiverObjs.size(); i++) {
                 tempReceiverObj = (Map<String, Object>) tempReceiverObjs.get(i);
-
+                
                 tempCircuit.addReceiver(new Location(
                     world,
                     (Integer) tempReceiverObj.get("x"),
