@@ -75,7 +75,7 @@ public class QuantumConnectors extends JavaPlugin{
 //Generic wrappers for console messages
     public void log(Level level,String sMessage){
         if(!sMessage.equals(""))
-            getLogger().log(level, "[QuantumConnectors] {0}", sMessage);
+            getLogger().log(level,sMessage);
     }
     public void log(String sMessage){
         log(Level.INFO,sMessage);

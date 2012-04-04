@@ -30,13 +30,8 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
 // Command was: "/qc"
         if(args.length == 0 || args[0].equalsIgnoreCase("?")){    
             plugin.msg(player, "To create a quantum circuit, use /qc <circuit>; and click   on a sender and then a receiver with redstone.");
-            
-            String s = "";
-            for (String sKey : CircuitManager.getValidCircuitTypes().keySet()) {
-                s += sKey + ", ";
-            }
 
-            plugin.msg(player, ChatColor.YELLOW + "Available circuits: " + ChatColor.WHITE + s.substring(0, s.length() - 2));
+            plugin.msg(player, ChatColor.YELLOW + "Available circuits: " + ChatColor.WHITE + CircuitManager.getValidSendersString());
         }
       
 // Command was: "/qc cancel"
