@@ -118,9 +118,9 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
                     QuantumConnectors.circuitTypes.get(args[0])
                     );
             
+            int iDelay = 0;
+            
             if(args.length > 1){
-                int iDelay = 0;
-                
                 try { 
                     iDelay = Integer.parseInt(args[1]);
                 }
@@ -128,21 +128,23 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
                     iDelay = -1;
                 }      
                 
-                if(iDelay < 0 || iDelay > 15){
+                if(iDelay < 0 || iDelay > QuantumConnectors.MAX_DELAY_TIME){
                     iDelay = 0;
+                    
                     plugin.msg(player,ChatColor.RED + "Invalid delay time, assuming no delay");  
                 }
-
-                QuantumConnectors.tempCircuitDelays.put(player,iDelay);
             }
+            
+            QuantumConnectors.tempCircuitDelays.put(player,iDelay);
                 
             //Player has no pending circuit
                 if(!QuantumConnectors.tempCircuits.containsKey(player)){
                     plugin.msg(player, "Circuit is ready to be created!");
                 }
             //Player has a pending circuit, still nothing to do here
-                else{
-                    plugin.msg(player, "Circuit type switched to: "+args[0]+"!");
+                else{                    
+                    plugin.msg(player, "Circuit type switched to: "+args[0]
+                            +" ("+(iDelay == 0 ? "no" : iDelay+"t")+" delay)");
                 }
             }
             

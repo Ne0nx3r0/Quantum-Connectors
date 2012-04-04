@@ -1,36 +1,40 @@
 package com.ne0nx3r0.quantum.circuits;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import org.bukkit.Location;
 
 public class Circuit{
     //aka location, type
-    private Map<Location,Receiver> receivers;
+    private List receivers;
     
     public Circuit(){
-        receivers = new HashMap<Location,Receiver>();
+        this.receivers = new ArrayList<Receiver>();
     }
-    public Circuit(Map<Location,Receiver> map){
-        receivers = map;
+    public Circuit(List receivers){
+        this.receivers = receivers;
     }
 
     public void addReceiver(Location loc,int type,int delay){
-        receivers.put(loc,new Receiver(type,delay));
+        receivers.add(new Receiver(loc,type,delay));
     }
     
-    public void setReceivers(Map<Location,Receiver> map){
-        receivers = map;
+    public void setReceivers(List receivers){
+        this.receivers = receivers;
     }
     
-    public Boolean getReceiver(Location loc){
-        return receivers.containsKey(loc);
+    public Receiver getReceiver(int index){
+        return (Receiver) receivers.get(index);
     }
-    public Map<Location, Receiver> getReceivers(){
+    public List getReceivers(){
         return receivers;
     }
     
-    public void delReceiver(Location loc){
-        receivers.remove(loc);
+    public int getReceiversCount(){
+        return receivers.size();
+    }
+    
+    public void delReceiver(Receiver r){
+        receivers.remove(r);
     }
 }

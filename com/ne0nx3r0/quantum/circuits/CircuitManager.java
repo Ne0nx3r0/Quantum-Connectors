@@ -131,17 +131,19 @@ public final class CircuitManager{
     }
     public static void activateCircuit(Location lSender, int current, int chain){
         Circuit circuit = getCircuit(lSender);
-        Map<Location,Receiver> receivers = circuit.getReceivers();
+        List receivers = circuit.getReceivers();
         
         if(!receivers.isEmpty()){
             int iType;
             int iDelay;
-            
-            for(Location r : receivers.keySet()){
-                iType = receivers.get(r).type;
-                iDelay = receivers.get(r).delay;
 
-                Block b = r.getBlock();
+            Receiver r;
+            for(int i = 0; i < receivers.size(); i++){
+                r = (Receiver) receivers.get(i);
+                
+                iType = r.type;
+                iDelay = r.delay;
+                Block b = r.location.getBlock();
 
                 if (isValidReceiver(b)){
                     if (iType == CircuitTypes.QUANTUM.getId()) {
@@ -221,7 +223,7 @@ public final class CircuitManager{
             plugin.getServer().getScheduler().scheduleAsyncDelayedTask(
                 plugin,
                 new DelayedSetReceiver(block,on),
-                iDelay * 20); 
+                iDelay); 
         }
     }
     
@@ -339,7 +341,7 @@ public final class CircuitManager{
             Map<String,Object> tempReceiverObj;
             ArrayList tempReceiverObjs;
             Circuit currentCircuit;
-            Map<Location,Receiver> currentReceivers;
+            List<Receiver> currentReceivers;
 
             Map<Location,Circuit> currentWorldCircuits = worlds.get(world);
             
@@ -356,15 +358,18 @@ public final class CircuitManager{
                 currentReceivers = currentCircuit.getReceivers();
 
                 tempReceiverObjs = new ArrayList();
-                for(Location rLoc : currentReceivers.keySet()){
+                Receiver r;
+                for(int i = 0; i < currentReceivers.size(); i++){
+                    r = currentReceivers.get(i);
+                    
                     tempReceiverObj = new HashMap<String,Object>();
                     
-                    tempReceiverObj.put("x",rLoc.getBlockX());
-                    tempReceiverObj.put("y",rLoc.getBlockY());
-                    tempReceiverObj.put("z",rLoc.getBlockZ());
+                    tempReceiverObj.put("x",r.location.getBlockX());
+                    tempReceiverObj.put("y",r.location.getBlockY());
+                    tempReceiverObj.put("z",r.location.getBlockZ());
 
-                    tempReceiverObj.put("t",currentReceivers.get(rLoc).type);
-                    tempReceiverObj.put("d",currentReceivers.get(rLoc).delay);
+                    tempReceiverObj.put("t",r.type);
+                    tempReceiverObj.put("d",r.delay);
                     
                     tempReceiverObjs.add(tempReceiverObj);
                 }

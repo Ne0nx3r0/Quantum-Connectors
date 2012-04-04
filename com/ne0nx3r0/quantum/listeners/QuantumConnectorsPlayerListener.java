@@ -23,11 +23,11 @@ public class QuantumConnectorsPlayerListener implements Listener{
     public void onPlayerInteract(PlayerInteractEvent event){   
 
     //Clicked on a block that has a quantum circuit (sender) attached
-        if (event.getClickedBlock() != null && QuantumConnectors.circuitManager.circuitExists(event.getClickedBlock().getLocation())) {
+        if (event.getClickedBlock() != null && CircuitManager.circuitExists(event.getClickedBlock().getLocation())) {
             Block block = event.getClickedBlock();
 
             if (block.getType() == Material.WOODEN_DOOR || block.getType() == Material.TRAP_DOOR) {
-                QuantumConnectors.circuitManager.activateCircuit(event.getClickedBlock().getLocation(), QuantumConnectors.circuitManager.getBlockCurrent(block));
+                CircuitManager.activateCircuit(event.getClickedBlock().getLocation(), CircuitManager.getBlockCurrent(block));
             }
         }
         
@@ -80,7 +80,7 @@ public class QuantumConnectorsPlayerListener implements Listener{
                             QuantumConnectors.tempCircuitDelays.get(player)//iDelay
                         );
                         
-                        plugin.msg(player, "Added a receiver!" +ChatColor.YELLOW + " ('/qc done', or add more receivers)");
+                        plugin.msg(player, "Added a receiver! (#"+QuantumConnectors.tempCircuits.get(player).getReceiversCount() +")" +ChatColor.YELLOW + " ('/qc done', or add more receivers)");
                     }
                 //Receiver was in a different world
                     else{

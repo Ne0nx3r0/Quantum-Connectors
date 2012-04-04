@@ -6,11 +6,9 @@ import com.ne0nx3r0.quantum.circuits.CircuitTypes;
 import com.ne0nx3r0.quantum.listeners.QuantumConnectorsBlockListener;
 import com.ne0nx3r0.quantum.listeners.QuantumConnectorsPlayerListener;
 import com.ne0nx3r0.quantum.listeners.QuantumConnectorsWorldListener;
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -18,9 +16,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class QuantumConnectors extends JavaPlugin{    
-//Grab the logger
-    public static final Logger logger = Logger.getLogger("Minecraft");
-    
+
 //Register events
     private final QuantumConnectorsPlayerListener playerListener = new QuantumConnectorsPlayerListener(this);
     private final QuantumConnectorsBlockListener blockListener = new QuantumConnectorsBlockListener(this);
@@ -34,14 +30,17 @@ public class QuantumConnectors extends JavaPlugin{
     
 //Configurables
     public static int MAX_CHAIN_LINKS = 3;
+    public static int MAX_DELAY_TIME = 20 * 20;//20s converted to ticks... I think?
+
     private static int AUTOSAVE_INTERVAL = 30;//specified here in minutes
     private static int AUTO_SAVE_ID = -1;
-    
-//Holders
+
+//Temporary Holders for circuit creation
     public static Map<Player, Circuit> tempCircuits;
     public static Map<Player, Location> tempCircuitLocations;
     public static Map<Player, Integer> tempCircuitTypes;
     public static Map<Player, Integer> tempCircuitDelays;
+
     
     @Override
     public void onDisable(){
@@ -80,7 +79,7 @@ public class QuantumConnectors extends JavaPlugin{
         pm.registerEvents(worldListener, this);
         
     //Schedule saves
-        AUTOSAVE_INTERVAL = AUTOSAVE_INTERVAL * 60 * 20;//convert to minutes
+        AUTOSAVE_INTERVAL = AUTOSAVE_INTERVAL * 60 * 20;//convert to ~minutes
         
         AUTO_SAVE_ID = getServer().getScheduler().scheduleSyncRepeatingTask(
             this,
@@ -99,7 +98,7 @@ public class QuantumConnectors extends JavaPlugin{
 //Generic wrappers for console messages
     public void log(Level level,String sMessage){
         if(!sMessage.equals(""))
-            logger.log(level,"[QuantumConnectors] " + sMessage);
+            getLogger().log(level, "[QuantumConnectors] {0}", sMessage);
     }
     public void log(String sMessage){
         log(Level.INFO,sMessage);
@@ -110,6 +109,7 @@ public class QuantumConnectors extends JavaPlugin{
     
     //Scheduled save mechanism
     private Runnable autosaveCircuits = new Runnable() {
+        @Override
         public void run() {
             circuitManager.saveAllWorlds();
         }
