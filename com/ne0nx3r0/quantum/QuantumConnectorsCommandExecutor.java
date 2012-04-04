@@ -1,6 +1,8 @@
 package com.ne0nx3r0.quantum;
 
 import com.ne0nx3r0.quantum.circuits.Circuit;
+import com.ne0nx3r0.quantum.circuits.CircuitManager;
+import com.ne0nx3r0.quantum.circuits.PendingCircuit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -30,7 +32,7 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
             plugin.msg(player, "To create a quantum circuit, use /qc <circuit>; and click   on a sender and then a receiver with redstone.");
             
             String s = "";
-            for (String sKey : QuantumConnectors.circuitTypes.keySet()) {
+            for (String sKey : CircuitManager.getValidCircuitTypes().keySet()) {
                 s += sKey + ", ";
             }
 
@@ -41,12 +43,9 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
         else if(args[0].equalsIgnoreCase("cancel")){
         
         //Pending circuit exists
-            if(QuantumConnectors.tempCircuitTypes.containsKey(player)){
-            
-            //Remove all pending data
-                QuantumConnectors.tempCircuitTypes.remove(player);
-                QuantumConnectors.tempCircuits.remove(player);
-                QuantumConnectors.tempCircuitLocations.remove(player);
+            if(CircuitManager.hasPendingCircuit(player)){
+                
+                CircuitManager.removePendingCircuit(player);
                 
                 plugin.msg(player, "Your pending circuit has been removed!");
             }
@@ -60,35 +59,29 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
         else if(args[0].equalsIgnoreCase("done")){
         
         //They typed "/qc <circuit>"
-            if(QuantumConnectors.tempCircuitTypes.containsKey(player)){
+            if(CircuitManager.hasPendingCircuit(player)){
+                PendingCircuit pc = CircuitManager.getPendingCircuit(player);
             //They also setup a sender
-                if(QuantumConnectors.tempCircuitLocations.containsKey(player)){
+                if(pc.hasSenderLocation()){
                 //Finally, they also setup at least one receiver
-                    if(QuantumConnectors.tempCircuits.containsKey(player)
-                    && !QuantumConnectors.tempCircuits.get(player).getReceivers().isEmpty()){
-                    //PHEW!
+                    if(pc.hasReceiver()){
                         
-                        plugin.circuitManager.addCircuit(
-                                QuantumConnectors.tempCircuitLocations.get(player),
-                                QuantumConnectors.tempCircuits.get(player)); 
+                        CircuitManager.addCircuit(pc); 
                         
-                    // I hate doors, I hate just the wooden doors.
+                    // I hate doors, I hate all the wooden doors.
                     // I just want to break them all, but I can't
                     // Can't break all wood doors.
-                        if(QuantumConnectors.tempCircuitLocations.get(player).getBlock().getType() == Material.WOODEN_DOOR){
-                            Block bDoor = QuantumConnectors.tempCircuitLocations.get(player).getBlock();
+                        if(pc.getSenderLocation().getBlock().getType() == Material.WOODEN_DOOR){
+                            Block bDoor = pc.getSenderLocation().getBlock();
                             int iData = (int) bDoor.getData();
                             Block bOtherPiece = bDoor.getRelative((iData & 0x08) == 0x08 ? BlockFace.DOWN : BlockFace.UP);
 
                             //TODO: Clone instead of reference the circuit?
-                            QuantumConnectors.circuitManager.addCircuit(
-                                    bOtherPiece.getLocation(), 
-                                    QuantumConnectors.tempCircuits.get(player));                            
+                            //TODO: On break check if the circuit has a twin
+                            CircuitManager.addCircuit(bOtherPiece.getLocation(),pc.getCircuit());
                         }
                         
-                        QuantumConnectors.tempCircuitLocations.remove(player);
-                        QuantumConnectors.tempCircuits.remove(player);
-                        QuantumConnectors.tempCircuitTypes.remove(player);
+                        CircuitManager.removePendingCircuit(player);
 
                         plugin.msg(player, "Quantum circuit created!");
                     }
@@ -107,41 +100,37 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
         }
         
 // Command was: "/qc <valid circuit type>"
-        else if(QuantumConnectors.circuitTypes.containsKey(args[0])){  
+        else if(CircuitManager.isValidCircuitType(args[0])){
             
         //Player has permission to create the circuit
             if(player.hasPermission("QuantumConnectors.create."+args[0])){
-            
-            //Set the type regardless
-            QuantumConnectors.tempCircuitTypes.put(
-                    player,
-                    QuantumConnectors.circuitTypes.get(args[0])
-                    );
-            
-            int iDelay = 0;
-            
-            if(args.length > 1){
-                try { 
-                    iDelay = Integer.parseInt(args[1]);
+
+            //Figure out if there's a delay, or use 0 for no delay
+                int iDelay = 0;
+
+                if(args.length > 1){
+                    try { 
+                        iDelay = Integer.parseInt(args[1]);
+                    }
+                    catch (NumberFormatException e){
+                        iDelay = -1;
+                    }      
+
+                    if(iDelay < 0 || iDelay > QuantumConnectors.MAX_DELAY_TIME){
+                        iDelay = 0;
+                        
+                        plugin.msg(player,ChatColor.RED + "Invalid delay time, assuming no delay");  
+                    }
                 }
-                catch (NumberFormatException e){
-                    iDelay = -1;
-                }      
                 
-                if(iDelay < 0 || iDelay > QuantumConnectors.MAX_DELAY_TIME){
-                    iDelay = 0;
+                if(!CircuitManager.hasPendingCircuit(player)){
+                    CircuitManager.addPendingCircuit(
+                            player,
+                            CircuitManager.getCircuitType(args[0]),
+                            iDelay);
                     
-                    plugin.msg(player,ChatColor.RED + "Invalid delay time, assuming no delay");  
-                }
-            }
-            
-            QuantumConnectors.tempCircuitDelays.put(player,iDelay);
-                
-            //Player has no pending circuit
-                if(!QuantumConnectors.tempCircuits.containsKey(player)){
                     plugin.msg(player, "Circuit is ready to be created!");
                 }
-            //Player has a pending circuit, still nothing to do here
                 else{                    
                     plugin.msg(player, "Circuit type switched to: "+args[0]
                             +" ("+(iDelay == 0 ? "no" : iDelay+"t")+" delay)");

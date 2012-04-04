@@ -1,6 +1,5 @@
 package com.ne0nx3r0.quantum;
 
-import com.ne0nx3r0.quantum.circuits.Circuit;
 import com.ne0nx3r0.quantum.circuits.CircuitManager;
 import com.ne0nx3r0.quantum.circuits.CircuitTypes;
 import com.ne0nx3r0.quantum.listeners.QuantumConnectorsBlockListener;
@@ -10,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -21,9 +19,6 @@ public class QuantumConnectors extends JavaPlugin{
     private final QuantumConnectorsPlayerListener playerListener = new QuantumConnectorsPlayerListener(this);
     private final QuantumConnectorsBlockListener blockListener = new QuantumConnectorsBlockListener(this);
     private final QuantumConnectorsWorldListener worldListener = new QuantumConnectorsWorldListener(this);
-    
-//List of circuit types
-    public static Map<String, Integer> circuitTypes = new HashMap<String, Integer>();
 
 //Circuit Manager
     public static CircuitManager circuitManager;
@@ -34,13 +29,6 @@ public class QuantumConnectors extends JavaPlugin{
 
     private static int AUTOSAVE_INTERVAL = 30;//specified here in minutes
     private static int AUTO_SAVE_ID = -1;
-
-//Temporary Holders for circuit creation
-    public static Map<Player, Circuit> tempCircuits;
-    public static Map<Player, Location> tempCircuitLocations;
-    public static Map<Player, Integer> tempCircuitTypes;
-    public static Map<Player, Integer> tempCircuitDelays;
-
     
     @Override
     public void onDisable(){
@@ -53,20 +41,9 @@ public class QuantumConnectors extends JavaPlugin{
     public void onEnable(){
     //This might be outdated...
         getDataFolder().mkdirs();
-        
-    //Setup available circuit types 
-        for (CircuitTypes t : CircuitTypes.values()){
-            circuitTypes.put(t.name, t.id);
-        }
-        
+
     //Create a circuit manager
         circuitManager = new CircuitManager(this);
-        
-    //Initialize holders
-        tempCircuits = new HashMap<Player, Circuit>();
-        tempCircuitLocations = new HashMap<Player, Location>();
-        tempCircuitTypes = new HashMap<Player, Integer>();
-        tempCircuitDelays = new HashMap<Player, Integer>();
         
     //Register qc command
         getCommand("qc").setExecutor(new QuantumConnectorsCommandExecutor(this));   

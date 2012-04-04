@@ -14,12 +14,19 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.entity.Player;
 
 public final class CircuitManager{
     private static QuantumConnectors plugin;
     
-    //Lookup/Storage for circuits, and subsequently their receivers
+// Lookup/Storage for circuits, and subsequently their receivers
     private static Map<World,Map<Location, Circuit>> worlds = new HashMap<World,Map<Location, Circuit>>();
+
+// Temporary Holders for circuit creation
+    public static Map<Player, PendingCircuit> pendingCircuits;
+
+// Allow circuitTypes/circuits
+    public static Map<String, Integer> circuitTypes = new HashMap<String, Integer>();
     
     private static Material[] validSenders = new Material[]{
         Material.LEVER,
@@ -58,6 +65,15 @@ public final class CircuitManager{
     public CircuitManager(final QuantumConnectors qc){
         CircuitManager.plugin = qc;
         
+    //Setup available circuit types 
+        for (CircuitTypes t : CircuitTypes.values()){
+            circuitTypes.put(t.name, t.id);
+        }
+     
+    //Create a holder for pending circuits
+        pendingCircuits = new HashMap<Player,PendingCircuit>();
+    
+    //Init any loaded worlds
         for(World world: plugin.getServer().getWorlds()){
             loadWorld(world);
         }
@@ -75,7 +91,7 @@ public final class CircuitManager{
         return false;
     }
 
-    public String getValidSendersString() {
+    public static String getValidSendersString() {
         String msg = "";
         for (int i = 0; i < validSenders.length; i++) {
             msg += (i != 0 ? ", " : "") + validSenders[i].name().toLowerCase().replace("_", " ");
@@ -95,7 +111,7 @@ public final class CircuitManager{
         return false;
     }
 
-    public String getValidReceiversString() {
+    public static String getValidReceiversString() {
         String msg = "";
         for (int i = 0; i < validReceivers.length; i++) {
             msg += (i != 0 ? ", " : "") + validReceivers[i].name().toLowerCase().replace("_", " ");
@@ -106,9 +122,13 @@ public final class CircuitManager{
     
     
 // Circuit (sender) CRUD
-    public void addCircuit(Location circuitLocation, Circuit newCircuit){
+    public static void addCircuit(Location circuitLocation, Circuit newCircuit){
         //Notably circuits are now created from a temporary copy, rather than piecemeal here. 
         worlds.get(circuitLocation.getWorld()).put(circuitLocation, newCircuit);
+    }
+    public static void addCircuit(PendingCircuit pc) {
+       worlds.get(pc.getSenderLocation().getWorld())
+               .put(pc.getSenderLocation(),pc.getCircuit());
     }
     
     public static boolean circuitExists(Location circuitLocation){
@@ -462,5 +482,40 @@ public final class CircuitManager{
         }
         
         worlds.put(world,worldCircuits);
+    }
+
+// Temporary circuit stuff 
+// I really don't know what order this deserves among the existing class methods
+    public static PendingCircuit addPendingCircuit(Player player,int type,int delay){
+        PendingCircuit pc = new PendingCircuit(type,delay);
+        
+        pendingCircuits.put(player, pc);
+        
+        return pc;
+    }
+    
+    public static PendingCircuit getPendingCircuit(Player player){
+        return pendingCircuits.get(player);
+    }
+    
+    public static boolean hasPendingCircuit(Player player){
+        return pendingCircuits.containsKey(player);
+    }
+    
+    public static void removePendingCircuit(Player player){
+        pendingCircuits.remove(player);
+    }
+    
+//Circuit Types
+    public static boolean isValidCircuitType(String type){
+        return circuitTypes.containsKey(type);
+    }
+    
+    public static int getCircuitType(String sType){
+        return circuitTypes.get(sType);
+    }
+    
+    public static Map<String, Integer> getValidCircuitTypes(){
+        return circuitTypes;
     }
 }
