@@ -123,7 +123,8 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
                             CircuitManager.getCircuitType(args[0]),
                             iDelay);
                     
-                    plugin.msg(player, "Circuit is ready to be created!");
+                    plugin.msg(player, "Circuit is ready to be created! ("+args[0]
+                            +" "+(iDelay == 0 ? "no" : iDelay+"t")+" delay)");
                 }
                 else{       
                     CircuitManager.getPendingCircuit(player).setCircuitType(CircuitManager.getCircuitType(args[0]), iDelay);
