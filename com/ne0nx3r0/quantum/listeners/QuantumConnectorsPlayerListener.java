@@ -78,7 +78,7 @@ public class QuantumConnectorsPlayerListener implements Listener{
                     //Add the receiver to our new/found circuit
                         pc.addReceiver(clickedLoc);
                         
-                        plugin.msg(player, "Added a receiver! (#"+pc.getCircuit().getReceiversCount() +")" +ChatColor.YELLOW + " ('/qc done', or add more receivers)");
+                        plugin.msg(player, "Added a receiver! (#"+pc.getCircuit().getReceiversCount() +")" +ChatColor.YELLOW + " ('/qc done', or add more)");
                     }
                 //Receiver was in a different world
                     else{
