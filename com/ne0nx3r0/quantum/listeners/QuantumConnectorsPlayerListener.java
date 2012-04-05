@@ -23,17 +23,8 @@ public class QuantumConnectorsPlayerListener implements Listener{
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEvent event){   
 
-    //Clicked on a block that has a quantum circuit (sender) attached
-        if (event.getClickedBlock() != null && CircuitManager.circuitExists(event.getClickedBlock().getLocation())) {
-            Block block = event.getClickedBlock();
-
-            if (block.getType() == Material.WOODEN_DOOR || block.getType() == Material.TRAP_DOOR) {
-                CircuitManager.activateCircuit(event.getClickedBlock().getLocation(), CircuitManager.getBlockCurrent(block));
-            }
-        }
-        
     //Holding redstone, clicked a block, and has a pending circuit from /qc
-        else if(event.getItem() != null
+        if(event.getItem() != null
         && event.getItem().getType() == Material.REDSTONE
         && event.getClickedBlock() != null
         && CircuitManager.hasPendingCircuit(event.getPlayer())){
@@ -75,10 +66,19 @@ public class QuantumConnectorsPlayerListener implements Listener{
                     
                 //Only allow circuits in the same world, sorry multiworld QCircuits :(
                     if(pc.getSenderLocation().getWorld().equals(clickedLoc.getWorld())){
-                    //Add the receiver to our new/found circuit
-                        pc.addReceiver(clickedLoc);
-                        
-                        plugin.msg(player, "Added a receiver! (#"+pc.getCircuit().getReceiversCount() +")" +ChatColor.YELLOW + " ('/qc done', or add more)");
+                    //Isn't going over max receivers    
+                        if(QuantumConnectors.MAX_RECEIVERS_PER_CIRCUIT == 0 // 0 == unlimited
+                        || pc.getCircuit().getReceiversCount() < QuantumConnectors.MAX_RECEIVERS_PER_CIRCUIT){
+                        //Add the receiver to our new/found circuit
+                            pc.addReceiver(clickedLoc);
+
+                            plugin.msg(player, "Added a receiver! (#"+pc.getCircuit().getReceiversCount() +")" +ChatColor.YELLOW + " ('/qc done', or add more)");
+                        }
+                    //Went over max circuits
+                        else{
+                            plugin.msg(player, "You cannot add anymore receivers! ("+pc.getCircuit().getReceiversCount()+")");
+                            plugin.msg(player, "'/qc done' to finish circuit, or '/qc cancel' to void it");
+                        }
                     }
                 //Receiver was in a different world
                     else{
@@ -92,6 +92,14 @@ public class QuantumConnectorsPlayerListener implements Listener{
                     plugin.msg(player, "('/qc done' if you are finished)");
                 }
             }
-        }        
+        }  
+    //Clicked on a block that has a quantum circuit (sender) attached
+        else if(event.getClickedBlock() != null && CircuitManager.circuitExists(event.getClickedBlock().getLocation())) {
+            Block block = event.getClickedBlock();
+
+            if (block.getType() == Material.WOODEN_DOOR || block.getType() == Material.TRAP_DOOR) {
+                CircuitManager.activateCircuit(event.getClickedBlock().getLocation(), CircuitManager.getBlockCurrent(block));
+            }
+        }
     }
 }
