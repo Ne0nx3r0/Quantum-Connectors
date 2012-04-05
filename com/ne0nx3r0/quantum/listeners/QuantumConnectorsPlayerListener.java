@@ -76,7 +76,7 @@ public class QuantumConnectorsPlayerListener implements Listener{
                 //Only allow circuits in the same world, sorry multiworld QCircuits :(
                     if(pc.getSenderLocation().getWorld().equals(clickedLoc.getWorld())){
                     //Add the receiver to our new/found circuit
-                        pc.addReceiver(null);
+                        pc.addReceiver(clickedLoc);
                         
                         plugin.msg(player, "Added a receiver! (#"+pc.getCircuit().getReceiversCount() +")" +ChatColor.YELLOW + " ('/qc done', or add more receivers)");
                     }

@@ -126,7 +126,7 @@ public final class CircuitManager{
         //Notably circuits are now created from a temporary copy, rather than piecemeal here. 
         worlds.get(circuitLocation.getWorld()).put(circuitLocation, newCircuit);
     }
-    public static void addCircuit(PendingCircuit pc) {
+    public static void addCircuit(PendingCircuit pc){             
        worlds.get(pc.getSenderLocation().getWorld())
                .put(pc.getSenderLocation(),pc.getCircuit());
     }

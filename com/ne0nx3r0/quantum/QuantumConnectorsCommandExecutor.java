@@ -60,7 +60,6 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
                 if(pc.hasSenderLocation()){
                 //Finally, they also setup at least one receiver
                     if(pc.hasReceiver()){
-                        
                         CircuitManager.addCircuit(pc); 
                         
                     // I hate doors, I hate all the wooden doors.
