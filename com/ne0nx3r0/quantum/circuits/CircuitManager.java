@@ -444,8 +444,11 @@ public final class CircuitManager{
         
         Map<Location,Circuit> worldCircuits = new HashMap<Location,Circuit>();
         
+        Location tempCircuitObjLoc;
+        
+        ArrayList tempReceiverObjs;
         Map<String,Object> tempReceiverObj;
-        ArrayList tempReceiverObjs = null;
+        Location tempReceiverLoc;
 
         Circuit tempCircuit = null;
         for(Map<String,Object> tempCircuitObj : tempCircuits){
@@ -455,25 +458,40 @@ public final class CircuitManager{
         //TODO: circuit/receiver verification
             for(int i = 0; i < tempReceiverObjs.size(); i++) {
                 tempReceiverObj = (Map<String, Object>) tempReceiverObjs.get(i);
+                tempReceiverLoc = new Location(
+                        world,
+                        (Integer) tempReceiverObj.get("x"),
+                        (Integer) tempReceiverObj.get("y"),
+                        (Integer) tempReceiverObj.get("z"));
                 
-                tempCircuit.addReceiver(new Location(
-                    world,
-                    (Integer) tempReceiverObj.get("x"),
-                    (Integer) tempReceiverObj.get("y"),
-                    (Integer) tempReceiverObj.get("z")),
-                    (Integer) tempReceiverObj.get("t"),
-                    (tempReceiverObj.get("d") == null ? 0 : (Integer) tempReceiverObj.get("d")));
-                //lazy convertor... Nobody should actually have the v2 of this yml in production yet anyway.
+                if(CircuitManager.isValidReceiver(tempReceiverLoc.getBlock())){
+                    tempCircuit.addReceiver(
+                            tempReceiverLoc,
+                            (Integer) tempReceiverObj.get("t"),
+                            (Integer) tempReceiverObj.get("d"));
+                }
+                //Invalid receiver block type
+                else{
+                    plugin.log("Removed a " + world.getName() + " circuit's receiver; "+tempReceiverLoc.getBlock().getType().name()+" is not a valid receiver.");
+                }
             }
 
             // Verify there is at least one valid receiver
                 if(!tempCircuit.getReceivers().isEmpty()){
-                    worldCircuits.put(new Location(
-                            world,
-                            (Integer) tempCircuitObj.get("x"),
-                            (Integer) tempCircuitObj.get("y"),
-                            (Integer) tempCircuitObj.get("z")
-                        ),tempCircuit); 
+                    tempCircuitObjLoc = new Location(
+                                world,
+                                (Integer) tempCircuitObj.get("x"),
+                                (Integer) tempCircuitObj.get("y"),
+                                (Integer) tempCircuitObj.get("z"));
+                    
+                    //Verify the sender is a valid type
+                    if(CircuitManager.isValidReceiver(tempCircuitObjLoc.getBlock())){
+                        worldCircuits.put(tempCircuitObjLoc,tempCircuit); 
+                    }
+                    //Invalid sender type
+                    else{
+                        plugin.log("Removed a "+world.getName()+" circuit; "+tempCircuitObjLoc.getBlock().getType().name()+" is not a valid sender.");
+                    }
                 }
             // No valid receivers for this circuit
                 else{
