@@ -1,6 +1,5 @@
 package com.ne0nx3r0.quantum;
 
-import com.ne0nx3r0.quantum.circuits.Circuit;
 import com.ne0nx3r0.quantum.circuits.CircuitManager;
 import com.ne0nx3r0.quantum.circuits.PendingCircuit;
 import org.bukkit.ChatColor;
@@ -100,37 +99,41 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
             if(player.hasPermission("QuantumConnectors.create."+args[0])){
 
             //Figure out if there's a delay, or use 0 for no delay
-                int iDelay = 0;
+                double dDelay = 0;
 
                 if(args.length > 1){
                     try { 
-                        iDelay = Integer.parseInt(args[1]);
+                        dDelay = Double.parseDouble(args[1]);
                     }
                     catch (NumberFormatException e){
-                        iDelay = -1;
+                        dDelay = -1;
                     }      
 
-                    if(iDelay < 0 || iDelay > QuantumConnectors.MAX_DELAY_TIME){
-                        iDelay = 0;
+                    if(dDelay < 0 || dDelay > QuantumConnectors.MAX_DELAY_TIME){
+                        dDelay = 0;
                         
-                        plugin.msg(player,ChatColor.RED + "Invalid delay time (min:0 max:"+QuantumConnectors.MAX_DELAY_TIME+", assuming no delay");  
+                        plugin.msg(player,ChatColor.RED + "Invalid delay time (min:0s max:"+QuantumConnectors.MAX_DELAY_TIME+"s, assuming no delay");  
                     }
                 }
+                
+                String sDelayMsg = " ("+args[0]+" "+(dDelay == 0 ? "no" : dDelay+"s")+" delay)";
+                
+                int iDelayTicks = (int) Math.round(dDelay*20);
                 
                 if(!CircuitManager.hasPendingCircuit(player)){
                     CircuitManager.addPendingCircuit(
                             player,
                             CircuitManager.getCircuitType(args[0]),
-                            iDelay);
+                            iDelayTicks);
                     
-                    plugin.msg(player, "Circuit is ready to be created! ("+args[0]
-                            +" "+(iDelay == 0 ? "no" : iDelay+"t")+" delay)");
+                    plugin.msg(player, args[0]+" circuit ready to be created!"+sDelayMsg);
                 }
                 else{       
-                    CircuitManager.getPendingCircuit(player).setCircuitType(CircuitManager.getCircuitType(args[0]), iDelay);
+                    CircuitManager.getPendingCircuit(player).setCircuitType(
+                            CircuitManager.getCircuitType(args[0]),
+                            iDelayTicks);
                     
-                    plugin.msg(player, "Circuit type switched to: "+args[0]
-                            +" ("+(iDelay == 0 ? "no" : iDelay+"t")+" delay)");
+                    plugin.msg(player, "Circuit type switched to: "+args[0]+sDelayMsg);
                 }
             }
             

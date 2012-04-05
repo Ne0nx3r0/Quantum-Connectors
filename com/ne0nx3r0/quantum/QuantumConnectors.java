@@ -25,7 +25,7 @@ public class QuantumConnectors extends JavaPlugin{
     
 //Configurables
     public static int MAX_CHAIN_LINKS = 3;
-    public static int MAX_DELAY_TIME = 50;//20s converted to ticks... I think?
+    public static int MAX_DELAY_TIME = 10;//in seconds
     public static int MAX_RECEIVERS_PER_CIRCUIT = 12;
 
     private static int AUTOSAVE_INTERVAL = 30;//specified here in minutes
