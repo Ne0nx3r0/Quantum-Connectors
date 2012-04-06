@@ -359,7 +359,7 @@ public final class CircuitManager{
             }
             FileConfiguration yml = YamlConfiguration.loadConfiguration(ymlFile);
             
-            plugin.log("Saving "+ymlFile.getName()+"...");
+            //plugin.log("Saving "+ymlFile.getName()+"...");
             
         //Prep this world's data for saving
             List<Object> tempCircuits = new ArrayList<Object>();
@@ -421,6 +421,8 @@ public final class CircuitManager{
         }
     }
     public void saveAllWorlds(){
+        plugin.log("Saving Circuits");
+        
         for(World world : worlds.keySet()){
             saveWorld(world);
         }
