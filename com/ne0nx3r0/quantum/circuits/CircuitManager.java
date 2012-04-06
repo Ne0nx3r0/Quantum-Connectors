@@ -4,6 +4,8 @@ import com.ne0nx3r0.quantum.QuantumConnectors;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.minecraft.server.EntityTNTPrimed;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -73,6 +75,11 @@ public final class CircuitManager{
     //Create a holder for pending circuits
         pendingCircuits = new HashMap<Player,PendingCircuit>();
     
+    //Convert circuits.yml to new structure    
+        if(new File(plugin.getDataFolder(),"circuits.yml").exists()){
+            convertOldCircuitsYml();
+        }
+        
     //Init any loaded worlds
         for(World world: plugin.getServer().getWorlds()){
             loadWorld(world);
@@ -399,9 +406,9 @@ public final class CircuitManager{
                 tempCircuits.add(tempCircuitObj);
             }
             
-            yml.set("circuits", tempCircuits);
             yml.set("fileVersion","2");
-            
+            yml.set("circuits", tempCircuits);
+
             try{
                 yml.save(ymlFile);
 
@@ -485,7 +492,7 @@ public final class CircuitManager{
                                 (Integer) tempCircuitObj.get("z"));
                     
                     //Verify the sender is a valid type
-                    if(CircuitManager.isValidReceiver(tempCircuitObjLoc.getBlock())){
+                    if(CircuitManager.isValidSender(tempCircuitObjLoc.getBlock())){
                         worldCircuits.put(tempCircuitObjLoc,tempCircuit); 
                     }
                     //Invalid sender type
@@ -535,5 +542,75 @@ public final class CircuitManager{
     
     public static Map<String, Integer> getValidCircuitTypes(){
         return circuitTypes;
+    }
+    
+//1.2.3 circuits.yml Converter
+    public void convertOldCircuitsYml(){
+        File oldYmlFile = new File(plugin.getDataFolder(),"circuits.yml");
+        if(oldYmlFile.exists()){
+            plugin.log("Found circuits.yml, attempting to convert...");
+
+            FileConfiguration oldYml = YamlConfiguration.loadConfiguration(oldYmlFile);
+
+            for(String worldName : oldYml.getValues(false).keySet()){
+                ArrayList tempCircuitObjs = new ArrayList();
+
+                for (int x = 0;; x++){
+                    String path = worldName + ".circuit_" + x;
+                    
+                    if (oldYml.get(path) == null) {
+                        break;
+                    }
+
+                    Map<String,Object> tempCircuitObj = new HashMap<String,Object>();
+                    
+                    String[] senderXYZ = oldYml.get(path + ".sender").toString().split(",");
+                    
+                    tempCircuitObj.put("x", Integer.parseInt(senderXYZ[0]));
+                    tempCircuitObj.put("y", Integer.parseInt(senderXYZ[1]));
+                    tempCircuitObj.put("z", Integer.parseInt(senderXYZ[2]));
+
+                    //they'll all be the same, should only ever be one anyway
+                    String receiversType = oldYml.get(path+".type").toString();
+                    
+                   ArrayList tempReceiverObjs = new ArrayList();
+                    for(Object receiver : oldYml.getList(path + ".receivers")){
+                        Map<String,Object> tempReceiverObj = new HashMap<String,Object>();
+                        
+                        String[] sReceiverLoc = receiver.toString().split(",");
+                        
+                        tempReceiverObj.put("x", Integer.parseInt(sReceiverLoc[0]));
+                        tempReceiverObj.put("y", Integer.parseInt(sReceiverLoc[1]));
+                        tempReceiverObj.put("z", Integer.parseInt(sReceiverLoc[2]));
+                        tempReceiverObj.put("d", 0);
+                        tempReceiverObj.put("t", Integer.parseInt(receiversType));
+
+                        tempReceiverObjs.add(tempReceiverObj);
+                    }
+                    
+                    tempCircuitObj.put("r",tempReceiverObjs);
+                    
+                    tempCircuitObjs.add(tempCircuitObj);
+                }
+                
+                File newYmlFile = new File(plugin.getDataFolder(),worldName+".circuits.yml");
+                FileConfiguration newYml = YamlConfiguration.loadConfiguration(newYmlFile);
+                
+                newYml.set("fileVersion", 2);
+                newYml.set("circuits", tempCircuitObjs);
+                
+                try {
+                    newYml.save(newYmlFile);
+                } catch (IOException ex) {
+                    plugin.error("Unable to save "+newYmlFile.getName()+"!");
+                    
+                    Logger.getLogger(CircuitManager.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }    
+
+            //I dunno man. Java file operations are a mystery to me. These lines worked.
+            File testFile = new File(plugin.getDataFolder(),"circuits.yml.bak");
+            new File(plugin.getDataFolder(),"circuits.yml").renameTo(testFile);
+        }
     }
 }
