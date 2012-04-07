@@ -1,0 +1,12 @@
+# Max number of recursions per circuit
+# You shouldn't ever really need to change this
+max_chain_links: 3
+
+# Autosave time in minutes
+autosave_interval_minutes: 30
+
+# Max allowed delay for one recevier in seconds (QuantumConnectors.ignoreLimits will overwrite this)
+max_delay_time: 10
+
+# Max receivers for a single circuit (QuantumConnectors.ignoreLimits will overwrite this)
+max_receivers_per_circuit: 20

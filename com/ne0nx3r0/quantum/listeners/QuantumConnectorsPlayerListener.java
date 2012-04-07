@@ -68,7 +68,8 @@ public class QuantumConnectorsPlayerListener implements Listener{
                     if(pc.getSenderLocation().getWorld().equals(clickedLoc.getWorld())){
                     //Isn't going over max receivers    
                         if(QuantumConnectors.MAX_RECEIVERS_PER_CIRCUIT == 0 // 0 == unlimited
-                        || pc.getCircuit().getReceiversCount() < QuantumConnectors.MAX_RECEIVERS_PER_CIRCUIT){
+                        || pc.getCircuit().getReceiversCount() < QuantumConnectors.MAX_RECEIVERS_PER_CIRCUIT
+                        || player.hasPermission("QuantumConnectors.ignoreLimits")){
                         //Add the receiver to our new/found circuit
                             pc.addReceiver(clickedLoc);
 

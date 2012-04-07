@@ -4,8 +4,11 @@ import com.ne0nx3r0.quantum.circuits.CircuitManager;
 import com.ne0nx3r0.quantum.listeners.QuantumConnectorsBlockListener;
 import com.ne0nx3r0.quantum.listeners.QuantumConnectorsPlayerListener;
 import com.ne0nx3r0.quantum.listeners.QuantumConnectorsWorldListener;
+import java.io.File;
 import java.util.logging.Level;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -52,6 +55,9 @@ public class QuantumConnectors extends JavaPlugin{
         pm.registerEvents(playerListener, this);
         pm.registerEvents(blockListener, this);
         pm.registerEvents(worldListener, this);
+    
+    //TODO: Setup config
+        setupConfig();
         
     //Schedule saves
         AUTOSAVE_INTERVAL = AUTOSAVE_INTERVAL * 60 * 20;//convert to ~minutes
@@ -89,4 +95,25 @@ public class QuantumConnectors extends JavaPlugin{
             circuitManager.saveAllWorlds();
         }
     };
+
+    private void setupConfig(){
+        this.reloadConfig();
+        
+        File configFile = new File(this.getDataFolder(), "config.yml");
+        
+        if(!configFile.exists()){
+            this.saveDefaultConfig();
+            this.saveConfig();
+        }
+        
+        FileConfiguration config = this.getConfig();
+        config.options().copyDefaults(true);
+        this.saveConfig();
+        this.reloadConfig();
+        
+        MAX_CHAIN_LINKS           = config.getInt("max_chain_links", MAX_CHAIN_LINKS);
+        MAX_DELAY_TIME            = config.getInt("max_delay_time", MAX_DELAY_TIME);
+        MAX_RECEIVERS_PER_CIRCUIT = config.getInt("max_receivers_per_circuit", MAX_RECEIVERS_PER_CIRCUIT);
+        AUTOSAVE_INTERVAL         = config.getInt("autosave_interval_minutes", AUTOSAVE_INTERVAL);
+    }
 }

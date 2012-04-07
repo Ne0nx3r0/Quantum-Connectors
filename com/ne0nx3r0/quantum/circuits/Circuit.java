@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Location;
 
+//TODO: Save player with circuit
+
+//TODO: Allow naming of circuits
+
 public class Circuit{
     //aka location, type
     private List receivers;

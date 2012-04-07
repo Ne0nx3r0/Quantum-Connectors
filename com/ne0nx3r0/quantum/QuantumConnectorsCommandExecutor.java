@@ -114,7 +114,8 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
                         dDelay = -1;
                     }      
 
-                    if(dDelay < 0 || dDelay > QuantumConnectors.MAX_DELAY_TIME){
+                    if(dDelay < 0 
+                    || (dDelay > QuantumConnectors.MAX_DELAY_TIME && !player.hasPermission("QuantumConnectors.ignoreLimits"))){
                         dDelay = 0;
                         
                         plugin.msg(player,ChatColor.RED + "Invalid delay time (min:0s max:"+QuantumConnectors.MAX_DELAY_TIME+"s, assuming no delay");  
