@@ -40,12 +40,12 @@ public final class CircuitManager{
         Material.REDSTONE_TORCH_ON,
         Material.REDSTONE_LAMP_OFF,
         Material.REDSTONE_LAMP_ON,
-        Material.DIODE_BLOCK_OFF,
-        Material.DIODE_BLOCK_ON,//TODO: Test repeaters
+        //Material.DIODE_BLOCK_OFF,
+        //Material.DIODE_BLOCK_ON,//TODO: Figure out repeaters as senders
         Material.IRON_DOOR_BLOCK,
         Material.WOODEN_DOOR,
         Material.TRAP_DOOR,
-        Material.POWERED_RAIL,
+        //Material.POWERED_RAIL,//TODO: Figure out powered rail as sender
         //TODO: Add chests?
     };
     private static Material[] validReceivers = new Material[]{
@@ -54,12 +54,12 @@ public final class CircuitManager{
         Material.WOODEN_DOOR,
         Material.TRAP_DOOR,
         Material.POWERED_RAIL,
-        Material.REDSTONE_TORCH_OFF,
-        Material.REDSTONE_TORCH_ON,//TODO: Test torches/lamps send & receive
-        Material.REDSTONE_LAMP_OFF,
-        Material.REDSTONE_LAMP_ON,
-        Material.PISTON_BASE,
-        Material.PISTON_STICKY_BASE,//TODO: Test pistons, for the hell of it.
+        //Material.REDSTONE_TORCH_OFF,
+        //Material.REDSTONE_TORCH_ON,//TODO: Figure out torches&lamps as receivers
+        //Material.REDSTONE_LAMP_OFF,
+        //Material.REDSTONE_LAMP_ON,
+        //Material.PISTON_BASE,
+        //Material.PISTON_STICKY_BASE,//TODO: Figure out pistons as receivers
         Material.TNT
     };
     
