@@ -381,6 +381,8 @@ public final class CircuitManager{
                 tempCircuitObj.put("x",cLoc.getBlockX());
                 tempCircuitObj.put("y",cLoc.getBlockY());
                 tempCircuitObj.put("z",cLoc.getBlockZ());
+                
+                tempCircuitObj.put("o", currentCircuit.getOwner());
 
                 currentReceivers = currentCircuit.getReceivers();
 
@@ -459,9 +461,9 @@ public final class CircuitManager{
         Map<String,Object> tempReceiverObj;
         Location tempReceiverLoc;
 
-        Circuit tempCircuit = null;
-        for(Map<String,Object> tempCircuitObj : tempCircuits){
-            tempCircuit = new Circuit();
+        for(Map<String,Object> tempCircuitObj : tempCircuits){          
+            //dummy value of # for owners
+            Circuit tempCircuit = new Circuit((String) (tempCircuitObj.get("o") == null ? "" : tempCircuitObj.get("o")));
             tempReceiverObjs = (ArrayList) tempCircuitObj.get("r");
             
         //TODO: circuit/receiver verification
@@ -514,7 +516,7 @@ public final class CircuitManager{
 // Temporary circuit stuff 
 // I really don't know what order this deserves among the existing class methods
     public static PendingCircuit addPendingCircuit(Player player,int type,int delay){
-        PendingCircuit pc = new PendingCircuit(type,delay);
+        PendingCircuit pc = new PendingCircuit(player.getName(),type,delay);
         
         pendingCircuits.put(player, pc);
         

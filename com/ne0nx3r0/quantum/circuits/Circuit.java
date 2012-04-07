@@ -4,21 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Location;
 
-//TODO: Save player with circuit
-
 //TODO: Allow naming of circuits
 
 public class Circuit{
-    //aka location, type
     private List receivers;
+    private String playerName;
     
-    public Circuit(){
+    public Circuit(String player){
+        this.playerName = player;
         this.receivers = new ArrayList<Receiver>();
     }
-    public Circuit(List receivers){
+    public Circuit(String player,List receivers){
+        this.playerName = player;
         this.receivers = receivers;
     }
-
+    
     public void addReceiver(Location loc,int type,int delay){
         receivers.add(new Receiver(loc,type,delay));
     }
@@ -40,5 +40,13 @@ public class Circuit{
     
     public void delReceiver(Receiver r){
         receivers.remove(r);
+    }
+    
+    public void setOwner(String player){
+        this.playerName = player;
+    }
+    
+    public String getOwner(){
+        return playerName;
     }
 }

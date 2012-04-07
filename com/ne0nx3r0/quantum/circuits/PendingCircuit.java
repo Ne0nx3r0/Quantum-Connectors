@@ -8,10 +8,10 @@ public class PendingCircuit{
     private int currentType;
     private int currentDelay;
 
-    public PendingCircuit(int type,int delay){
+    public PendingCircuit(String ownerName,int type,int delay){
         currentType = type;
         currentDelay = delay;
-        circuit = new Circuit();
+        circuit = new Circuit(ownerName);
     }
     
     public void setCircuitType(int type,int delay){
