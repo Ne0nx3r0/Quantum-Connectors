@@ -393,12 +393,12 @@ public final class CircuitManager{
                     
                     tempReceiverObj = new HashMap<String,Object>();
                     
-                    tempReceiverObj.put("x",r.location.getBlockX());
-                    tempReceiverObj.put("y",r.location.getBlockY());
                     tempReceiverObj.put("z",r.location.getBlockZ());
-
-                    tempReceiverObj.put("t",r.type);
+                    tempReceiverObj.put("y",r.location.getBlockY());
+                    tempReceiverObj.put("x",r.location.getBlockX());
+                    
                     tempReceiverObj.put("d",r.delay);
+                    tempReceiverObj.put("t",r.type);
                     
                     tempReceiverObjs.add(tempReceiverObj);
                 }
