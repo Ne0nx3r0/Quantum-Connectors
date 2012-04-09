@@ -250,7 +250,7 @@ public final class CircuitManager{
         if(iDelay == 0){
             setReceiver(block,on);
         }else{
-            plugin.getServer().getScheduler().scheduleAsyncDelayedTask(
+            plugin.getServer().getScheduler().scheduleSyncDelayedTask(
                 plugin,
                 new DelayedSetReceiver(block,on),
                 iDelay); 
@@ -424,7 +424,7 @@ public final class CircuitManager{
                 plugin.error("Failed to save "+ymlFile.getName());
             }  
         }else{
-            plugin.error(world.getName() + " could not be saved! (wasn't loaded?)");
+            plugin.error(world.getName() + " could not be saved!");
         }
     }
     public void saveAllWorlds(){
