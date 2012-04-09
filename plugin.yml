@@ -7,3 +7,35 @@ description: Wireless redstone connections
 commands:
    qc:
       description: Create a quantum connector
+permissions:
+    QuantumConnectors.*:
+      description: Allows all permissions
+      children:
+        QuantumConnectors.create.*: true
+    QuantumConnectors.create.*:
+      description: Allows creation of circuits
+      children:
+        QuantumConnectors.create.quantum: true
+        QuantumConnectors.create.on: true
+        QuantumConnectors.create.off: true
+        QuantumConnectors.create.toggle: true
+        QuantumConnectors.create.reverse: true
+        QuantumConnectors.create.random: true
+    QuantumConnectors.create.quantum:
+      description: Allows creation of "Quantum" Circuit
+      default: op
+    QuantumConnectors.create.on:
+      description: Allows creation of "On" circuit
+      default: op
+    QuantumConnectors.create.off:
+      description: Allows creation of "Off" circuit
+      default: op
+    QuantumConnectors.create.toggle:
+      description: Allows creation of "Toggle" circuit
+      default: op
+    QuantumConnectors.create.reverse:
+      description: Allows creation of "Reverse" circuit
+      default: op
+    QuantumConnectors.create.random:
+      description: Allows creation of "Random" circuit
+      default: op
