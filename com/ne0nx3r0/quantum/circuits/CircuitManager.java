@@ -45,6 +45,7 @@ public final class CircuitManager{
         Material.IRON_DOOR_BLOCK,
         Material.WOODEN_DOOR,
         Material.TRAP_DOOR,
+        Material.FENCE_GATE,
         //Material.POWERED_RAIL,//TODO: Figure out powered rail as sender
         //TODO: Add chests?
     };
@@ -54,6 +55,7 @@ public final class CircuitManager{
         Material.WOODEN_DOOR,
         Material.TRAP_DOOR,
         Material.POWERED_RAIL,
+        Material.FENCE_GATE,
         //Material.REDSTONE_TORCH_OFF,
         //Material.REDSTONE_TORCH_ON,//TODO: Figure out torches&lamps as receivers
         //Material.REDSTONE_LAMP_OFF,
@@ -236,7 +238,8 @@ public final class CircuitManager{
             return (iData & 0x08) == 0x08 ? 15 : 0;
         } else if (mBlock == Material.IRON_DOOR_BLOCK
                 || mBlock == Material.WOODEN_DOOR
-                || mBlock == Material.TRAP_DOOR) {
+                || mBlock == Material.TRAP_DOOR
+                || mBlock == Material.FENCE_GATE) {
             return (iData & 0x04) == 0x04 ? 15 : 0;
         }
 
@@ -291,7 +294,8 @@ public final class CircuitManager{
                 iData ^= 0x08; //send power off
             }
             block.setData((byte) iData);
-        } else if (mBlock == Material.IRON_DOOR_BLOCK || mBlock == Material.WOODEN_DOOR) {
+        } else if(mBlock == Material.IRON_DOOR_BLOCK 
+               || mBlock == Material.WOODEN_DOOR) {
             Block bOtherPiece = block.getRelative(((iData & 0x08) == 0x08) ? BlockFace.DOWN : BlockFace.UP);
             int iOtherPieceData = (int) bOtherPiece.getData();
 
@@ -305,7 +309,8 @@ public final class CircuitManager{
             block.setData((byte) iData);
             bOtherPiece.setData((byte) iOtherPieceData);
             block.getWorld().playEffect(block.getLocation(), Effect.DOOR_TOGGLE, 0, 10);
-        } else if (mBlock == Material.TRAP_DOOR) {
+        } else if(mBlock == Material.TRAP_DOOR
+               || mBlock == Material.FENCE_GATE){
             if (on && (iData & 0x04) != 0x04) {
                 iData |= 0x04;//send open
             } else if (!on && (iData & 0x04) == 0x04) {

@@ -98,7 +98,9 @@ public class QuantumConnectorsPlayerListener implements Listener{
         else if(event.getClickedBlock() != null && CircuitManager.circuitExists(event.getClickedBlock().getLocation())) {
             Block block = event.getClickedBlock();
 
-            if (block.getType() == Material.WOODEN_DOOR || block.getType() == Material.TRAP_DOOR) {
+            if (block.getType() == Material.WOODEN_DOOR 
+             || block.getType() == Material.TRAP_DOOR
+             || block.getType() == Material.FENCE_GATE){
                 CircuitManager.activateCircuit(event.getClickedBlock().getLocation(), CircuitManager.getBlockCurrent(block));
             }
         }
