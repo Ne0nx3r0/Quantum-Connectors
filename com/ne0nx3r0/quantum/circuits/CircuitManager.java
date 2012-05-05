@@ -542,6 +542,9 @@ public final class CircuitManager{
     
 //Circuit Types
     public static boolean isValidCircuitType(String type){
+        if(type.equalsIgnoreCase("q")) type = "quantum";
+        else if(type.equalsIgnoreCase("t")) type = "toggle";
+        
         return circuitTypes.containsKey(type);
     }
     

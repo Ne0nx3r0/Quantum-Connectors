@@ -20,7 +20,8 @@ permissions:
         QuantumConnectors.create.off: true
         QuantumConnectors.create.toggle: true
         QuantumConnectors.create.reverse: true
-        QuantumConnectors.create.random: true
+        QuantumConnectors.create.random: true 
+        #purposely not including spawn here, so it can't accidentally be granted
     QuantumConnectors.create.quantum:
       description: Allows creation of "Quantum" Circuit
       default: op
@@ -38,4 +39,7 @@ permissions:
       default: op
     QuantumConnectors.create.random:
       description: Allows creation of "Random" circuit
+      default: op
+    QuantumConnectors.create.spawn:
+      description: Allows creation of "Spawn" circuit
       default: op

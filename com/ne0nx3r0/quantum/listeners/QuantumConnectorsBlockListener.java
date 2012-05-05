@@ -18,7 +18,7 @@ public class QuantumConnectorsBlockListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOW)
-    public void onBlockRedstoneChange(BlockRedstoneEvent event) {
+    public void onBlockRedstoneChange(BlockRedstoneEvent event){
         if (CircuitManager.circuitExists(event.getBlock().getLocation())) {
             CircuitManager.activateCircuit(event.getBlock().getLocation(), event.getNewCurrent());
         }

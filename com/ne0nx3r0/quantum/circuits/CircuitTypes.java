@@ -7,6 +7,7 @@ public enum CircuitTypes{
     TOGGLE(3),
     REVERSE(4),
     RANDOM(5);
+//    BLOCK(6),
 
     public int id;
     public String name;
