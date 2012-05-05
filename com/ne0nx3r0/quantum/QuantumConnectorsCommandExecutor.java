@@ -24,6 +24,12 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
             plugin.log("You can't run this from the console!");
         }
         
+        if(args.length > 0){
+            if(args[0].equalsIgnoreCase("q")) args[0] = "quantum";
+            else if(args[0].equalsIgnoreCase("t")) args[0] = "toggle";
+            else if(args[0].equalsIgnoreCase("r")) args[0] = "reverse";
+        }
+        
         Player player = (Player) cs;
         
 // Command was: "/qc"
