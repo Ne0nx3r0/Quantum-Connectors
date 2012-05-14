@@ -48,7 +48,7 @@ public final class CircuitManager{
         Material.FENCE_GATE,
         Material.CHEST,
         Material.BOOKSHELF,
-        Material.BED,
+        Material.BED_BLOCK,
         //Material.POWERED_RAIL,//TODO: Figure out powered rail as sender
         //TODO: Add chests?
     };
