@@ -7,11 +7,16 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
+import org.bukkit.block.DoubleChest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.InventoryHolder;
 
 public class QuantumConnectorsPlayerListener implements Listener{
     private final QuantumConnectors plugin;
@@ -105,4 +110,55 @@ public class QuantumConnectorsPlayerListener implements Listener{
             }
         }
     }
+    
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onInventoryOpen(InventoryOpenEvent e){
+        InventoryHolder ih = e.getInventory().getHolder();
+        
+        if(ih instanceof Chest){
+            Location lChest = ((Chest) e.getInventory().getHolder()).getLocation();
+            
+            if(CircuitManager.circuitExists(lChest)){
+                CircuitManager.activateCircuit(lChest, 5);//Can't remember the max redstone current, 5 works
+            }
+        }else if(ih instanceof DoubleChest){
+            DoubleChest dc = (DoubleChest) ih;
+            
+            Location lLeft = ((Chest) dc.getLeftSide()).getLocation();
+            if(CircuitManager.circuitExists(lLeft)){
+                CircuitManager.activateCircuit(lLeft, 5);
+            }        
+            
+            Location lRight = ((Chest) dc.getRightSide()).getLocation();
+            if(CircuitManager.circuitExists(lRight)){
+                CircuitManager.activateCircuit(lRight, 5);
+            }
+        }
+    }
+    
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onInventoryClose(InventoryCloseEvent e){
+        InventoryHolder ih = e.getInventory().getHolder();
+            
+        if(ih instanceof Chest){
+            Location lChest = ((Chest) ih).getLocation();
+            
+            if(CircuitManager.circuitExists(lChest)){
+                CircuitManager.activateCircuit(lChest, 0);
+            }
+        }else if(ih instanceof DoubleChest){
+            DoubleChest dc = (DoubleChest) ih;
+            
+            Location lLeft = ((Chest) dc.getLeftSide()).getLocation();
+            if(CircuitManager.circuitExists(lLeft)){
+                CircuitManager.activateCircuit(lLeft, 5);
+            }        
+            
+            Location lRight = ((Chest) dc.getRightSide()).getLocation();
+            if(CircuitManager.circuitExists(lRight)){
+                CircuitManager.activateCircuit(lRight, 5);
+            }
+        }
+    }
+
 }

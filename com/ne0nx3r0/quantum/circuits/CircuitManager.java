@@ -46,6 +46,7 @@ public final class CircuitManager{
         Material.WOODEN_DOOR,
         Material.TRAP_DOOR,
         Material.FENCE_GATE,
+        Material.CHEST,
         //Material.POWERED_RAIL,//TODO: Figure out powered rail as sender
         //TODO: Add chests?
     };
@@ -64,7 +65,7 @@ public final class CircuitManager{
         //Material.PISTON_STICKY_BASE,//TODO: Figure out pistons as receivers
         Material.TNT
     };
-    
+
 // Main
     public CircuitManager(final QuantumConnectors qc){
         CircuitManager.plugin = qc;
@@ -87,7 +88,7 @@ public final class CircuitManager{
             loadWorld(world);
         }
     }
-
+    
 // Sender/Receiver checks
     public static boolean isValidSender(Block block) {
         Material mBlock = block.getType();
