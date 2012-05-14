@@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
 import org.bukkit.block.DoubleChest;
 import org.bukkit.entity.Player;
@@ -15,8 +16,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.PlayerBedEnterEvent;
+import org.bukkit.event.player.PlayerBedLeaveEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.material.Bed;
 
 public class QuantumConnectorsPlayerListener implements Listener{
     private final QuantumConnectors plugin;
@@ -105,7 +109,8 @@ public class QuantumConnectorsPlayerListener implements Listener{
 
             if (block.getType() == Material.WOODEN_DOOR 
              || block.getType() == Material.TRAP_DOOR
-             || block.getType() == Material.FENCE_GATE){
+             || block.getType() == Material.FENCE_GATE
+             || block.getType() == Material.BOOKSHELF){
                 CircuitManager.activateCircuit(event.getClickedBlock().getLocation(), CircuitManager.getBlockCurrent(block));
             }
         }
@@ -160,5 +165,32 @@ public class QuantumConnectorsPlayerListener implements Listener{
             }
         }
     }
-
+    
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onEnterBed(PlayerBedEnterEvent e){
+        if(CircuitManager.circuitExists(e.getBed().getLocation())){
+            CircuitManager.activateCircuit(e.getBed().getLocation(), 5);
+        }
+        if(CircuitManager.circuitExists(this.getTwinLocation((Bed) e.getBed()))){
+            CircuitManager.activateCircuit(this.getTwinLocation((Bed) e.getBed()), 5);
+        }
+    }
+    
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onLeaveBed(PlayerBedLeaveEvent e){
+        if(CircuitManager.circuitExists(e.getBed().getLocation())){
+            CircuitManager.activateCircuit(e.getBed().getLocation(), 0);
+        }
+        if(CircuitManager.circuitExists(this.getTwinLocation((Bed) e.getBed()))){
+            CircuitManager.activateCircuit(this.getTwinLocation((Bed) e.getBed()), 0);
+        }
+    }
+    
+    private Location getTwinLocation(Bed b){
+        if(b.isHeadOfBed()){
+            return (((Block) b).getRelative(b.getFacing())).getLocation();
+        }else{
+            return (((Block) b).getRelative(b.getFacing().getOppositeFace())).getLocation();
+        }
+    }
 }
