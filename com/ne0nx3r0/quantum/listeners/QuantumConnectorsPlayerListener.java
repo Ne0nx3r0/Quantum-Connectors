@@ -128,14 +128,20 @@ public class QuantumConnectorsPlayerListener implements Listener{
         }else if(ih instanceof DoubleChest){
             DoubleChest dc = (DoubleChest) ih;
             
-            Location lLeft = ((Chest) dc.getLeftSide()).getLocation();
-            if(CircuitManager.circuitExists(lLeft)){
-                CircuitManager.activateCircuit(lLeft, 5);
-            }        
+            Chest cLeft = (Chest) dc.getLeftSide();
+            if(cLeft != null){
+                Location lLeft = cLeft.getLocation();
+                if(CircuitManager.circuitExists(lLeft)){
+                    CircuitManager.activateCircuit(lLeft, 5);
+                }      
+            }
             
-            Location lRight = ((Chest) dc.getRightSide()).getLocation();
-            if(CircuitManager.circuitExists(lRight)){
-                CircuitManager.activateCircuit(lRight, 5);
+            Chest cRight = (Chest) dc.getLeftSide();
+            if(cRight != null){
+                Location lRight = cLeft.getLocation();
+                if(CircuitManager.circuitExists(lRight)){
+                    CircuitManager.activateCircuit(lRight, 5);
+                }      
             }
         }
     }
@@ -153,14 +159,20 @@ public class QuantumConnectorsPlayerListener implements Listener{
         }else if(ih instanceof DoubleChest){
             DoubleChest dc = (DoubleChest) ih;
             
-            Location lLeft = ((Chest) dc.getLeftSide()).getLocation();
-            if(CircuitManager.circuitExists(lLeft)){
-                CircuitManager.activateCircuit(lLeft, 5);
-            }        
+            Chest cLeft = (Chest) dc.getLeftSide();
+            if(cLeft != null){
+                Location lLeft = cLeft.getLocation();
+                if(CircuitManager.circuitExists(lLeft)){
+                    CircuitManager.activateCircuit(lLeft, 0);
+                }      
+            }
             
-            Location lRight = ((Chest) dc.getRightSide()).getLocation();
-            if(CircuitManager.circuitExists(lRight)){
-                CircuitManager.activateCircuit(lRight, 5);
+            Chest cRight = (Chest) dc.getLeftSide();
+            if(cRight != null){
+                Location lRight = cLeft.getLocation();
+                if(CircuitManager.circuitExists(lRight)){
+                    CircuitManager.activateCircuit(lRight, 0);
+                }      
             }
         }
     }
