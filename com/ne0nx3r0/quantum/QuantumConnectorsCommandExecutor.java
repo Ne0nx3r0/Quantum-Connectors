@@ -21,20 +21,21 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String alias, String[] args) {
         if (!(cs instanceof Player)){
-            plugin.log("You can't run this from the console!");
+            plugin.log("You can't run QC commands from the console!");
         }
         
         if(args.length > 0){
             if(args[0].equalsIgnoreCase("q")) args[0] = "quantum";
             else if(args[0].equalsIgnoreCase("t")) args[0] = "toggle";
             else if(args[0].equalsIgnoreCase("r")) args[0] = "reverse";
+            else if(args[0].equalsIgnoreCase("c")) args[0] = "c";
         }
         
         Player player = (Player) cs;
         
 // Command was: "/qc"
         if(args.length == 0 || args[0].equalsIgnoreCase("?")){    
-            plugin.msg(player, "To create a quantum circuit, use /qc <circuit>; and click   on a sender and then a receiver with redstone.");
+            plugin.msg(player, "To create a quantum circuit, use /qc <circuit>; and click on a sender and then a receiver with redstone.");
 
             String s = "";	  	
             for(String sKey : CircuitManager.getValidCircuitTypes().keySet()) {

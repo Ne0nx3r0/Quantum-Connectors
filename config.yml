@@ -9,8 +9,12 @@
 # -
 # max_receivers_per_circuit: 20
 # Max receivers for a single circuit (QuantumConnectors.ignoreLimits will overwrite this)
+#-
+# verbose-logging: false
+# If true the plugin will log details related to saving files/etc.
 #
 max_chain_links: 3
 autosave_interval_minutes: 30
 max_delay_time: 10
 max_receivers_per_circuit: 20
+verbose_logging: false

@@ -367,7 +367,7 @@ public final class CircuitManager{
             }
             FileConfiguration yml = YamlConfiguration.loadConfiguration(ymlFile);
             
-            //plugin.log("Saving "+ymlFile.getName()+"...");
+            if(plugin.VERBOSE_LOGGING) plugin.log("Saving "+ymlFile.getName()+"...");
             
         //Prep this world's data for saving
             List<Object> tempCircuits = new ArrayList<Object>();
@@ -422,7 +422,7 @@ public final class CircuitManager{
             try{
                 yml.save(ymlFile);
 
-                plugin.log(ymlFile.getName()+" Saved!");
+                if(QuantumConnectors.VERBOSE_LOGGING) plugin.log(ymlFile.getName()+" Saved!");
             }catch(IOException IO) {
                 plugin.error("Failed to save "+ymlFile.getName());
             }  
@@ -430,8 +430,9 @@ public final class CircuitManager{
             plugin.error(world.getName() + " could not be saved!");
         }
     }
+    
     public void saveAllWorlds(){
-        plugin.log("Saving Circuits");
+        if(QuantumConnectors.VERBOSE_LOGGING) plugin.log("Saving Circuits");
         
         for(World world : worlds.keySet()){
             saveWorld(world);
@@ -445,7 +446,7 @@ public final class CircuitManager{
         
         File ymlFile = new File(plugin.getDataFolder(),world.getName()+".circuits.yml");
         
-        plugin.log("Loading "+ymlFile.getName()+"...");
+        if(plugin.VERBOSE_LOGGING) plugin.log("Loading "+ymlFile.getName()+"...");
 
         if(!ymlFile.exists()) {
             plugin.error(ymlFile.getName() + " not found, will be created with the next save.");
@@ -491,7 +492,7 @@ public final class CircuitManager{
                 }
                 //Invalid receiver block type
                 else{
-                    plugin.log("Removed a " + world.getName() + " circuit's receiver; "+tempReceiverLoc.getBlock().getType().name()+" is not a valid receiver.");
+                    if(plugin.VERBOSE_LOGGING) plugin.log("Removed a " + world.getName() + " circuit's receiver; "+tempReceiverLoc.getBlock().getType().name()+" is not a valid receiver.");
                 }
             }
 
@@ -509,12 +510,12 @@ public final class CircuitManager{
                     }
                     //Invalid sender type
                     else{
-                        plugin.log("Removed a "+world.getName()+" circuit; "+tempCircuitObjLoc.getBlock().getType().name()+" is not a valid sender.");
+                        if(plugin.VERBOSE_LOGGING) plugin.log("Removed a "+world.getName()+" circuit; "+tempCircuitObjLoc.getBlock().getType().name()+" is not a valid sender.");
                     }
                 }
             // No valid receivers for this circuit
                 else{
-                    plugin.log("Removed a '"+world.getName()+"' circuit: no valid receivers.");
+                    if(plugin.VERBOSE_LOGGING) plugin.log("Removed a '"+world.getName()+"' circuit: no valid receivers.");
                 }
         }
         

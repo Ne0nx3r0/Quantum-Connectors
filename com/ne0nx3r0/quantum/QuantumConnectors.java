@@ -26,6 +26,7 @@ public class QuantumConnectors extends JavaPlugin{
     public static int MAX_CHAIN_LINKS = 3;
     public static int MAX_DELAY_TIME = 10;//in seconds
     public static int MAX_RECEIVERS_PER_CIRCUIT = 20;
+    public static boolean VERBOSE_LOGGING = false;
 
     private static int AUTOSAVE_INTERVAL = 30;//specified here in minutes
     private static int AUTO_SAVE_ID = -1;
@@ -34,7 +35,7 @@ public class QuantumConnectors extends JavaPlugin{
     public void onDisable(){
         circuitManager.saveAllWorlds();
         
-        log("Disabled");
+        if(QuantumConnectors.VERBOSE_LOGGING) log("Disabled");
     }
     
     @Override
@@ -66,9 +67,6 @@ public class QuantumConnectors extends JavaPlugin{
             autosaveCircuits,
             AUTOSAVE_INTERVAL,
             AUTOSAVE_INTERVAL);
-        
-    //All done!
-        log("Enabled");
     }	
     
     public void msg(Player player, String sMessage) {
@@ -110,6 +108,7 @@ public class QuantumConnectors extends JavaPlugin{
         this.saveConfig();
         this.reloadConfig();
         
+        VERBOSE_LOGGING           = config.getBoolean("verbose_logging",VERBOSE_LOGGING);
         MAX_CHAIN_LINKS           = config.getInt("max_chain_links", MAX_CHAIN_LINKS);
         MAX_DELAY_TIME            = config.getInt("max_delay_time", MAX_DELAY_TIME);
         MAX_RECEIVERS_PER_CIRCUIT = config.getInt("max_receivers_per_circuit", MAX_RECEIVERS_PER_CIRCUIT);
