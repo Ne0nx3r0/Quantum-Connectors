@@ -21,7 +21,7 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String alias, String[] args) {
         if (!(cs instanceof Player)){
-            plugin.log("You can't run QC commands from the console!");
+            plugin.log(plugin.getMessage("console_not_allowed:"));
         }
         
         if(args.length > 0){
@@ -35,14 +35,14 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
         
 // Command was: "/qc"
         if(args.length == 0 || args[0].equalsIgnoreCase("?")){    
-            plugin.msg(player, "To create a quantum circuit, use /qc <circuit>; and click on a sender and then a receiver with redstone.");
+            plugin.msg(player, "qc_usage");
 
             String s = "";	  	
             for(String sKey : CircuitManager.getValidCircuitTypes().keySet()) {
                 s += sKey + ", ";
             }
 
-            plugin.msg(player, ChatColor.YELLOW + "Available circuits: " + ChatColor.WHITE + s.substring(0, s.length() - 2));
+            plugin.msg(player, ChatColor.YELLOW + plugin.getMessage("available_circuits")+ChatColor.WHITE + s.substring(0, s.length() - 2));
         }
       
 // Command was: "/qc cancel"
@@ -53,11 +53,11 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
                 
                 CircuitManager.removePendingCircuit(player);
                 
-                plugin.msg(player, "Your pending circuit has been removed!");
+                plugin.msg(player, plugin.getMessage("cancelled"));
             }
         //No pending circuit
             else{
-                plugin.msg(player, "No pending circuit to remove.");
+                plugin.msg(player, plugin.getMessage("no_pending_circuit"));
             }
         }
 
@@ -88,19 +88,19 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
                         
                         CircuitManager.removePendingCircuit(player);
 
-                        plugin.msg(player, "Quantum circuit created!");
+                        plugin.msg(player, plugin.getMessage("circuit_created"));
                     }
                     //They have not setup at least one receiver
                     else{
-                        plugin.msg(player,"You need to setup at least one receiver first!");
+                        plugin.msg(player,plugin.getMessage("no_receivers"));
                     }
                 }
                 //They didn't setup a sender
                 else{
-                   plugin.msg(player, "You need to setup a sender and receiver first!"); 
+                   plugin.msg(player, plugin.getMessage("no_sender")); 
                 }
             }else{
-                plugin.msg(player,"No pending action to finish.");
+                plugin.msg(player,plugin.getMessage("no_pending_action"));
             }
         }
         
@@ -125,11 +125,13 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
                     || (dDelay > QuantumConnectors.MAX_DELAY_TIME && !player.hasPermission("QuantumConnectors.ignoreLimits"))){
                         dDelay = 0;
                         
-                        plugin.msg(player,ChatColor.RED + "Invalid delay time (min:0s max:"+QuantumConnectors.MAX_DELAY_TIME+"s, assuming no delay");  
+                        plugin.msg(player,ChatColor.RED + plugin.getMessage("invalid_delay").replaceAll("%maxdelay%", new Integer(QuantumConnectors.MAX_DELAY_TIME).toString()));  
                     }
                 }
                 
-                String sDelayMsg = " ("+args[0]+" "+(dDelay == 0 ? "no" : dDelay+"s")+" delay)";
+                String sDelayMsg = " ("+args[0]+" "+dDelay+"s delay)";
+                
+                sDelayMsg = " ";
                 
                 int iDelayTicks = (int) Math.round(dDelay*20);
                 
@@ -139,26 +141,30 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
                             CircuitManager.getCircuitType(args[0]),
                             iDelayTicks);
                     
-                    plugin.msg(player, args[0]+" circuit ready to be created!"+sDelayMsg);
+                    plugin.msg(player,plugin.getMessage("circuit_ready")
+                            .replace("%circuit%",args[0].toUpperCase())
+                            .replace("%delay%",new Double(dDelay).toString()));
                 }
                 else{       
                     CircuitManager.getPendingCircuit(player).setCircuitType(
                             CircuitManager.getCircuitType(args[0]),
                             iDelayTicks);
                     
-                    plugin.msg(player, "Circuit type switched to: "+args[0]+sDelayMsg);
+                    plugin.msg(player, plugin.getMessage("circuit_changed")
+                            .replace("%circuit%",args[0].toUpperCase())
+                            .replace("%delay%",new Double(dDelay).toString()));
                 }
             }
             
         //Player doesn't have permission
             else{
-                plugin.msg(player, ChatColor.RED + "You don't have permission to create the " + args[0] + " circuit!");
+                plugin.msg(player, ChatColor.RED + plugin.getMessage("no_permission").replace("%circuit",args[0].toUpperCase()));
             }
         }
         
 // Command was invalid
         else{
-            plugin.msg(player,"Invalid circuit specified. '/qc' for usage.");
+            plugin.msg(player,plugin.getMessage("invalid_circuit"));
         }
        
         return true;

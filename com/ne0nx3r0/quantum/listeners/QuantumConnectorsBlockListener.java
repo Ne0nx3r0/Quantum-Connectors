@@ -8,6 +8,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockRedstoneEvent;
+import org.bukkit.event.inventory.FurnaceBurnEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 
 public class QuantumConnectorsBlockListener implements Listener {
     private final QuantumConnectors plugin;
@@ -29,6 +31,22 @@ public class QuantumConnectorsBlockListener implements Listener {
         Location l = event.getBlock().getLocation();
         if (CircuitManager.circuitExists(l)) { // Breaking Sender
             CircuitManager.removeCircuit(l);
+        }
+    }
+    
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onFuranceBurn(FurnaceBurnEvent e){
+        
+        System.out.println("burn baby burn!");
+        System.out.println(e.isBurning());
+        System.out.println(e.getBurnTime());
+            
+        if(CircuitManager.circuitExists(e.getBlock().getLocation())){            
+            if(e.isBurning()){
+                CircuitManager.activateCircuit(e.getBlock().getLocation(), 5);
+            }else{
+                CircuitManager.activateCircuit(e.getBlock().getLocation(), 0);
+            }
         }
     }
 }

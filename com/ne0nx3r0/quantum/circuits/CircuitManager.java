@@ -49,6 +49,7 @@ public final class CircuitManager{
         Material.CHEST,
         Material.BOOKSHELF,
         Material.BED_BLOCK,
+        Material.FURNACE,
         //Material.POWERED_RAIL,//TODO: Figure out powered rail as sender
         //TODO: Add chests?
     };
@@ -367,7 +368,7 @@ public final class CircuitManager{
             }
             FileConfiguration yml = YamlConfiguration.loadConfiguration(ymlFile);
             
-            if(plugin.VERBOSE_LOGGING) plugin.log("Saving "+ymlFile.getName()+"...");
+            if(plugin.VERBOSE_LOGGING) plugin.log(plugin.getMessage("saving").replace("%file",ymlFile.getName()));
             
         //Prep this world's data for saving
             List<Object> tempCircuits = new ArrayList<Object>();
@@ -422,18 +423,16 @@ public final class CircuitManager{
             try{
                 yml.save(ymlFile);
 
-                if(QuantumConnectors.VERBOSE_LOGGING) plugin.log(ymlFile.getName()+" Saved!");
+                if(QuantumConnectors.VERBOSE_LOGGING) plugin.log(plugin.getMessage("saved").replace("%file",ymlFile.getName()));
             }catch(IOException IO) {
-                plugin.error("Failed to save "+ymlFile.getName());
+                plugin.error(plugin.getMessage("save_failed").replace("%world", world.getName()));
             }  
         }else{
-            plugin.error(world.getName() + " could not be saved!");
+            plugin.error(plugin.getMessage("save_failed").replace("%world", world.getName()));
         }
     }
     
     public void saveAllWorlds(){
-        if(QuantumConnectors.VERBOSE_LOGGING) plugin.log("Saving Circuits");
-        
         for(World world : worlds.keySet()){
             saveWorld(world);
         }
@@ -446,10 +445,10 @@ public final class CircuitManager{
         
         File ymlFile = new File(plugin.getDataFolder(),world.getName()+".circuits.yml");
         
-        if(plugin.VERBOSE_LOGGING) plugin.log("Loading "+ymlFile.getName()+"...");
+        if(plugin.VERBOSE_LOGGING) plugin.log(plugin.getMessage("loading").replace("%file%",ymlFile.getName()));
 
         if(!ymlFile.exists()) {
-            plugin.error(ymlFile.getName() + " not found, will be created with the next save.");
+            if(plugin.VERBOSE_LOGGING) plugin.error(plugin.getMessage("loading_not_found").replace("%file%",ymlFile.getName()));
             return;
         }
         
@@ -458,7 +457,7 @@ public final class CircuitManager{
         List<Map<String,Object>> tempCircuits = (List<Map<String,Object>>) yml.get("circuits");
 
         if(tempCircuits == null){
-            plugin.log("No circuits found in "+ymlFile.getName());
+            plugin.log(plugin.getMessage("loading_no_circuits").replace("%file%",ymlFile.getName()));
             return;
         }
         
@@ -492,7 +491,11 @@ public final class CircuitManager{
                 }
                 //Invalid receiver block type
                 else{
-                    if(plugin.VERBOSE_LOGGING) plugin.log("Removed a " + world.getName() + " circuit's receiver; "+tempReceiverLoc.getBlock().getType().name()+" is not a valid receiver.");
+                    if(plugin.VERBOSE_LOGGING) plugin.log(
+                        plugin.getMessage("receiver_removed")
+                            .replace("%world%",world.getName())
+                            .replace("%block%",tempReceiverLoc.getBlock().getType().name())
+                    );
                 }
             }
 
@@ -510,12 +513,15 @@ public final class CircuitManager{
                     }
                     //Invalid sender type
                     else{
-                        if(plugin.VERBOSE_LOGGING) plugin.log("Removed a "+world.getName()+" circuit; "+tempCircuitObjLoc.getBlock().getType().name()+" is not a valid sender.");
+                        if(plugin.VERBOSE_LOGGING) plugin.log(plugin.getMessage("circuit_removed_invalid")
+                                .replace("%world",world.getName())
+                                .replace("%block%",tempCircuitObjLoc.getBlock().getType().name()));
                     }
                 }
             // No valid receivers for this circuit
                 else{
-                    if(plugin.VERBOSE_LOGGING) plugin.log("Removed a '"+world.getName()+"' circuit: no valid receivers.");
+                    if(plugin.VERBOSE_LOGGING) plugin.log(plugin.getMessage("circuit_removed_no_receivers")
+                            .replace("%world%",world.getName()));
                 }
         }
         
@@ -561,7 +567,7 @@ public final class CircuitManager{
     public void convertOldCircuitsYml(){
         File oldYmlFile = new File(plugin.getDataFolder(),"circuits.yml");
         if(oldYmlFile.exists()){
-            plugin.log("Found circuits.yml, attempting to convert...");
+            plugin.log(plugin.getMessage("found_old_file").replace("%file%",oldYmlFile.getName()));
 
             FileConfiguration oldYml = YamlConfiguration.loadConfiguration(oldYmlFile);
 
@@ -615,7 +621,7 @@ public final class CircuitManager{
                 try {
                     newYml.save(newYmlFile);
                 } catch (IOException ex) {
-                    plugin.error("Unable to save "+newYmlFile.getName()+"!");
+                    plugin.error(plugin.getMessage("unable_to_save").replace("%file%",newYmlFile.getName()));
                     
                     Logger.getLogger(CircuitManager.class.getName()).log(Level.SEVERE, null, ex);
                 }

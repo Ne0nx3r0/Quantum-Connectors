@@ -5,9 +5,16 @@ import com.ne0nx3r0.quantum.listeners.QuantumConnectorsBlockListener;
 import com.ne0nx3r0.quantum.listeners.QuantumConnectorsPlayerListener;
 import com.ne0nx3r0.quantum.listeners.QuantumConnectorsWorldListener;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -31,6 +38,9 @@ public class QuantumConnectors extends JavaPlugin{
     private static int AUTOSAVE_INTERVAL = 30;//specified here in minutes
     private static int AUTO_SAVE_ID = -1;
     
+//Localized Messages
+    private static Map<String,String> messages;
+    
     @Override
     public void onDisable(){
         circuitManager.saveAllWorlds();
@@ -43,6 +53,9 @@ public class QuantumConnectors extends JavaPlugin{
     //This might be outdated...
         getDataFolder().mkdirs();
 
+    //Load config options, localized messages
+        setupConfig();
+        
     //Create a circuit manager
         circuitManager = new CircuitManager(this);
         
@@ -55,9 +68,6 @@ public class QuantumConnectors extends JavaPlugin{
         pm.registerEvents(playerListener, this);
         pm.registerEvents(blockListener, this);
         pm.registerEvents(worldListener, this);
-    
-    //TODO: Setup config
-        setupConfig();
         
     //Schedule saves
         AUTOSAVE_INTERVAL = AUTOSAVE_INTERVAL * 60 * 20;//convert to ~minutes
@@ -85,8 +95,13 @@ public class QuantumConnectors extends JavaPlugin{
         log(Level.WARNING,sMessage);
     }
     
+//Wrapper for getting localized messages
+    public String getMessage(String sMessageName){
+        return messages.get(sMessageName);
+    }
+    
     //Scheduled save mechanism
-    private Runnable autosaveCircuits = new Runnable() {
+    private Runnable autosaveCircuits = new Runnable(){
         @Override
         public void run() {
             circuitManager.saveAllWorlds();
@@ -113,5 +128,37 @@ public class QuantumConnectors extends JavaPlugin{
         MAX_DELAY_TIME            = config.getInt("max_delay_time", MAX_DELAY_TIME);
         MAX_RECEIVERS_PER_CIRCUIT = config.getInt("max_receivers_per_circuit", MAX_RECEIVERS_PER_CIRCUIT);
         AUTOSAVE_INTERVAL         = config.getInt("autosave_interval_minutes", AUTOSAVE_INTERVAL);
+   
+        messages = new HashMap<String,String>();
+        
+        File messagesFile = new File(this.getDataFolder(), "messages.yml");   
+        
+        if(!messagesFile.exists()){
+            messagesFile.getParentFile().mkdirs();
+            copy(this.getResource("messages.yml"), messagesFile);
+        }
+        
+        FileConfiguration messagesYml = YamlConfiguration.loadConfiguration(messagesFile);
+
+        Set<String> messageList = messagesYml.getKeys(false);
+        
+        for(String m : messageList){
+            messages.put(m, messagesYml.getString(m));
+        }        
+    }
+    
+    private void copy(InputStream in, File file) {
+        try {
+            OutputStream out = new FileOutputStream(file);
+            byte[] buf = new byte[1024];
+            int len;
+            while((len=in.read(buf))>0){
+                out.write(buf,0,len);
+            }
+            out.close();
+            in.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

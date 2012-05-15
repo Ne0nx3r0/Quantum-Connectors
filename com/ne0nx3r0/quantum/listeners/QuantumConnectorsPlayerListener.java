@@ -115,7 +115,7 @@ public class QuantumConnectorsPlayerListener implements Listener{
         }
     }
     
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onInventoryOpen(InventoryOpenEvent e){
         InventoryHolder ih = e.getInventory().getHolder();
         
@@ -146,10 +146,10 @@ public class QuantumConnectorsPlayerListener implements Listener{
         }
     }
     
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent e){
         InventoryHolder ih = e.getInventory().getHolder();
-            
+        
         if(ih instanceof Chest){
             Location lChest = ((Chest) ih).getLocation();
             
@@ -177,7 +177,7 @@ public class QuantumConnectorsPlayerListener implements Listener{
         }
     }
     
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onEnterBed(PlayerBedEnterEvent e){
         if(CircuitManager.circuitExists(e.getBed().getLocation())){
             CircuitManager.activateCircuit(e.getBed().getLocation(), 5);
@@ -187,7 +187,7 @@ public class QuantumConnectorsPlayerListener implements Listener{
         }
     }
     
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onLeaveBed(PlayerBedLeaveEvent e){
         if(CircuitManager.circuitExists(e.getBed().getLocation())){
             CircuitManager.activateCircuit(e.getBed().getLocation(), 0);
