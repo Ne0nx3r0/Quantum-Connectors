@@ -133,19 +133,19 @@ public class QuantumConnectorsPlayerListener implements Listener{
             Location lLeft = null;
             try{ 
                 lLeft = ((Chest) dc.getLeftSide()).getLocation(); 
-            }finally{
-                if(lLeft != null && CircuitManager.circuitExists(lLeft)){
-                    CircuitManager.activateCircuit(lLeft, 5);
-                }      
-            }
+            }catch(NullPointerException npe){}
+            
+            if(lLeft != null && CircuitManager.circuitExists(lLeft)){
+                CircuitManager.activateCircuit(lLeft, 0);
+            }      
             
             Location lRight = null;
             try{ 
                 lRight = ((Chest) dc.getRightSide()).getLocation(); 
-            }finally{
-                if(lRight != null && CircuitManager.circuitExists(lRight)){
-                    CircuitManager.activateCircuit(lRight, 5);
-                }
+            }catch(NullPointerException npe){}
+            
+            if(lRight != null && CircuitManager.circuitExists(lRight)){
+                CircuitManager.activateCircuit(lRight, 0);
             }
         }
     }
@@ -166,19 +166,19 @@ public class QuantumConnectorsPlayerListener implements Listener{
             Location lLeft = null;
             try{ 
                 lLeft = ((Chest) dc.getLeftSide()).getLocation(); 
-            }finally{
-                if(lLeft != null && CircuitManager.circuitExists(lLeft)){
-                    CircuitManager.activateCircuit(lLeft, 0);
-                }      
-            }
+            }catch(NullPointerException npe){}
+            
+            if(lLeft != null && CircuitManager.circuitExists(lLeft)){
+                CircuitManager.activateCircuit(lLeft, 0);
+            }      
             
             Location lRight = null;
             try{ 
                 lRight = ((Chest) dc.getRightSide()).getLocation(); 
-            }finally{
-                if(lRight != null && CircuitManager.circuitExists(lRight)){
-                    CircuitManager.activateCircuit(lRight, 0);
-                }
+            }catch(NullPointerException npe){}
+            
+            if(lRight != null && CircuitManager.circuitExists(lRight)){
+                CircuitManager.activateCircuit(lRight, 0);
             }
         }
     }
