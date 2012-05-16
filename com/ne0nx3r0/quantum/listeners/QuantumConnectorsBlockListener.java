@@ -9,7 +9,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.inventory.FurnaceBurnEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 
 public class QuantumConnectorsBlockListener implements Listener {
     private final QuantumConnectors plugin;
