@@ -36,17 +36,12 @@ public class QuantumConnectorsBlockListener implements Listener {
     
     @EventHandler(priority = EventPriority.NORMAL)
     public void onFuranceBurn(FurnaceBurnEvent e){
-        
-        System.out.println("burn baby burn!");
-        System.out.println(e.isBurning());
-        System.out.println(e.getBurnTime());
-            
         if(CircuitManager.circuitExists(e.getBlock().getLocation())){            
             if(e.isBurning()){
                 CircuitManager.activateCircuit(e.getBlock().getLocation(), 5);
-            }else{
+            }/* Still in the process of finding an "off" event for furnaces. else{
                 CircuitManager.activateCircuit(e.getBlock().getLocation(), 0);
-            }
+            }*/
         }
     }
 }

@@ -129,7 +129,7 @@ public class QuantumConnectorsPlayerListener implements Listener{
             }
         }else if(ih instanceof DoubleChest){
             DoubleChest dc = (DoubleChest) ih;
-            
+
             Chest cLeft = (Chest) dc.getLeftSide();
             if(cLeft != null){
                 Location lLeft = cLeft.getLocation();
@@ -138,9 +138,9 @@ public class QuantumConnectorsPlayerListener implements Listener{
                 }      
             }
             
-            Chest cRight = (Chest) dc.getLeftSide();
+            Chest cRight = (Chest) dc.getRightSide();
             if(cRight != null){
-                Location lRight = cLeft.getLocation();
+                Location lRight = cRight.getLocation();
                 if(CircuitManager.circuitExists(lRight)){
                     CircuitManager.activateCircuit(lRight, 5);
                 }      
@@ -171,7 +171,7 @@ public class QuantumConnectorsPlayerListener implements Listener{
             
             Chest cRight = (Chest) dc.getLeftSide();
             if(cRight != null){
-                Location lRight = cLeft.getLocation();
+                Location lRight = cRight.getLocation();
                 if(CircuitManager.circuitExists(lRight)){
                     CircuitManager.activateCircuit(lRight, 0);
                 }      
