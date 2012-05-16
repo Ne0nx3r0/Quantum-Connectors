@@ -51,7 +51,6 @@ public final class CircuitManager{
         Material.BED_BLOCK,
         Material.FURNACE,
         //Material.POWERED_RAIL,//TODO: Figure out powered rail as sender
-        //TODO: Add chests?
     };
     private static Material[] validReceivers = new Material[]{
         Material.LEVER,
