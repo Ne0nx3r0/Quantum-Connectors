@@ -188,26 +188,32 @@ public class QuantumConnectorsPlayerListener implements Listener{
         if(CircuitManager.circuitExists(e.getBed().getLocation())){
             CircuitManager.activateCircuit(e.getBed().getLocation(), 5);
         }
-        if(CircuitManager.circuitExists(this.getTwinLocation((Bed) e.getBed()))){
-            CircuitManager.activateCircuit(this.getTwinLocation((Bed) e.getBed()), 5);
+        if(CircuitManager.circuitExists(this.getTwinLocation(e.getBed()))){
+            CircuitManager.activateCircuit(this.getTwinLocation(e.getBed()), 5);
         }
     }
     
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onLeaveBed(PlayerBedLeaveEvent e){
+        System.out.println(this.getTwinLocation(e.getBed()));
+        System.out.println(e.getBed().getLocation());
+        System.out.println(this.getTwinLocation(e.getBed()).getBlock().getType());
+        System.out.println(e.getBed().getLocation().getBlock().getType());
+        
         if(CircuitManager.circuitExists(e.getBed().getLocation())){
             CircuitManager.activateCircuit(e.getBed().getLocation(), 0);
         }
-        if(CircuitManager.circuitExists(this.getTwinLocation((Bed) e.getBed()))){
-            CircuitManager.activateCircuit(this.getTwinLocation((Bed) e.getBed()), 0);
+        if(CircuitManager.circuitExists(this.getTwinLocation(e.getBed()))){
+            CircuitManager.activateCircuit(this.getTwinLocation(e.getBed()), 0);
         }
     }
     
-    private Location getTwinLocation(Bed b){
-        if(b.isHeadOfBed()){
-            return (((Block) b).getRelative(b.getFacing())).getLocation();
+    private Location getTwinLocation(Block b){
+        Bed bed = (Bed) b.getState().getData();
+        if(bed.isHeadOfBed()){
+            return b.getRelative(bed.getFacing().getOppositeFace()).getLocation();
         }else{
-            return (((Block) b).getRelative(b.getFacing().getOppositeFace())).getLocation();
+            return b.getRelative(bed.getFacing()).getLocation();
         }
     }
 }
