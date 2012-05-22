@@ -194,12 +194,7 @@ public class QuantumConnectorsPlayerListener implements Listener{
     }
     
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onLeaveBed(PlayerBedLeaveEvent e){
-        System.out.println(this.getTwinLocation(e.getBed()));
-        System.out.println(e.getBed().getLocation());
-        System.out.println(this.getTwinLocation(e.getBed()).getBlock().getType());
-        System.out.println(e.getBed().getLocation().getBlock().getType());
-        
+    public void onLeaveBed(PlayerBedLeaveEvent e){        
         if(CircuitManager.circuitExists(e.getBed().getLocation())){
             CircuitManager.activateCircuit(e.getBed().getLocation(), 0);
         }
