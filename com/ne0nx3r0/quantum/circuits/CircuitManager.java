@@ -25,7 +25,7 @@ public final class CircuitManager{
     private static Map<World,Map<Location, Circuit>> worlds = new HashMap<World,Map<Location, Circuit>>();
 
 // Temporary Holders for circuit creation
-    public static Map<Player, PendingCircuit> pendingCircuits;
+    public static Map<String, PendingCircuit> pendingCircuits;
 
 // Allow circuitTypes/circuits
     public static Map<String, Integer> circuitTypes = new HashMap<String, Integer>();
@@ -78,7 +78,7 @@ public final class CircuitManager{
         }
      
     //Create a holder for pending circuits
-        pendingCircuits = new HashMap<Player,PendingCircuit>();
+        pendingCircuits = new HashMap<String,PendingCircuit>();
     
     //Convert circuits.yml to new structure    
         if(new File(plugin.getDataFolder(),"circuits.yml").exists()){
@@ -367,7 +367,7 @@ public final class CircuitManager{
             }
             FileConfiguration yml = YamlConfiguration.loadConfiguration(ymlFile);
             
-            if(plugin.VERBOSE_LOGGING) plugin.log(plugin.getMessage("saving").replace("%file",ymlFile.getName()));
+            if(QuantumConnectors.VERBOSE_LOGGING) plugin.log(plugin.getMessage("saving").replace("%file",ymlFile.getName()));
             
         //Prep this world's data for saving
             List<Object> tempCircuits = new ArrayList<Object>();
@@ -444,10 +444,10 @@ public final class CircuitManager{
         
         File ymlFile = new File(plugin.getDataFolder(),world.getName()+".circuits.yml");
         
-        if(plugin.VERBOSE_LOGGING) plugin.log(plugin.getMessage("loading").replace("%file%",ymlFile.getName()));
+        if(QuantumConnectors.VERBOSE_LOGGING) plugin.log(plugin.getMessage("loading").replace("%file%",ymlFile.getName()));
 
         if(!ymlFile.exists()) {
-            if(plugin.VERBOSE_LOGGING) plugin.error(plugin.getMessage("loading_not_found").replace("%file%",ymlFile.getName()));
+            if(QuantumConnectors.VERBOSE_LOGGING) plugin.error(plugin.getMessage("loading_not_found").replace("%file%",ymlFile.getName()));
             return;
         }
         
@@ -490,7 +490,7 @@ public final class CircuitManager{
                 }
                 //Invalid receiver block type
                 else{
-                    if(plugin.VERBOSE_LOGGING) plugin.log(
+                    if(QuantumConnectors.VERBOSE_LOGGING) plugin.log(
                         plugin.getMessage("receiver_removed")
                             .replace("%world%",world.getName())
                             .replace("%block%",tempReceiverLoc.getBlock().getType().name())
@@ -512,14 +512,14 @@ public final class CircuitManager{
                     }
                     //Invalid sender type
                     else{
-                        if(plugin.VERBOSE_LOGGING) plugin.log(plugin.getMessage("circuit_removed_invalid")
+                        if(QuantumConnectors.VERBOSE_LOGGING) plugin.log(plugin.getMessage("circuit_removed_invalid")
                                 .replace("%world",world.getName())
                                 .replace("%block%",tempCircuitObjLoc.getBlock().getType().name()));
                     }
                 }
             // No valid receivers for this circuit
                 else{
-                    if(plugin.VERBOSE_LOGGING) plugin.log(plugin.getMessage("circuit_removed_no_receivers")
+                    if(QuantumConnectors.VERBOSE_LOGGING) plugin.log(plugin.getMessage("circuit_removed_no_receivers")
                             .replace("%world%",world.getName()));
                 }
         }
@@ -532,21 +532,21 @@ public final class CircuitManager{
     public static PendingCircuit addPendingCircuit(Player player,int type,int delay){
         PendingCircuit pc = new PendingCircuit(player.getName(),type,delay);
         
-        pendingCircuits.put(player, pc);
+        pendingCircuits.put(player.getName(), pc);
         
         return pc;
     }
     
     public static PendingCircuit getPendingCircuit(Player player){
-        return pendingCircuits.get(player);
+        return pendingCircuits.get(player.getName());
     }
     
     public static boolean hasPendingCircuit(Player player){
-        return pendingCircuits.containsKey(player);
+        return pendingCircuits.containsKey(player.getName());
     }
     
     public static void removePendingCircuit(Player player){
-        pendingCircuits.remove(player);
+        pendingCircuits.remove(player.getName());
     }
     
 //Circuit Types
