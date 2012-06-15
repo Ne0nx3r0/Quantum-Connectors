@@ -244,14 +244,19 @@ public final class CircuitManager{
         Material mBlock = b.getType();
         int iData = (int) b.getData();
 
-        if (mBlock == Material.LEVER
-                || mBlock == Material.POWERED_RAIL) {
+        if(mBlock == Material.LEVER
+                || mBlock == Material.POWERED_RAIL){
             return (iData & 0x08) == 0x08 ? 15 : 0;
-        } else if (mBlock == Material.IRON_DOOR_BLOCK
+        }else if(mBlock == Material.IRON_DOOR_BLOCK
                 || mBlock == Material.WOODEN_DOOR
                 || mBlock == Material.TRAP_DOOR
-                || mBlock == Material.FENCE_GATE) {
+                || mBlock == Material.FENCE_GATE){
             return (iData & 0x04) == 0x04 ? 15 : 0;
+        }else if(mBlock == Material.REDSTONE_LAMP_OFF
+                 || mBlock == Material.REDSTONE_LAMP_ON
+                 || mBlock == Material.REDSTONE_TORCH_OFF
+                 || mBlock == Material.REDSTONE_TORCH_ON){
+            return keepAlives.contains(b) ? 15 : 0;
         }
 
         return b.getBlockPower();
