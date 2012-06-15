@@ -26,6 +26,9 @@ public final class CircuitManager{
 
 // Temporary Holders for circuit creation
     public static Map<String, PendingCircuit> pendingCircuits;
+    
+// keepAlives - lamps/torches/etc that should stay powered regardless of redstone events
+    public static ArrayList<Block> keepAlives;
 
 // Allow circuitTypes/circuits
     public static Map<String, Integer> circuitTypes = new HashMap<String, Integer>();
@@ -59,18 +62,23 @@ public final class CircuitManager{
         Material.TRAP_DOOR,
         Material.POWERED_RAIL,
         Material.FENCE_GATE,
-        //Material.REDSTONE_TORCH_OFF,
-        //Material.REDSTONE_TORCH_ON,//TODO: Figure out torches&lamps as receivers
-        //Material.REDSTONE_LAMP_OFF,
-        //Material.REDSTONE_LAMP_ON,
+        Material.REDSTONE_TORCH_OFF,
+        Material.REDSTONE_TORCH_ON,//TODO: Figure out torches&lamps as receivers
+        Material.REDSTONE_LAMP_OFF,
+        Material.REDSTONE_LAMP_ON,
         //Material.PISTON_BASE,
         //Material.PISTON_STICKY_BASE,//TODO: Figure out pistons as receivers
         Material.TNT
     };
 
+    public static boolean shouldLeaveReceiverOn(Block block) {
+        return keepAlives.contains(block);
+    }
+
 // Main
     public CircuitManager(final QuantumConnectors qc){
         CircuitManager.plugin = qc;
+        CircuitManager.keepAlives = new ArrayList<Block>();
         
     //Setup available circuit types 
         for (CircuitTypes t : CircuitTypes.values()){
@@ -337,18 +345,22 @@ public final class CircuitManager{
             //net.minecraft.server.Block.PISTON.doPhysics(((CraftWorld)block.getWorld()).getHandle(), block.getX(), block.getY(), block.getZ(), -1);
         } else if (mBlock == Material.REDSTONE_TORCH_ON) {
             if (!on) {
+                keepAlives.remove(block);
                 block.setType(Material.REDSTONE_TORCH_OFF);
             }
         } else if (mBlock == Material.REDSTONE_TORCH_OFF) {
             if (on) {
+                keepAlives.add(block);
                 block.setType(Material.REDSTONE_TORCH_ON);
             }
         } else if (mBlock == Material.REDSTONE_LAMP_ON) {
             if (!on) {
+                keepAlives.remove(block);
                 block.setType(Material.REDSTONE_LAMP_OFF);
             }
         } else if (mBlock == Material.REDSTONE_LAMP_OFF) {
             if (on) {
+                keepAlives.add(block);
                 block.setType(Material.REDSTONE_LAMP_ON);
             }
         }

@@ -27,6 +27,10 @@ public class QuantumConnectorsBlockListener implements Listener {
         if (CircuitManager.circuitExists(event.getBlock().getLocation())) {
             CircuitManager.activateCircuit(event.getBlock().getLocation(), event.getNewCurrent());
         }
+
+        if (CircuitManager.shouldLeaveReceiverOn(event.getBlock()){
+            event.setNewCurrent(15);
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
