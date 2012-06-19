@@ -119,7 +119,12 @@ public class QuantumConnectorsPlayerListener implements Listener{
     
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onInventoryOpen(InventoryOpenEvent e){
-        InventoryHolder ih = e.getInventory().getHolder();
+    	InventoryHolder ih;
+    	try{
+            ih = e.getInventory().getHolder();
+    	}catch(NullPointerException ex){
+    		return;
+    	}
         
         if(ih instanceof Chest){
             Location lChest = ((Chest) e.getInventory().getHolder()).getLocation();
@@ -152,7 +157,12 @@ public class QuantumConnectorsPlayerListener implements Listener{
     
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent e){
-        InventoryHolder ih = e.getInventory().getHolder();
+    	InventoryHolder ih;
+    	try{
+            ih = e.getInventory().getHolder();
+    	}catch(NullPointerException ex){
+    		return;
+    	}
         
         if(ih instanceof Chest){
             Location lChest = ((Chest) ih).getLocation();
