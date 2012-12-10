@@ -103,7 +103,8 @@ public class QuantumConnectorsPlayerListener implements Listener{
             }
         }  
     //Clicked on a block that has a quantum circuit (sender) attached
-        else if(event.getClickedBlock() != null && CircuitManager.circuitExists(event.getClickedBlock().getLocation())) {
+        else if(event.getClickedBlock() != null && CircuitManager.circuitExists(event.getClickedBlock().getLocation()))
+        {
             Block block = event.getClickedBlock();
 
             if( block.getType() == Material.WOODEN_DOOR 
@@ -111,14 +112,16 @@ public class QuantumConnectorsPlayerListener implements Listener{
              || block.getType() == Material.FENCE_GATE){
                 CircuitManager.activateCircuit(event.getClickedBlock().getLocation(), CircuitManager.getBlockCurrent(block));
             }
-            else if(block.getType() == Material.BOOKSHELF){
+            else if(block.getType() == Material.BOOKSHELF)
+            {
                 CircuitManager.activateCircuit(event.getClickedBlock().getLocation(), 5);
             }
         }
     }
     
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onInventoryOpen(InventoryOpenEvent e){
+    public void onInventoryOpen(InventoryOpenEvent e)
+    {
     	InventoryHolder ih;
     	try{
             ih = e.getInventory().getHolder();

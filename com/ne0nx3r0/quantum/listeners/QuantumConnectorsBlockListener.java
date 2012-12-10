@@ -6,7 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.Furnace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -19,12 +18,12 @@ public class QuantumConnectorsBlockListener implements Listener {
     public static String string;
 
     public QuantumConnectorsBlockListener(final QuantumConnectors plugin) {
-        this.plugin = plugin;
+        QuantumConnectorsBlockListener.plugin = plugin;
     }
 
     @EventHandler(priority = EventPriority.LOW)
     public void onBlockRedstoneChange(BlockRedstoneEvent event){
-        if (CircuitManager.circuitExists(event.getBlock().getLocation())) {
+        if (CircuitManager.circuitExists(event.getBlock().getLocation())){
             CircuitManager.activateCircuit(event.getBlock().getLocation(), event.getNewCurrent());
         }
 

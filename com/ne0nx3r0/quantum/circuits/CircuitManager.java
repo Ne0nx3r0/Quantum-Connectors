@@ -53,6 +53,7 @@ public final class CircuitManager{
         Material.BOOKSHELF,
         Material.BED_BLOCK,
         Material.FURNACE,
+        Material.WOOD_BUTTON
         //Material.POWERED_RAIL,//TODO: Figure out powered rail as sender
     };
     private static Material[] validReceivers = new Material[]{
