@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.minecraft.server.EntityTNTPrimed;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -15,7 +14,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.entity.Player;
 
 public final class CircuitManager{
@@ -69,7 +67,6 @@ public final class CircuitManager{
         Material.REDSTONE_LAMP_ON,
         //Material.PISTON_BASE,
         //Material.PISTON_STICKY_BASE,//TODO: Figure out pistons as receivers
-        Material.TNT
     };
 
     public static boolean shouldLeaveReceiverOn(Block block) {
@@ -278,40 +275,25 @@ public final class CircuitManager{
         Material mBlock = block.getType();
         int iData = (int) block.getData();
 
-        if (mBlock == Material.LEVER) {
-            if (on && (iData & 0x08) != 0x08) { // Massive annoyance
+        if(mBlock == Material.LEVER)
+        {
+            if(on && (iData & 0x08) != 0x08)
+            { // Massive annoyance
                 iData |= 0x08; //send power on
-            } else if (!on && (iData & 0x08) == 0x08) {
+            } else if (!on && (iData & 0x08) == 0x08) 
+            {
                 iData ^= 0x08; //send power off
             }
-            int i1 = iData & 7;
-            net.minecraft.server.World w = ((net.minecraft.server.World) ((CraftWorld) block.getWorld()).getHandle());
-            Location l = block.getLocation();
-            int i = (int) l.getX();
-            int j = (int) l.getY();
-            int k = (int) l.getZ();
-            int id = block.getTypeId();
-            w.setData(i, j, k, iData);
-            w.applyPhysics(i, j, k, id);
-            if (i1 == 1) {
-                w.applyPhysics(i - 1, j, k, id);
-            } else if (i1 == 2) {
-                w.applyPhysics(i + 1, j, k, id);
-            } else if (i1 == 3) {
-                w.applyPhysics(i, j, k - 1, id);
-            } else if (i1 == 4) {
-                w.applyPhysics(i, j, k + 1, id);
-            } else {
-                w.applyPhysics(i, j - 1, k, id);
-            }
-        } else if (mBlock == Material.POWERED_RAIL) {
+        }
+        else if (mBlock == Material.POWERED_RAIL) {
             if (on && (iData & 0x08) != 0x08) {
                 iData |= 0x08; //send power on
             } else if (!on && (iData & 0x08) == 0x08) {
                 iData ^= 0x08; //send power off
             }
             block.setData((byte) iData);
-        } else if(mBlock == Material.IRON_DOOR_BLOCK 
+        }
+        else if(mBlock == Material.IRON_DOOR_BLOCK 
                || mBlock == Material.WOODEN_DOOR) {
             Block bOtherPiece = block.getRelative(((iData & 0x08) == 0x08) ? BlockFace.DOWN : BlockFace.UP);
             int iOtherPieceData = (int) bOtherPiece.getData();
@@ -326,7 +308,8 @@ public final class CircuitManager{
             block.setData((byte) iData);
             bOtherPiece.setData((byte) iOtherPieceData);
             block.getWorld().playEffect(block.getLocation(), Effect.DOOR_TOGGLE, 0, 10);
-        } else if(mBlock == Material.TRAP_DOOR
+        }
+        else if(mBlock == Material.TRAP_DOOR
                || mBlock == Material.FENCE_GATE){
             if (on && (iData & 0x04) != 0x04) {
                 iData |= 0x04;//send open
@@ -334,13 +317,8 @@ public final class CircuitManager{
                 iData ^= 0x04;//send close
             }
             block.setData((byte) iData);
-        } else if (mBlock == Material.TNT) {
-            block.setType(Material.AIR);
-            CraftWorld world = (CraftWorld) block.getWorld();
-            EntityTNTPrimed tnt = new EntityTNTPrimed(world.getHandle(), block.getX() + 0.5F, block.getY() + 0.5F, block.getZ() + 0.5F);
-            world.getHandle().addEntity(tnt);
-            block.getWorld().playEffect(block.getLocation(), Effect.SMOKE, 1);
-        } else if (mBlock == Material.PISTON_BASE || mBlock == Material.PISTON_STICKY_BASE) {
+        } 
+        else if (mBlock == Material.PISTON_BASE || mBlock == Material.PISTON_STICKY_BASE) {
             // Makeshift piston code... Doesn't work!
             if (on && (iData & 0x08) != 0x08) {
                 iData |= 0x08; //send power on
