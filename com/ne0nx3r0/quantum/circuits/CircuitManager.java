@@ -14,6 +14,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.craftbukkit.v1_4_6.CraftWorld;
 import org.bukkit.entity.Player;
 
 public final class CircuitManager{
@@ -24,6 +25,8 @@ public final class CircuitManager{
 
 // Temporary Holders for circuit creation
     public static Map<String, PendingCircuit> pendingCircuits;
+    
+    private static int version;
     
 // keepAlives - lamps/torches/etc that should stay powered regardless of redstone events
     public static ArrayList<Block> keepAlives;
@@ -74,9 +77,29 @@ public final class CircuitManager{
     }
 
 // Main
-    public CircuitManager(final QuantumConnectors qc){
+    public CircuitManager(final QuantumConnectors qc)
+    {
         CircuitManager.plugin = qc;
         CircuitManager.keepAlives = new ArrayList<Block>();
+        
+    //Bukkit ingenuity at it's finest.
+        String packageName = plugin.getServer().getClass().getPackage().getName();
+        String sVersion = packageName.substring(packageName.lastIndexOf('.') + 1);
+        
+        if(sVersion.equals("v1_4_5"))
+        {
+            version = 145;
+        }
+        else if(sVersion.equals("v1_4_6"))
+        {
+            version = 146;
+        }
+        else
+        {
+            version = 0;
+            plugin.log("Unsupported version: "+sVersion);
+            plugin.getServer().getPluginManager().disablePlugin(plugin);
+        }
         
     //Setup available circuit types 
         for (CircuitTypes t : CircuitTypes.values()){
@@ -277,12 +300,58 @@ public final class CircuitManager{
 
         if(mBlock == Material.LEVER)
         {
-            if(on && (iData & 0x08) != 0x08)
-            { // Massive annoyance
+            if (on && (iData & 0x08) != 0x08) { // Massive annoyance
                 iData |= 0x08; //send power on
-            } else if (!on && (iData & 0x08) == 0x08) 
-            {
+            } else if (!on && (iData & 0x08) == 0x08) {
                 iData ^= 0x08; //send power off
+            }
+            int i1 = iData & 7;
+            
+            Location l = block.getLocation();
+            int i = (int) l.getX();
+            int j = (int) l.getY();
+            int k = (int) l.getZ();
+            int id = block.getTypeId();
+            
+            if(version == 145)
+            {
+                net.minecraft.server.v1_4_6.World w = ((net.minecraft.server.v1_4_6.World) ((CraftWorld) block.getWorld()).getHandle());
+                
+                w.setData(i, j, k, iData);
+                
+                w.applyPhysics(i, j, k, id);
+                
+                if (i1 == 1) {
+                    w.applyPhysics(i - 1, j, k, id);
+                } else if (i1 == 2) {
+                    w.applyPhysics(i + 1, j, k, id);
+                } else if (i1 == 3) {
+                    w.applyPhysics(i, j, k - 1, id);
+                } else if (i1 == 4) {
+                    w.applyPhysics(i, j, k + 1, id);
+                } else {
+                    w.applyPhysics(i, j - 1, k, id);
+                }
+            }
+            if(version == 146)
+            {
+                net.minecraft.server.v1_4_6.World w = ((net.minecraft.server.v1_4_6.World) ((CraftWorld) block.getWorld()).getHandle());
+                
+                w.setData(i, j, k, iData);
+                
+                w.applyPhysics(i, j, k, id);
+                
+                if (i1 == 1) {
+                    w.applyPhysics(i - 1, j, k, id);
+                } else if (i1 == 2) {
+                    w.applyPhysics(i + 1, j, k, id);
+                } else if (i1 == 3) {
+                    w.applyPhysics(i, j, k - 1, id);
+                } else if (i1 == 4) {
+                    w.applyPhysics(i, j, k + 1, id);
+                } else {
+                    w.applyPhysics(i, j - 1, k, id);
+                }
             }
         }
         else if (mBlock == Material.POWERED_RAIL) {
