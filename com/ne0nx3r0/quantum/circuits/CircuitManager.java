@@ -12,10 +12,11 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.v1_4_6.CraftWorld;
 import org.bukkit.entity.Player;
+import org.bukkit.material.Lever;
 
 public final class CircuitManager{
     private static QuantumConnectors plugin;
@@ -25,8 +26,6 @@ public final class CircuitManager{
 
 // Temporary Holders for circuit creation
     public static Map<String, PendingCircuit> pendingCircuits;
-    
-    private static int version;
     
 // keepAlives - lamps/torches/etc that should stay powered regardless of redstone events
     public static ArrayList<Block> keepAlives;
@@ -54,8 +53,10 @@ public final class CircuitManager{
         Material.BOOKSHELF,
         Material.BED_BLOCK,
         Material.FURNACE,
-        Material.WOOD_BUTTON
+        Material.WOOD_BUTTON,
         //Material.POWERED_RAIL,//TODO: Figure out powered rail as sender
+        //Material.PISTON_BASE,
+        //Material.PISTON_STICKY_BASE,//TODO: Pistons as senders
     };
     private static Material[] validReceivers = new Material[]{
         Material.LEVER,
@@ -64,12 +65,12 @@ public final class CircuitManager{
         Material.TRAP_DOOR,
         Material.POWERED_RAIL,
         Material.FENCE_GATE,
-        Material.REDSTONE_TORCH_OFF,
-        Material.REDSTONE_TORCH_ON,//TODO: Figure out torches&lamps as receivers
-        Material.REDSTONE_LAMP_OFF,
-        Material.REDSTONE_LAMP_ON,
+        //Material.REDSTONE_TORCH_OFF,
+        //Material.REDSTONE_TORCH_ON,
+        //Material.REDSTONE_LAMP_OFF,
+        //Material.REDSTONE_LAMP_ON,
         //Material.PISTON_BASE,
-        //Material.PISTON_STICKY_BASE,//TODO: Figure out pistons as receivers
+        //Material.PISTON_STICKY_BASE,//TODO: Pistons as receivers
     };
 
     public static boolean shouldLeaveReceiverOn(Block block) {
@@ -81,25 +82,6 @@ public final class CircuitManager{
     {
         CircuitManager.plugin = qc;
         CircuitManager.keepAlives = new ArrayList<Block>();
-        
-    //Bukkit ingenuity at it's finest.
-        String packageName = plugin.getServer().getClass().getPackage().getName();
-        String sVersion = packageName.substring(packageName.lastIndexOf('.') + 1);
-        
-        if(sVersion.equals("v1_4_5"))
-        {
-            version = 145;
-        }
-        else if(sVersion.equals("v1_4_6"))
-        {
-            version = 146;
-        }
-        else
-        {
-            version = 0;
-            plugin.log("Unsupported version: "+sVersion);
-            plugin.getServer().getPluginManager().disablePlugin(plugin);
-        }
         
     //Setup available circuit types 
         for (CircuitTypes t : CircuitTypes.values()){
@@ -299,60 +281,12 @@ public final class CircuitManager{
         int iData = (int) block.getData();
 
         if(mBlock == Material.LEVER)
-        {
-            if (on && (iData & 0x08) != 0x08) { // Massive annoyance
-                iData |= 0x08; //send power on
-            } else if (!on && (iData & 0x08) == 0x08) {
-                iData ^= 0x08; //send power off
-            }
-            int i1 = iData & 7;
-            
-            Location l = block.getLocation();
-            int i = (int) l.getX();
-            int j = (int) l.getY();
-            int k = (int) l.getZ();
-            int id = block.getTypeId();
-            
-            if(version == 145)
-            {
-                net.minecraft.server.v1_4_6.World w = ((net.minecraft.server.v1_4_6.World) ((CraftWorld) block.getWorld()).getHandle());
-                
-                w.setData(i, j, k, iData);
-                
-                w.applyPhysics(i, j, k, id);
-                
-                if (i1 == 1) {
-                    w.applyPhysics(i - 1, j, k, id);
-                } else if (i1 == 2) {
-                    w.applyPhysics(i + 1, j, k, id);
-                } else if (i1 == 3) {
-                    w.applyPhysics(i, j, k - 1, id);
-                } else if (i1 == 4) {
-                    w.applyPhysics(i, j, k + 1, id);
-                } else {
-                    w.applyPhysics(i, j - 1, k, id);
-                }
-            }
-            if(version == 146)
-            {
-                net.minecraft.server.v1_4_6.World w = ((net.minecraft.server.v1_4_6.World) ((CraftWorld) block.getWorld()).getHandle());
-                
-                w.setData(i, j, k, iData);
-                
-                w.applyPhysics(i, j, k, id);
-                
-                if (i1 == 1) {
-                    w.applyPhysics(i - 1, j, k, id);
-                } else if (i1 == 2) {
-                    w.applyPhysics(i + 1, j, k, id);
-                } else if (i1 == 3) {
-                    w.applyPhysics(i, j, k - 1, id);
-                } else if (i1 == 4) {
-                    w.applyPhysics(i, j, k + 1, id);
-                } else {
-                    w.applyPhysics(i, j - 1, k, id);
-                }
-            }
+        {               
+            BlockState state = block.getState();  
+            Lever lever = (Lever) state.getData();
+            lever.setPowered(on);
+            state.setData(lever);
+            state.update();
         }
         else if (mBlock == Material.POWERED_RAIL) {
             if (on && (iData & 0x08) != 0x08) {
@@ -396,7 +330,7 @@ public final class CircuitManager{
             }
             block.setData((byte) iData);
             //net.minecraft.server.Block.PISTON.doPhysics(((CraftWorld)block.getWorld()).getHandle(), block.getX(), block.getY(), block.getZ(), -1);
-        } else if (mBlock == Material.REDSTONE_TORCH_ON) {
+        } /*else if (mBlock == Material.REDSTONE_TORCH_ON) {
             if (!on) {
                 keepAlives.remove(block);
                 block.setType(Material.REDSTONE_TORCH_OFF);
@@ -416,7 +350,8 @@ public final class CircuitManager{
                 keepAlives.add(block);
                 block.setType(Material.REDSTONE_LAMP_ON);
             }
-        }
+        } 
+        }*/
     }
 
     public void saveWorld(World world){
@@ -695,5 +630,10 @@ public final class CircuitManager{
             File testFile = new File(plugin.getDataFolder(),"circuits.yml.bak");
             new File(plugin.getDataFolder(),"circuits.yml").renameTo(testFile);
         }
+    }
+    
+    public Set<Location> circuitLocations(World w)
+    {
+        return this.worlds.get(w).keySet();
     }
 }

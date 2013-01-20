@@ -7,7 +7,7 @@ import org.bukkit.Location;
 //TODO: Allow naming of circuits
 
 public class Circuit{
-    private List receivers;
+    private List<Receiver> receivers;
     private String playerName;
     
     public Circuit(String player){
@@ -30,7 +30,8 @@ public class Circuit{
     public Receiver getReceiver(int index){
         return (Receiver) receivers.get(index);
     }
-    public List getReceivers(){
+    
+    public List<Receiver> getReceivers(){
         return receivers;
     }
     

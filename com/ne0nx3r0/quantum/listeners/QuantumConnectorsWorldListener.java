@@ -23,4 +23,28 @@ public class QuantumConnectorsWorldListener implements Listener {
     public void onWorldUnload(WorldUnloadEvent event) {
         QuantumConnectors.circuitManager.saveWorld(event.getWorld());
     }
+    /*
+  @EventHandler(priority=EventPriority.NORMAL, ignoreCancelled=true)
+  public void onChunkUnload(ChunkUnloadEvent e)
+  {
+    for(Iterator i$ = QuantumConnectors.circuitManager.circuitLocations(e.getWorld()).iterator(); i$.hasNext(); )
+    {
+        Location loc = (Location)i$.next();
+        
+        for(Receiver r : CircuitManager.getCircuit(loc).getReceivers())
+        {
+            Location l = r.location;
+            
+            int circuitChunkX = loc.getBlock().getChunk().getX();
+            int chunkX = e.getChunk().getX();
+            int circuitChunkZ = loc.getBlock().getChunk().getZ();
+            int chunkZ = e.getChunk().getZ();
+
+            if ((Math.abs(chunkX - circuitChunkX) <= this.plugin.getChunkUnloadRange()) && (Math.abs(chunkZ - circuitChunkZ) <= this.plugin.getChunkUnloadRange()))
+            {
+                e.setCancelled(true);
+            }
+        }
+    }
+  }*/
 }
