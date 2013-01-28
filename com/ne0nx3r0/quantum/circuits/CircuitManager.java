@@ -15,6 +15,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.craftbukkit.v1_4_R1.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.material.Lever;
 
@@ -65,10 +66,10 @@ public final class CircuitManager{
         Material.TRAP_DOOR,
         Material.POWERED_RAIL,
         Material.FENCE_GATE,
+        Material.REDSTONE_LAMP_OFF,
+        Material.REDSTONE_LAMP_ON,
         //Material.REDSTONE_TORCH_OFF,
         //Material.REDSTONE_TORCH_ON,
-        //Material.REDSTONE_LAMP_OFF,
-        //Material.REDSTONE_LAMP_ON,
         //Material.PISTON_BASE,
         //Material.PISTON_STICKY_BASE,//TODO: Pistons as receivers
     };
@@ -281,12 +282,60 @@ public final class CircuitManager{
         int iData = (int) block.getData();
 
         if(mBlock == Material.LEVER)
-        {               
-            BlockState state = block.getState();  
-            Lever lever = (Lever) state.getData();
-            lever.setPowered(on);
-            state.setData(lever);
-            state.update();
+        {          
+            if(plugin.getAPIVersion().equalsIgnoreCase("v1_4_R1"))
+            {
+                if (on && (iData & 0x08) != 0x08)
+                { // Revenge of the massive annoyance
+                    iData |= 0x08; //send power on
+                }
+                else if (!on && (iData & 0x08) == 0x08)
+                {
+                    iData ^= 0x08; //send power off
+                }
+
+                int i1 = iData & 7;
+
+                net.minecraft.server.v1_4_R1.WorldServer w = ((CraftWorld) block.getWorld()).getHandle();
+
+                Location l = block.getLocation();
+
+                int i = (int) l.getX();
+                int j = (int) l.getY();
+                int k = (int) l.getZ();
+                int id = block.getTypeId();
+                w.setData(i, j, k, iData);
+                w.applyPhysics(i, j, k, id);
+
+                if (i1 == 1)
+                {
+                    w.applyPhysics(i - 1, j, k, id);
+                }
+                else if (i1 == 2)
+                {
+                    w.applyPhysics(i + 1, j, k, id);
+                }
+                else if (i1 == 3)
+                {
+                    w.applyPhysics(i, j, k - 1, id);
+                }
+                else if (i1 == 4)
+                {
+                    w.applyPhysics(i, j, k + 1, id);
+                }
+                else
+                {
+                    w.applyPhysics(i, j - 1, k, id);
+                }
+            }
+            else
+            {
+                BlockState state = block.getState();  
+                Lever lever = (Lever) state.getData();
+                lever.setPowered(on);
+                state.setData(lever);
+                state.update();
+            }
         }
         else if (mBlock == Material.POWERED_RAIL) {
             if (on && (iData & 0x08) != 0x08) {
@@ -340,7 +389,8 @@ public final class CircuitManager{
                 keepAlives.add(block);
                 block.setType(Material.REDSTONE_TORCH_ON);
             }
-        } else if (mBlock == Material.REDSTONE_LAMP_ON) {
+        }*/
+        else if (mBlock == Material.REDSTONE_LAMP_ON) {
             if (!on) {
                 keepAlives.remove(block);
                 block.setType(Material.REDSTONE_LAMP_OFF);
@@ -350,8 +400,7 @@ public final class CircuitManager{
                 keepAlives.add(block);
                 block.setType(Material.REDSTONE_LAMP_ON);
             }
-        } 
-        }*/
+        }
     }
 
     public void saveWorld(World world){

@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
+import net.h31ix.updater.Updater;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -21,62 +22,90 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class QuantumConnectors extends JavaPlugin{    
 
-//Register events
+// Register events
     private final QuantumConnectorsPlayerListener playerListener = new QuantumConnectorsPlayerListener(this);
     private final QuantumConnectorsBlockListener blockListener = new QuantumConnectorsBlockListener(this);
     private final QuantumConnectorsWorldListener worldListener = new QuantumConnectorsWorldListener(this);
 
-//Circuit Manager
+// Circuit Manager
     public static CircuitManager circuitManager;
     
-//Configurables
+// Configurables
     public static int MAX_CHAIN_LINKS = 3;
     public static int MAX_DELAY_TIME = 10;//in seconds
     public static int MAX_RECEIVERS_PER_CIRCUIT = 20;
     public static boolean VERBOSE_LOGGING = false;
+    private boolean UPDATE_NOTIFICATIONS = false;
 
     private static int AUTOSAVE_INTERVAL = 30;//specified here in minutes
     private static int AUTO_SAVE_ID = -1;
     
-//Localized Messages
+// Localized Messages
     private static Map<String,String> messages;
+    
+// Updater
+    private boolean updateAvailable = false;
+    private String updateName;
+
+// Version
+    private String apiVersion;
+    private String apiSupportedVersion = "v1_4_R1";
+    private boolean outdated = false;
     
     @Override
     public void onDisable(){
-        circuitManager.saveAllWorlds();
-        
-        if(QuantumConnectors.VERBOSE_LOGGING) log("Disabled");
+        if(circuitManager != null)
+        {
+            circuitManager.saveAllWorlds();
+        }
     }
     
     @Override
-    public void onEnable(){
+    public void onEnable()
+    {
+
     //This might be outdated...
         getDataFolder().mkdirs();
 
     //Load config options, localized messages
         setupConfig();
-        
+
     //Create a circuit manager
         circuitManager = new CircuitManager(this);
-        
+
     //Register qc command
         getCommand("qc").setExecutor(new QuantumConnectorsCommandExecutor(this));   
-        
+
     //Register listeners
         PluginManager pm = getServer().getPluginManager();
-        
+
         pm.registerEvents(playerListener, this);
         pm.registerEvents(blockListener, this);
         pm.registerEvents(worldListener, this);
-        
+
     //Schedule saves
         AUTOSAVE_INTERVAL = AUTOSAVE_INTERVAL * 60 * 20;//convert to ~minutes
-        
+
         AUTO_SAVE_ID = getServer().getScheduler().scheduleSyncRepeatingTask(
             this,
             autosaveCircuits,
             AUTOSAVE_INTERVAL,
             AUTOSAVE_INTERVAL);
+        
+        String packageName = getServer().getClass().getPackage().getName();
+        this.apiVersion = packageName.substring(packageName.lastIndexOf('.') + 1);
+        
+        if(this.UPDATE_NOTIFICATIONS)
+        {
+            if(!apiVersion.equals(apiSupportedVersion))
+            {
+                outdated = true;
+            }
+
+            Updater updater = new Updater(this, "quantum-connectors", this.getFile(), Updater.UpdateType.NO_DOWNLOAD, false);
+            updateAvailable = updater.getResult() == Updater.UpdateResult.UPDATE_AVAILABLE; 
+            updateName = updater.getLatestVersionString();
+        }
     }	
     
     public void msg(Player player, String sMessage) {
@@ -114,20 +143,17 @@ public class QuantumConnectors extends JavaPlugin{
         File configFile = new File(this.getDataFolder(), "config.yml");
         
         if(!configFile.exists()){
-            this.saveDefaultConfig();
-            this.saveConfig();
+            copy(this.getResource("config.yml"),configFile);
         }
         
         FileConfiguration config = this.getConfig();
-        config.options().copyDefaults(true);
-        this.saveConfig();
-        this.reloadConfig();
         
         VERBOSE_LOGGING           = config.getBoolean("verbose_logging",VERBOSE_LOGGING);
         MAX_CHAIN_LINKS           = config.getInt("max_chain_links", MAX_CHAIN_LINKS);
         MAX_DELAY_TIME            = config.getInt("max_delay_time", MAX_DELAY_TIME);
         MAX_RECEIVERS_PER_CIRCUIT = config.getInt("max_receivers_per_circuit", MAX_RECEIVERS_PER_CIRCUIT);
         AUTOSAVE_INTERVAL         = config.getInt("autosave_interval_minutes", AUTOSAVE_INTERVAL);
+        UPDATE_NOTIFICATIONS      = config.getBoolean("update_notifications", UPDATE_NOTIFICATIONS);
    
         messages = new HashMap<String,String>();
         
@@ -161,9 +187,24 @@ public class QuantumConnectors extends JavaPlugin{
             e.printStackTrace();
         }
     }
-/*
-    public int getChunkUnloadRange()
+
+    public boolean isUpdateAvailable()
     {
-        
-    }*/
+        return this.updateAvailable;
+    }
+    
+    public String getUpdateName()
+    {
+        return updateName;
+    }
+
+    public String getAPIVersion()
+    {
+        return this.apiVersion;
+    }
+
+    public boolean isApiOudated()
+    {
+        return this.outdated;
+    }
 }

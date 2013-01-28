@@ -2,6 +2,7 @@ package com.ne0nx3r0.quantum;
 
 import com.ne0nx3r0.quantum.circuits.CircuitManager;
 import com.ne0nx3r0.quantum.circuits.PendingCircuit;
+import net.h31ix.updater.Updater;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -21,14 +22,15 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender cs, Command cmd, String alias, String[] args) {
         if (!(cs instanceof Player)){
-            plugin.log(plugin.getMessage("console_not_allowed:"));
+            plugin.log(plugin.getMessage("console_not_allowed"));
+            
+            return true;
         }
         
         if(args.length > 0){
             if(args[0].equalsIgnoreCase("q")) args[0] = "quantum";
             else if(args[0].equalsIgnoreCase("t")) args[0] = "toggle";
             else if(args[0].equalsIgnoreCase("r")) args[0] = "reverse";
-            else if(args[0].equalsIgnoreCase("c")) args[0] = "c";
         }
         
         Player player = (Player) cs;
@@ -44,9 +46,8 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
 
             plugin.msg(player, ChatColor.YELLOW + plugin.getMessage("available_circuits")+ChatColor.WHITE + s.substring(0, s.length() - 2));
         }
-      
 // Command was: "/qc cancel"
-        else if(args[0].equalsIgnoreCase("cancel")){
+        else if(args[0].equalsIgnoreCase("cancel") || args[0].equalsIgnoreCase("c")){
         
         //Pending circuit exists
             if(CircuitManager.hasPendingCircuit(player)){

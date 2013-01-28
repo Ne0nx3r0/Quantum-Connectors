@@ -18,18 +18,40 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerBedLeaveEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.material.Bed;
 
 public class QuantumConnectorsPlayerListener implements Listener{
     private final QuantumConnectors plugin;
     
-    public QuantumConnectorsPlayerListener(QuantumConnectors instance){
+    public QuantumConnectorsPlayerListener(QuantumConnectors instance)
+    {
         this.plugin = instance;
     }
     
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event)
+    {
+        Player player = event.getPlayer();
+        
+        if(player.hasPermission("QuantumConnectors.update") || player.isOp())
+        {
+            if(plugin.isUpdateAvailable())
+            {
+                player.sendMessage(ChatColor.RED+"[QC] An update is available: " + ChatColor.WHITE + plugin.getUpdateName());
+            }
+
+            if(plugin.isApiOudated())
+            {
+                player.sendMessage(ChatColor.RED+"[QC] Your current safeguard version "+plugin.getAPIVersion()+" is not supported by QC. Using levers as receivers will be limited until QC and/or your version of Bukkit is updated.");
+            }
+        }
+    }
+    
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onPlayerInteract(PlayerInteractEvent event){  
+    public void onPlayerInteract(PlayerInteractEvent event)
+    {  
 
     //Holding redstone, clicked a block, and has a pending circuit from /qc
         if(event.getItem() != null
@@ -159,7 +181,8 @@ public class QuantumConnectorsPlayerListener implements Listener{
     }
     
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onInventoryClose(InventoryCloseEvent e){
+    public void onInventoryClose(InventoryCloseEvent e)
+    {
     	InventoryHolder ih;
     	try{
             ih = e.getInventory().getHolder();
@@ -197,7 +220,8 @@ public class QuantumConnectorsPlayerListener implements Listener{
     }
     
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onEnterBed(PlayerBedEnterEvent e){
+    public void onEnterBed(PlayerBedEnterEvent e)
+    {
         if(CircuitManager.circuitExists(e.getBed().getLocation())){
             CircuitManager.activateCircuit(e.getBed().getLocation(), 5);
         }
@@ -207,7 +231,8 @@ public class QuantumConnectorsPlayerListener implements Listener{
     }
     
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onLeaveBed(PlayerBedLeaveEvent e){        
+    public void onLeaveBed(PlayerBedLeaveEvent e)
+    {        
         if(CircuitManager.circuitExists(e.getBed().getLocation())){
             CircuitManager.activateCircuit(e.getBed().getLocation(), 0);
         }
@@ -216,7 +241,8 @@ public class QuantumConnectorsPlayerListener implements Listener{
         }
     }
     
-    private Location getTwinLocation(Block b){
+    private Location getTwinLocation(Block b)
+    {
         Bed bed = (Bed) b.getState().getData();
         if(bed.isHeadOfBed()){
             return b.getRelative(bed.getFacing().getOppositeFace()).getLocation();
