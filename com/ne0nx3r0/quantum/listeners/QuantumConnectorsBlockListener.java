@@ -41,7 +41,8 @@ public class QuantumConnectorsBlockListener implements Listener {
     }
     
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onFuranceBurn(FurnaceBurnEvent e){
+    public void onFuranceBurn(FurnaceBurnEvent e)
+    {        
         if(CircuitManager.circuitExists(e.getBlock().getLocation())){          
             if(e.isBurning()){
                 Location lFurnace = e.getBlock().getLocation();
@@ -53,28 +54,33 @@ public class QuantumConnectorsBlockListener implements Listener {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(
                     plugin,
                     new DelayedFurnaceCoolCheck(lFurnace),
-                    e.getBurnTime()
+                    e.getBurnTime()+5
                 ); 
             }
         }
     }
     
-    private static class DelayedFurnaceCoolCheck implements Runnable{
+    private static class DelayedFurnaceCoolCheck implements Runnable
+    {
         private final Location lFurnace;
 
-        DelayedFurnaceCoolCheck(Location lFurnace){
+        DelayedFurnaceCoolCheck(Location lFurnace)
+        {
             this.lFurnace = lFurnace;
         }
         
         @Override
-        public void run(){
+        public void run()
+        {       
             Block bFurnace = lFurnace.getBlock();
 
             // If it's a BURNING_FURNACE it's still on and the next 
             // FurnaceBurnEvent is responsible for dispatching a delayed task
-            if(bFurnace.getType() == Material.FURNACE){
+            if(bFurnace.getType() == Material.FURNACE)
+            {
                 //Send OFF
-                if(CircuitManager.circuitExists(lFurnace)){
+                if(CircuitManager.circuitExists(lFurnace))
+                {
                     CircuitManager.activateCircuit(lFurnace, 0);
                 }
             }
