@@ -13,27 +13,32 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.inventory.FurnaceBurnEvent;
 
-public class QuantumConnectorsBlockListener implements Listener {
+public class QuantumConnectorsBlockListener implements Listener
+{
     private static QuantumConnectors plugin;
     public static String string;
 
-    public QuantumConnectorsBlockListener(final QuantumConnectors plugin) {
+    public QuantumConnectorsBlockListener(final QuantumConnectors plugin)
+    {
         QuantumConnectorsBlockListener.plugin = plugin;
     }
 
     @EventHandler(priority = EventPriority.LOW)
-    public void onBlockRedstoneChange(BlockRedstoneEvent event){
-        if (CircuitManager.circuitExists(event.getBlock().getLocation())){
-            CircuitManager.activateCircuit(event.getBlock().getLocation(), event.getNewCurrent());
+    public void onBlockRedstoneChange(BlockRedstoneEvent e)
+    {
+        if (CircuitManager.circuitExists(e.getBlock().getLocation()))
+        {
+            CircuitManager.activateCircuit(e.getBlock().getLocation(), e.getNewCurrent());
         }
 
-        if(CircuitManager.shouldLeaveReceiverOn(event.getBlock())){
-            event.setNewCurrent(15);
+        if(CircuitManager.shouldLeaveReceiverOn(e.getBlock())){
+            e.setNewCurrent(15);
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onBlockBreak(BlockBreakEvent event) {
+    public void onBlockBreak(BlockBreakEvent event)
+    {
         Location l = event.getBlock().getLocation();
         if (CircuitManager.circuitExists(l)) { // Breaking Sender
             CircuitManager.removeCircuit(l);

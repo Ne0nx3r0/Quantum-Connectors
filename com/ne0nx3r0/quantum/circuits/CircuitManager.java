@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.minecraft.server.v1_5_R2.BlockLever;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -15,7 +16,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.v1_4_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_5_R2.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.material.Lever;
 
@@ -55,6 +56,14 @@ public final class CircuitManager{
         Material.BED_BLOCK,
         Material.FURNACE,
         Material.WOOD_BUTTON,
+        //Material.REDSTONE_COMPARATOR,
+        //Material.REDSTONE_COMPARATOR_ON,
+        //Material.REDSTONE_COMPARATOR_OFF,
+        Material.REDSTONE_BLOCK,
+        Material.DAYLIGHT_DETECTOR,
+        Material.DETECTOR_RAIL,
+        Material.IRON_PLATE,
+        Material.GOLD_PLATE,
         //Material.POWERED_RAIL,//TODO: Figure out powered rail as sender
         //Material.PISTON_BASE,
         //Material.PISTON_STICKY_BASE,//TODO: Pistons as senders
@@ -283,8 +292,8 @@ public final class CircuitManager{
 
         if(mBlock == Material.LEVER)
         {          
-            if(plugin.getAPIVersion().equalsIgnoreCase("v1_4_R1"))
-            {
+            if(!plugin.isApiOudated())
+            {                
                 if (on && (iData & 0x08) != 0x08)
                 { // Revenge of the massive annoyance
                     iData |= 0x08; //send power on
@@ -293,40 +302,13 @@ public final class CircuitManager{
                 {
                     iData ^= 0x08; //send power off
                 }
-
-                int i1 = iData & 7;
-
-                net.minecraft.server.v1_4_R1.WorldServer w = ((CraftWorld) block.getWorld()).getHandle();
-
+                
+                BlockLever cbLever = (BlockLever) block.getState();
+                net.minecraft.server.v1_5_R2.WorldServer w = ((CraftWorld) block.getWorld()).getHandle();
+                
                 Location l = block.getLocation();
 
-                int i = (int) l.getX();
-                int j = (int) l.getY();
-                int k = (int) l.getZ();
-                int id = block.getTypeId();
-                w.setData(i, j, k, iData);
-                w.applyPhysics(i, j, k, id);
-
-                if (i1 == 1)
-                {
-                    w.applyPhysics(i - 1, j, k, id);
-                }
-                else if (i1 == 2)
-                {
-                    w.applyPhysics(i + 1, j, k, id);
-                }
-                else if (i1 == 3)
-                {
-                    w.applyPhysics(i, j, k - 1, id);
-                }
-                else if (i1 == 4)
-                {
-                    w.applyPhysics(i, j, k + 1, id);
-                }
-                else
-                {
-                    w.applyPhysics(i, j - 1, k, id);
-                }
+                cbLever.interact(w, l.getBlockX(), l.getBlockY(), l.getBlockZ(), null, 0, 0, 0, 0);
             }
             else
             {
@@ -337,7 +319,8 @@ public final class CircuitManager{
                 state.update();
             }
         }
-        else if (mBlock == Material.POWERED_RAIL) {
+        else if (mBlock == Material.POWERED_RAIL)
+        {
             if (on && (iData & 0x08) != 0x08) {
                 iData |= 0x08; //send power on
             } else if (!on && (iData & 0x08) == 0x08) {

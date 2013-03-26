@@ -94,7 +94,7 @@ public class QuantumConnectors extends JavaPlugin{
         
         String packageName = getServer().getClass().getPackage().getName();
         this.apiVersion = packageName.substring(packageName.lastIndexOf('.') + 1);
-        
+
         if(this.UPDATE_NOTIFICATIONS)
         {
             if(!apiVersion.equals(apiSupportedVersion))

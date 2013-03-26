@@ -41,11 +41,6 @@ public class QuantumConnectorsPlayerListener implements Listener{
             {
                 player.sendMessage(ChatColor.RED+"[QC] An update is available: " + ChatColor.WHITE + plugin.getUpdateName());
             }
-
-            if(plugin.isApiOudated())
-            {
-                player.sendMessage(ChatColor.RED+"[QC] Your current safeguard version "+plugin.getAPIVersion()+" is not supported by QC. Using levers as receivers will be limited until QC and/or your version of Bukkit is updated.");
-            }
         }
     }
     
