@@ -17,6 +17,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.v1_5_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_5_R2.block.CraftBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.material.Lever;
 
@@ -59,8 +60,7 @@ public final class CircuitManager{
         //Material.REDSTONE_COMPARATOR,
         //Material.REDSTONE_COMPARATOR_ON,
         //Material.REDSTONE_COMPARATOR_OFF,
-        Material.REDSTONE_BLOCK,
-        Material.DAYLIGHT_DETECTOR,
+        //Material.DAYLIGHT_DETECTOR,
         Material.DETECTOR_RAIL,
         Material.IRON_PLATE,
         Material.GOLD_PLATE,
@@ -238,7 +238,8 @@ public final class CircuitManager{
         } 
     }
     
-    private static class DelayedSetReceiver implements Runnable{
+    private static class DelayedSetReceiver implements Runnable
+    {
         private final Block block;
         private final boolean on;
 
@@ -248,7 +249,8 @@ public final class CircuitManager{
         }
         
         @Override
-        public void run(){
+        public void run()
+        {
             setReceiver(block,on);
         }
     }
@@ -294,21 +296,63 @@ public final class CircuitManager{
         {          
             if(!plugin.isApiOudated())
             {                
-                if (on && (iData & 0x08) != 0x08)
-                { // Revenge of the massive annoyance
-                    iData |= 0x08; //send power on
-                }
-                else if (!on && (iData & 0x08) == 0x08)
+                if ((on && (iData & 0x08) != 0x08) || (!on && (iData & 0x08) == 0x08))
                 {
-                    iData ^= 0x08; //send power off
-                }
-                
-                BlockLever cbLever = (BlockLever) block.getState();
-                net.minecraft.server.v1_5_R2.WorldServer w = ((CraftWorld) block.getWorld()).getHandle();
-                
-                Location l = block.getLocation();
+                    //New lighter annoyance!
+                    CraftBlock cbBlock = (CraftBlock) block;
+                    BlockState cbState = cbBlock.getState();
+                    
+                   // BlockLever cbLever = (BlockLever) cbState;
 
-                cbLever.interact(w, l.getBlockX(), l.getBlockY(), l.getBlockZ(), null, 0, 0, 0, 0);
+                    net.minecraft.server.v1_5_R2.WorldServer w = ((CraftWorld) block.getWorld()).getHandle();
+                    
+                    Location l = block.getLocation();
+
+                    int i = l.getBlockX();
+                    int j = l.getBlockY();
+                    int k = l.getBlockZ();
+                    
+                    int i1 = w.getData(i, j, k);
+                    int j1 = i1 & 7;
+                    int k1 = 8 - (i1 & 8);
+                    
+                    int id = block.getTypeId();
+                    
+                   // cbLever.interact(w, l.getBlockX(), l.getBlockY(), l.getBlockZ(), null, 0, 0, 0, 0);
+           //public boolean interact(World world, int i, int j, int k, EntityHuman entityhuman, int l, float f, float f1, float f2)
+                    
+                    w.setData(i, j, k, j1 + k1, 3);
+                    w.makeSound((double) i + 0.5D, (double) j + 0.5D, (double) k + 0.5D, "random.click", 0.3F, k1 > 0 ? 0.6F : 0.5F);
+                    w.applyPhysics(i, j, k, id);
+                    
+                    if (j1 == 1)
+                    {
+                        w.applyPhysics(i - 1, j, k, id);
+                    }
+                    else if (j1 == 2)
+                    {
+                        w.applyPhysics(i + 1, j, k, id);
+                    }
+                    else if (j1 == 3)
+                    {
+                        w.applyPhysics(i, j, k - 1, id);
+                    }
+                    else if (j1 == 4)
+                    {
+                        w.applyPhysics(i, j, k + 1, id);
+                    }
+                    else if (j1 != 5 && j1 != 6)
+                    {
+                        if(j1 == 0 || j1 == 7)
+                        {
+                            w.applyPhysics(i, j + 1, k, id);
+                        }
+                    }
+                    else
+                    {
+                        w.applyPhysics(i, j - 1, k, id);
+                    }
+                }
             }
             else
             {

@@ -49,11 +49,12 @@ public class QuantumConnectors extends JavaPlugin{
 
 // Version
     private String apiVersion;
-    private String apiSupportedVersion = "v1_4_R1";
+    private String apiSupportedVersion = "v1_5_R2";
     private boolean outdated = false;
     
     @Override
-    public void onDisable(){
+    public void onDisable()
+    {
         if(circuitManager != null)
         {
             circuitManager.saveAllWorlds();
