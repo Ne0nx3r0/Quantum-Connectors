@@ -49,7 +49,7 @@ public class QuantumConnectors extends JavaPlugin{
 
 // Version
     private String apiVersion;
-    private String apiSupportedVersion = "v1_5_R2";
+    private String apiSupportedVersion = "v1_6_R2";
     private boolean outdated = false;
     
     @Override

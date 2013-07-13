@@ -91,4 +91,19 @@ public class QuantumConnectorsBlockListener implements Listener
             }
         }
     }
+    
+    //Not technically a block event, but for our purposes it acts as one
+   /* public void arrowHit(ProjectileHitEvent e)
+    {
+        if(e.getEntityType() == EntityType.ARROW)
+        {
+            Location l = e.getEntity().getLocation();
+
+            if(l.getBlock().getType() == Material.WOOD_BUTTON
+            && CircuitManager.circuitExists(l))
+            {
+                CircuitManager.
+            }
+        }
+    }*/
 }

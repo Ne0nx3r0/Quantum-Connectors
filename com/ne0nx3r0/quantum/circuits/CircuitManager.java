@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import net.minecraft.server.v1_5_R2.BlockLever;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,8 +15,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.v1_5_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_5_R2.block.CraftBlock;
+import org.bukkit.craftbukkit.v1_6_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_6_R2.block.CraftBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.material.Lever;
 
@@ -159,7 +158,7 @@ public final class CircuitManager{
         //Notably circuits are now created from a temporary copy, rather than piecemeal here. 
         worlds.get(circuitLocation.getWorld()).put(circuitLocation, newCircuit);
     }
-    public static void addCircuit(PendingCircuit pc){             
+    public static void addCircuit(PendingCircuit pc){    
        worlds.get(pc.getSenderLocation().getWorld())
                .put(pc.getSenderLocation(),pc.getCircuit());
     }
@@ -304,7 +303,7 @@ public final class CircuitManager{
                     
                    // BlockLever cbLever = (BlockLever) cbState;
 
-                    net.minecraft.server.v1_5_R2.WorldServer w = ((CraftWorld) block.getWorld()).getHandle();
+                    net.minecraft.server.v1_6_R2.WorldServer w = ((CraftWorld) block.getWorld()).getHandle();
                     
                     Location l = block.getLocation();
 
