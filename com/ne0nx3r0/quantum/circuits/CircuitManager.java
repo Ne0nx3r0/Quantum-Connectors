@@ -15,8 +15,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.v1_6_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_6_R2.block.CraftBlock;
+import org.bukkit.craftbukkit.v1_6_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_6_R3.block.CraftBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.material.Lever;
 
@@ -303,7 +303,7 @@ public final class CircuitManager{
                     
                    // BlockLever cbLever = (BlockLever) cbState;
 
-                    net.minecraft.server.v1_6_R2.WorldServer w = ((CraftWorld) block.getWorld()).getHandle();
+                    net.minecraft.server.v1_6_R3.WorldServer w = ((CraftWorld) block.getWorld()).getHandle();
                     
                     Location l = block.getLocation();
 
