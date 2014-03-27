@@ -2,7 +2,6 @@ package com.ne0nx3r0.quantum;
 
 import com.ne0nx3r0.quantum.circuits.CircuitManager;
 import com.ne0nx3r0.quantum.circuits.PendingCircuit;
-import net.h31ix.updater.Updater;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;

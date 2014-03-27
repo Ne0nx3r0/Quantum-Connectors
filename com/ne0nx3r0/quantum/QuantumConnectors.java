@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import net.h31ix.updater.Updater;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -95,18 +94,6 @@ public class QuantumConnectors extends JavaPlugin{
         
         String packageName = getServer().getClass().getPackage().getName();
         this.apiVersion = packageName.substring(packageName.lastIndexOf('.') + 1);
-
-        if(this.UPDATE_NOTIFICATIONS)
-        {
-            if(!apiVersion.equals(apiSupportedVersion))
-            {
-                outdated = true;
-            }
-
-            Updater updater = new Updater(this, "quantum-connectors", this.getFile(), Updater.UpdateType.NO_DOWNLOAD, false);
-            updateAvailable = updater.getResult() == Updater.UpdateResult.UPDATE_AVAILABLE; 
-            updateName = updater.getLatestVersionString();
-        }
     }	
     
     public void msg(Player player, String sMessage) {

@@ -12,8 +12,3 @@ max_receivers_per_circuit: 20
 
 # If true the plugin will log details related to saving files/etc.
 verbose_logging: false
-
-# If true, displays a message on join when a new version is available or
-# the current version is not compatible with the installed API.
-# (requires OP or QuantumConnectors.update to receive update notifications)
-update_notifications: true

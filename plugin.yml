@@ -1,6 +1,6 @@
 name: QuantumConnectors
 main: com.ne0nx3r0.quantum.QuantumConnectors
-version: '2.4.11'
+version: '2.4.13'
 database: false
 startup: postworld
 description: Wireless redstone connections
@@ -43,7 +43,4 @@ permissions:
       default: op
     QuantumConnectors.create.spawn:
       description: Allows creation of "Spawn" circuit
-      default: op
-    QuantumConnectors.update:
-      description: Notifies users of available updates
       default: op

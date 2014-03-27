@@ -15,8 +15,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.v1_6_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_6_R3.block.CraftBlock;
+import org.bukkit.craftbukkit.v1_7_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_7_R1.block.CraftBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.material.Lever;
 
@@ -303,7 +303,7 @@ public final class CircuitManager{
                     
                    // BlockLever cbLever = (BlockLever) cbState;
 
-                    net.minecraft.server.v1_6_R3.WorldServer w = ((CraftWorld) block.getWorld()).getHandle();
+                    net.minecraft.server.v1_7_R2.WorldServer w = ((CraftWorld) block.getWorld()).getHandle();
                     
                     Location l = block.getLocation();
 
@@ -315,41 +315,41 @@ public final class CircuitManager{
                     int j1 = i1 & 7;
                     int k1 = 8 - (i1 & 8);
                     
-                    int id = block.getTypeId();
+                    net.minecraft.server.v1_7_R2.Block netBlock = w.getType(i, j, k);
                     
                    // cbLever.interact(w, l.getBlockX(), l.getBlockY(), l.getBlockZ(), null, 0, 0, 0, 0);
            //public boolean interact(World world, int i, int j, int k, EntityHuman entityhuman, int l, float f, float f1, float f2)
                     
                     w.setData(i, j, k, j1 + k1, 3);
                     w.makeSound((double) i + 0.5D, (double) j + 0.5D, (double) k + 0.5D, "random.click", 0.3F, k1 > 0 ? 0.6F : 0.5F);
-                    w.applyPhysics(i, j, k, id);
+                    w.applyPhysics(i, j, k, netBlock);
                     
                     if (j1 == 1)
                     {
-                        w.applyPhysics(i - 1, j, k, id);
+                        w.applyPhysics(i - 1, j, k, netBlock);
                     }
                     else if (j1 == 2)
                     {
-                        w.applyPhysics(i + 1, j, k, id);
+                        w.applyPhysics(i + 1, j, k, netBlock);
                     }
                     else if (j1 == 3)
                     {
-                        w.applyPhysics(i, j, k - 1, id);
+                        w.applyPhysics(i, j, k - 1, netBlock);
                     }
                     else if (j1 == 4)
                     {
-                        w.applyPhysics(i, j, k + 1, id);
+                        w.applyPhysics(i, j, k + 1, netBlock);
                     }
                     else if (j1 != 5 && j1 != 6)
                     {
                         if(j1 == 0 || j1 == 7)
                         {
-                            w.applyPhysics(i, j + 1, k, id);
+                            w.applyPhysics(i, j + 1, k, netBlock);
                         }
                     }
                     else
                     {
-                        w.applyPhysics(i, j - 1, k, id);
+                        w.applyPhysics(i, j - 1, k, netBlock);
                     }
                 }
             }
