@@ -15,8 +15,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.v1_7_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_7_R1.block.CraftBlock;
+import org.bukkit.craftbukkit.v1_7_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_7_R2.block.CraftBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.material.Lever;
 
@@ -178,10 +178,11 @@ public final class CircuitManager{
     }
     
 // Circuit activation    
-    public static void activateCircuit(Location lSender, int current){
-        activateCircuit(lSender, current, 0);
+    public static void activateCircuit(Location lSender, int oldCurrent, int newCurrent){
+        activateCircuit(lSender, oldCurrent, newCurrent, 0);
     }
-    public static void activateCircuit(Location lSender, int current, int chain){
+    
+    public static void activateCircuit(Location lSender, int oldCurrent, int newCurrent, int chain){
         Circuit circuit = getCircuit(lSender);
         List receivers = circuit.getReceivers();
         
@@ -192,30 +193,31 @@ public final class CircuitManager{
             Receiver r;
             for(int i = 0; i < receivers.size(); i++){
                 r = (Receiver) receivers.get(i);
-                
                 iType = r.type;
                 iDelay = r.delay;
                 Block b = r.location.getBlock();
 
                 if (isValidReceiver(b)){
                     if (iType == CircuitTypes.QUANTUM.getId()) {
-                        setReceiver(b, current > 0 ? true : false,iDelay);
+                        setReceiver(b, newCurrent > 0 ? true : false,iDelay);
                     } else if (iType == CircuitTypes.ON.getId()) {
-                        if (current > 0) {
-                            setReceiver(b, true,iDelay);
+                        if (newCurrent > 0 && oldCurrent == 0) {
+                            setReceiver(b, true, iDelay);
                         }
                     } else if (iType == CircuitTypes.OFF.getId()) {
-                        if (current > 0) {
-                            setReceiver(b, false,iDelay);
+                        if (newCurrent == 0 && oldCurrent > 0) {
+                            setReceiver(b, false, iDelay);
                         }
                     } else if (iType == CircuitTypes.TOGGLE.getId()) {
-                        if (current > 0) {
+                        if (newCurrent > 0 && oldCurrent == 0) {
                             setReceiver(b, getBlockCurrent(b) > 0 ? false : true,iDelay);
                         }
                     } else if (iType == CircuitTypes.REVERSE.getId()) {
-                        setReceiver(b, current > 0 ? false : true,iDelay);
+                        if(oldCurrent == 0 || newCurrent == 0) {
+                            setReceiver(b, newCurrent > 0 ? false : true,iDelay);
+                        }
                     } else if (iType == CircuitTypes.RANDOM.getId()) {
-                        if (current > 0) {
+                        if(newCurrent > 0 && (oldCurrent == 0 || newCurrent == 0)) {
                             setReceiver(b, new Random().nextBoolean() ? true : false,iDelay);
                         }
                     }

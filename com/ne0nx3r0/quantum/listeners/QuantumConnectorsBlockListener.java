@@ -28,7 +28,7 @@ public class QuantumConnectorsBlockListener implements Listener
     {
         if (CircuitManager.circuitExists(e.getBlock().getLocation()))
         {
-            CircuitManager.activateCircuit(e.getBlock().getLocation(), e.getNewCurrent());
+            CircuitManager.activateCircuit(e.getBlock().getLocation(), e.getOldCurrent(), e.getNewCurrent());
         }
 
         if(CircuitManager.shouldLeaveReceiverOn(e.getBlock())){
@@ -53,7 +53,7 @@ public class QuantumConnectorsBlockListener implements Listener
                 Location lFurnace = e.getBlock().getLocation();
                 
                 //SEND ON
-                CircuitManager.activateCircuit(lFurnace, 5);
+                CircuitManager.activateCircuit(lFurnace, 0, 1);
                 
                 //Schedule a check to send the corresponding OFF
                 Bukkit.getScheduler().scheduleSyncDelayedTask(
@@ -86,7 +86,7 @@ public class QuantumConnectorsBlockListener implements Listener
                 //Send OFF
                 if(CircuitManager.circuitExists(lFurnace))
                 {
-                    CircuitManager.activateCircuit(lFurnace, 0);
+                    CircuitManager.activateCircuit(lFurnace, 1, 0);
                 }
             }
         }

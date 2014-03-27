@@ -127,11 +127,14 @@ public class QuantumConnectorsPlayerListener implements Listener{
             if( block.getType() == Material.WOODEN_DOOR 
              || block.getType() == Material.TRAP_DOOR
              || block.getType() == Material.FENCE_GATE){
-                CircuitManager.activateCircuit(event.getClickedBlock().getLocation(), CircuitManager.getBlockCurrent(block));
+                int current = CircuitManager.getBlockCurrent(block);
+                
+                CircuitManager.activateCircuit(event.getClickedBlock().getLocation(), current, current > 0 ? 0 : 15 );
             }
             else if(block.getType() == Material.BOOKSHELF)
             {
-                CircuitManager.activateCircuit(event.getClickedBlock().getLocation(), 5);
+                // send on
+                CircuitManager.activateCircuit(event.getClickedBlock().getLocation(), 5, 0);
             }
         }
     }
@@ -150,7 +153,8 @@ public class QuantumConnectorsPlayerListener implements Listener{
             Location lChest = ((Chest) e.getInventory().getHolder()).getLocation();
             
             if(CircuitManager.circuitExists(lChest)){
-                CircuitManager.activateCircuit(lChest, 5);//Can't remember the max redstone current, 5 works
+                // send on
+                CircuitManager.activateCircuit(lChest, 5, 0);
             }
         }else if(ih instanceof DoubleChest){
             DoubleChest dc = (DoubleChest) ih;
@@ -161,7 +165,8 @@ public class QuantumConnectorsPlayerListener implements Listener{
             }catch(NullPointerException npe){}
             
             if(lLeft != null && CircuitManager.circuitExists(lLeft)){
-                CircuitManager.activateCircuit(lLeft, 0);
+                // send off
+                CircuitManager.activateCircuit(lLeft, 0, 5);
             }      
             
             Location lRight = null;
@@ -170,7 +175,8 @@ public class QuantumConnectorsPlayerListener implements Listener{
             }catch(NullPointerException npe){}
             
             if(lRight != null && CircuitManager.circuitExists(lRight)){
-                CircuitManager.activateCircuit(lRight, 0);
+                // send off
+                CircuitManager.activateCircuit(lRight, 0, 5);
             }
         }
     }
@@ -189,7 +195,8 @@ public class QuantumConnectorsPlayerListener implements Listener{
             Location lChest = ((Chest) ih).getLocation();
             
             if(CircuitManager.circuitExists(lChest)){
-                CircuitManager.activateCircuit(lChest, 0);
+                // send off
+                CircuitManager.activateCircuit(lChest, 0, 5);
             }
         }else if(ih instanceof DoubleChest){
             DoubleChest dc = (DoubleChest) ih;
@@ -200,7 +207,8 @@ public class QuantumConnectorsPlayerListener implements Listener{
             }catch(NullPointerException npe){}
             
             if(lLeft != null && CircuitManager.circuitExists(lLeft)){
-                CircuitManager.activateCircuit(lLeft, 0);
+                // send off
+                CircuitManager.activateCircuit(lLeft, 0, 5);
             }      
             
             Location lRight = null;
@@ -209,7 +217,8 @@ public class QuantumConnectorsPlayerListener implements Listener{
             }catch(NullPointerException npe){}
             
             if(lRight != null && CircuitManager.circuitExists(lRight)){
-                CircuitManager.activateCircuit(lRight, 0);
+                // send off
+                CircuitManager.activateCircuit(lRight, 0, 5);
             }
         }
     }
@@ -218,10 +227,12 @@ public class QuantumConnectorsPlayerListener implements Listener{
     public void onEnterBed(PlayerBedEnterEvent e)
     {
         if(CircuitManager.circuitExists(e.getBed().getLocation())){
-            CircuitManager.activateCircuit(e.getBed().getLocation(), 5);
+            // send on
+            CircuitManager.activateCircuit(e.getBed().getLocation(), 5, 0);
         }
         if(CircuitManager.circuitExists(this.getTwinLocation(e.getBed()))){
-            CircuitManager.activateCircuit(this.getTwinLocation(e.getBed()), 5);
+            // send on
+            CircuitManager.activateCircuit(this.getTwinLocation(e.getBed()), 5, 0);
         }
     }
     
@@ -229,10 +240,12 @@ public class QuantumConnectorsPlayerListener implements Listener{
     public void onLeaveBed(PlayerBedLeaveEvent e)
     {        
         if(CircuitManager.circuitExists(e.getBed().getLocation())){
-            CircuitManager.activateCircuit(e.getBed().getLocation(), 0);
+            // send off
+            CircuitManager.activateCircuit(e.getBed().getLocation(), 0, 5);
         }
         if(CircuitManager.circuitExists(this.getTwinLocation(e.getBed()))){
-            CircuitManager.activateCircuit(this.getTwinLocation(e.getBed()), 0);
+            // send off
+            CircuitManager.activateCircuit(this.getTwinLocation(e.getBed()), 0, 5);
         }
     }
     
