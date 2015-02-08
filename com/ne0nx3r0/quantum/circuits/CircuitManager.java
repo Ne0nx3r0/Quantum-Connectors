@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import net.minecraft.server.v1_8_R1.BlockPosition;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -15,8 +17,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.v1_7_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_7_R2.block.CraftBlock;
+import org.bukkit.craftbukkit.v1_8_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R1.block.CraftBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.material.Lever;
 
@@ -289,7 +291,7 @@ public final class CircuitManager{
         }
     }
     
-    private static void setReceiver(Block block, boolean on){
+    private static void setReceiver(Block block, boolean powerOn){
         Material mBlock = block.getType();
         int iData = (int) block.getData();
 
@@ -297,61 +299,51 @@ public final class CircuitManager{
         {          
             if(!plugin.isApiOudated())
             {                
-                if ((on && (iData & 0x08) != 0x08) || (!on && (iData & 0x08) == 0x08))
+                if ((powerOn && (iData & 0x08) != 0x08) || (!powerOn && (iData & 0x08) == 0x08))
                 {
-                    //New lighter annoyance!
                     CraftBlock cbBlock = (CraftBlock) block;
                     BlockState cbState = cbBlock.getState();
-                    
-                   // BlockLever cbLever = (BlockLever) cbState;
+                    net.minecraft.server.v1_8_R1.WorldServer w = ((CraftWorld) block.getWorld()).getHandle();
 
-                    net.minecraft.server.v1_7_R2.WorldServer w = ((CraftWorld) block.getWorld()).getHandle();
-                    
                     Location l = block.getLocation();
 
-                    int i = l.getBlockX();
-                    int j = l.getBlockY();
-                    int k = l.getBlockZ();
-                    
-                    int i1 = w.getData(i, j, k);
-                    int j1 = i1 & 7;
-                    int k1 = 8 - (i1 & 8);
-                    
-                    net.minecraft.server.v1_7_R2.Block netBlock = w.getType(i, j, k);
-                    
-                   // cbLever.interact(w, l.getBlockX(), l.getBlockY(), l.getBlockZ(), null, 0, 0, 0, 0);
-           //public boolean interact(World world, int i, int j, int k, EntityHuman entityhuman, int l, float f, float f1, float f2)
-                    
-                    w.setData(i, j, k, j1 + k1, 3);
-                    w.makeSound((double) i + 0.5D, (double) j + 0.5D, (double) k + 0.5D, "random.click", 0.3F, k1 > 0 ? 0.6F : 0.5F);
-                    w.applyPhysics(i, j, k, netBlock);
-                    
-                    if (j1 == 1)
-                    {
-                        w.applyPhysics(i - 1, j, k, netBlock);
+                    int blockX = l.getBlockX();
+                    int blockY = l.getBlockY();
+                    int blockZ = l.getBlockZ();
+
+                    BlockPosition bp = new BlockPosition(blockX,blockY,blockZ);
+
+                    int blockData = cbState.getRawData();
+                    int j1 = blockData & 7;
+                    int k1 = 8 - (blockData & 8);
+
+                    net.minecraft.server.v1_8_R1.Block netBlock =  w.getType(bp).getBlock();
+
+                    w.setTypeAndData(bp,netBlock.fromLegacyData(j1 + k1),3);
+
+                    w.makeSound((double) blockX + 0.5D, (double) blockY + 0.5D, (double) blockZ + 0.5D, "random.click", 0.3F, k1 > 0 ? 0.6F : 0.5F);
+
+                    w.applyPhysics(bp, netBlock);
+
+                    if (j1 == 1) {
+                        w.applyPhysics(new BlockPosition(blockX - 1, blockY, blockZ), netBlock);
                     }
-                    else if (j1 == 2)
-                    {
-                        w.applyPhysics(i + 1, j, k, netBlock);
+                    else if (j1 == 2) {
+                        w.applyPhysics(new BlockPosition(blockX + 1, blockY, blockZ), netBlock);
                     }
-                    else if (j1 == 3)
-                    {
-                        w.applyPhysics(i, j, k - 1, netBlock);
+                    else if (j1 == 3) {
+                        w.applyPhysics(new BlockPosition(blockX, blockY, blockZ - 1), netBlock);
                     }
-                    else if (j1 == 4)
-                    {
-                        w.applyPhysics(i, j, k + 1, netBlock);
+                    else if (j1 == 4) {
+                        w.applyPhysics(new BlockPosition(blockX, blockY, blockZ + 1), netBlock);
                     }
-                    else if (j1 != 5 && j1 != 6)
-                    {
-                        if(j1 == 0 || j1 == 7)
-                        {
-                            w.applyPhysics(i, j + 1, k, netBlock);
+                    else if (j1 != 5 && j1 != 6) {
+                        if(j1 == 0 || j1 == 7) {
+                            w.applyPhysics(new BlockPosition(blockX, blockY + 1, blockZ), netBlock);
                         }
                     }
-                    else
-                    {
-                        w.applyPhysics(i, j - 1, k, netBlock);
+                    else {
+                        w.applyPhysics(new BlockPosition(blockX, blockY - 1, blockZ), netBlock);
                     }
                 }
             }
@@ -359,16 +351,16 @@ public final class CircuitManager{
             {
                 BlockState state = block.getState();  
                 Lever lever = (Lever) state.getData();
-                lever.setPowered(on);
+                lever.setPowered(powerOn);
                 state.setData(lever);
                 state.update();
             }
         }
         else if (mBlock == Material.POWERED_RAIL)
         {
-            if (on && (iData & 0x08) != 0x08) {
-                iData |= 0x08; //send power on
-            } else if (!on && (iData & 0x08) == 0x08) {
+            if (powerOn && (iData & 0x08) != 0x08) {
+                iData |= 0x08; //send power powerOn
+            } else if (!powerOn && (iData & 0x08) == 0x08) {
                 iData ^= 0x08; //send power off
             }
             block.setData((byte) iData);
@@ -378,10 +370,10 @@ public final class CircuitManager{
             Block bOtherPiece = block.getRelative(((iData & 0x08) == 0x08) ? BlockFace.DOWN : BlockFace.UP);
             int iOtherPieceData = (int) bOtherPiece.getData();
 
-            if (on && (iData & 0x04) != 0x04) {
+            if (powerOn && (iData & 0x04) != 0x04) {
                 iData |= 0x04;
                 iOtherPieceData |= 0x04;
-            } else if (!on && (iData & 0x04) == 0x04) {
+            } else if (!powerOn && (iData & 0x04) == 0x04) {
                 iData ^= 0x04;
                 iOtherPieceData ^= 0x04;
             }
@@ -391,44 +383,65 @@ public final class CircuitManager{
         }
         else if(mBlock == Material.TRAP_DOOR
                || mBlock == Material.FENCE_GATE){
-            if (on && (iData & 0x04) != 0x04) {
+            if (powerOn && (iData & 0x04) != 0x04) {
                 iData |= 0x04;//send open
-            } else if (!on && (iData & 0x04) == 0x04) {
+            } else if (!powerOn && (iData & 0x04) == 0x04) {
                 iData ^= 0x04;//send close
             }
             block.setData((byte) iData);
         } 
         else if (mBlock == Material.PISTON_BASE || mBlock == Material.PISTON_STICKY_BASE) {
             // Makeshift piston code... Doesn't work!
-            if (on && (iData & 0x08) != 0x08) {
-                iData |= 0x08; //send power on
-            } else if (!on && (iData & 0x08) == 0x08) {
+            if (powerOn && (iData & 0x08) != 0x08) {
+                iData |= 0x08; //send power powerOn
+            } else if (!powerOn && (iData & 0x08) == 0x08) {
                 iData ^= 0x08; //send power off
             }
             block.setData((byte) iData);
             //net.minecraft.server.Block.PISTON.doPhysics(((CraftWorld)block.getWorld()).getHandle(), block.getX(), block.getY(), block.getZ(), -1);
         } /*else if (mBlock == Material.REDSTONE_TORCH_ON) {
-            if (!on) {
+            if (!powerOn) {
                 keepAlives.remove(block);
                 block.setType(Material.REDSTONE_TORCH_OFF);
             }
         } else if (mBlock == Material.REDSTONE_TORCH_OFF) {
-            if (on) {
+            if (powerOn) {
                 keepAlives.add(block);
                 block.setType(Material.REDSTONE_TORCH_ON);
             }
         }*/
         else if (mBlock == Material.REDSTONE_LAMP_ON) {
-            if (!on) {
+            if (!powerOn) {
                 keepAlives.remove(block);
                 block.setType(Material.REDSTONE_LAMP_OFF);
             }
         } else if (mBlock == Material.REDSTONE_LAMP_OFF) {
-            if (on) {
+            if (powerOn) {
                 keepAlives.add(block);
-                block.setType(Material.REDSTONE_LAMP_ON);
+
+                net.minecraft.server.v1_8_R1.World w = ((CraftWorld) block.getWorld()).getHandle();
+
+                try {
+                    setStaticStatus(w, true);
+                    block.setType(Material.REDSTONE_LAMP_ON);
+                    setStaticStatus(w, false);
+                }
+                catch (NoSuchFieldException e) {
+                    e.printStackTrace();
+                }
+                catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
             }
         }
+    }
+
+    private static void setStaticStatus(net.minecraft.server.v1_8_R1.World w, boolean isStatic) throws NoSuchFieldException, IllegalAccessException {
+        java.lang.reflect.Field field = net.minecraft.server.v1_8_R1.World.class.getDeclaredField("isStatic");
+
+        field.setAccessible(true);
+
+        field.set(w, isStatic);
     }
 
     public void saveWorld(World world){
