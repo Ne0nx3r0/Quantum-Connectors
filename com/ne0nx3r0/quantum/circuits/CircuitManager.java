@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.minecraft.server.v1_8_R3.BlockPosition;
+import net.minecraft.server.v1_9_R1.BlockPosition;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -17,8 +17,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.block.CraftBlock;
+import org.bukkit.craftbukkit.v1_9_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_9_R1.block.CraftBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.material.Lever;
 
@@ -303,7 +303,7 @@ public final class CircuitManager{
                 {
                     CraftBlock cbBlock = (CraftBlock) block;
                     BlockState cbState = cbBlock.getState();
-                    net.minecraft.server.v1_8_R3.WorldServer w = ((CraftWorld) block.getWorld()).getHandle();
+                    net.minecraft.server.v1_9_R1.WorldServer w = ((CraftWorld) block.getWorld()).getHandle();
 
                     Location l = block.getLocation();
 
@@ -317,7 +317,7 @@ public final class CircuitManager{
                     int j1 = blockData & 7;
                     int k1 = 8 - (blockData & 8);
 
-                    net.minecraft.server.v1_8_R3.Block netBlock =  w.getType(bp).getBlock();
+                    net.minecraft.server.v1_9_R1.Block netBlock =  w.getType(bp).getBlock();
 
                     w.setTypeAndData(bp,netBlock.fromLegacyData(j1 + k1),3);
 
@@ -419,7 +419,7 @@ public final class CircuitManager{
             if (powerOn) {
                 keepAlives.add(block);
 
-                net.minecraft.server.v1_8_R3.World w = ((CraftWorld) block.getWorld()).getHandle();
+                net.minecraft.server.v1_9_R1.World w = ((CraftWorld) block.getWorld()).getHandle();
 
                 try {
                     setStaticStatus(w, true);
@@ -436,8 +436,8 @@ public final class CircuitManager{
         }
     }
 
-    private static void setStaticStatus(net.minecraft.server.v1_8_R3.World w, boolean isStatic) throws NoSuchFieldException, IllegalAccessException {
-        java.lang.reflect.Field field = net.minecraft.server.v1_8_R3.World.class.getDeclaredField("isStatic");
+    private static void setStaticStatus(net.minecraft.server.v1_9_R1.World w, boolean isStatic) throws NoSuchFieldException, IllegalAccessException {
+        java.lang.reflect.Field field = net.minecraft.server.v1_9_R1.World.class.getDeclaredField("isStatic");
 
         field.setAccessible(true);
 
