@@ -1,6 +1,6 @@
 name: QuantumConnectors
-main: me.RagnarRoc.quantumConnectors.QuantumConnectors
-version: 'r_1.9.2'
+main: com.ne0nx3r0.quantum.QuantumConnectors
+version: 'v_1.10.2'
 database: false
 startup: postworld
 description: Wireless redstone connections
