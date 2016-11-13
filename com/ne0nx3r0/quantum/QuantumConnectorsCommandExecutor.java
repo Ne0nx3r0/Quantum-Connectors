@@ -36,7 +36,7 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
         
 // Command was: "/qc"
         if(args.length == 0 || args[0].equalsIgnoreCase("?")){    
-            plugin.msg(player, "qc_usage");
+            plugin.msg(player, "usage");
 
             String s = "";	  	
             for(String sKey : CircuitManager.getValidCircuitTypes().keySet()) {
