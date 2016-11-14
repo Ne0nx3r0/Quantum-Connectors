@@ -76,7 +76,12 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
                     // I hate doors, I hate all the wooden doors.
                     // I just want to break them all, but I can't
                     // Can't break all wood doors.
-                        if(pc.getSenderLocation().getBlock().getType() == Material.WOODEN_DOOR){
+                        if(pc.getSenderLocation().getBlock().getType() == Material.WOODEN_DOOR
+                          || pc.getSenderLocation().getBlock().getType() == Material.SPRUCE_DOOR
+                          || pc.getSenderLocation().getBlock().getType() == Material.BIRCH_DOOR
+                          || pc.getSenderLocation().getBlock().getType() == Material.JUNGLE_DOOR
+                          || pc.getSenderLocation().getBlock().getType() == Material.ACACIA_DOOR
+                          || pc.getSenderLocation().getBlock().getType() == Material.DARK_OAK_DOOR){
                             Block bDoor = pc.getSenderLocation().getBlock();
                             int iData = (int) bDoor.getData();
                             Block bOtherPiece = bDoor.getRelative((iData & 0x08) == 0x08 ? BlockFace.DOWN : BlockFace.UP);

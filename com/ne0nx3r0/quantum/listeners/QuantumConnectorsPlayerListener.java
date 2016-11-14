@@ -124,9 +124,19 @@ public class QuantumConnectorsPlayerListener implements Listener{
         {
             Block block = event.getClickedBlock();
 
-            if( block.getType() == Material.WOODEN_DOOR 
+            if( block.getType() == Material.WOODEN_DOOR
+             || block.getType() == Material.SPRUCE_DOOR
+             || block.getType() == Material.BIRCH_DOOR
+             || block.getType() == Material.JUNGLE_DOOR
+             || block.getType() == Material.ACACIA_DOOR
+             || block.getType() == Material.DARK_OAK_DOOR
              || block.getType() == Material.TRAP_DOOR
-             || block.getType() == Material.FENCE_GATE){
+             || block.getType() == Material.FENCE_GATE
+             || block.getType() == Material.SPRUCE_FENCE_GATE
+             || block.getType() == Material.BIRCH_FENCE_GATE
+             || block.getType() == Material.JUNGLE_FENCE_GATE
+             || block.getType() == Material.ACACIA_FENCE_GATE
+             || block.getType() == Material.DARK_OAK_FENCE_GATE){
                 int current = CircuitManager.getBlockCurrent(block);
                 
                 CircuitManager.activateCircuit(event.getClickedBlock().getLocation(), current, current > 0 ? 0 : 15 );
