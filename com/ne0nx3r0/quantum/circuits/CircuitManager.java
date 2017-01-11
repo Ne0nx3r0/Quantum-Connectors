@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.minecraft.server.v1_10_R1.BlockPosition;
+import net.minecraft.server.v1_10_R1.SoundEffect;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -51,8 +52,18 @@ public final class CircuitManager{
         //Material.DIODE_BLOCK_ON,//TODO: Figure out repeaters as senders
         Material.IRON_DOOR_BLOCK,
         Material.WOODEN_DOOR,
+        Material.SPRUCE_DOOR,
+        Material.BIRCH_DOOR,
+        Material.JUNGLE_DOOR,
+        Material.ACACIA_DOOR ,
+        Material.DARK_OAK_DOOR,
         Material.TRAP_DOOR,
         Material.FENCE_GATE,
+        Material.SPRUCE_FENCE_GATE,
+        Material.BIRCH_FENCE_GATE,
+        Material.JUNGLE_FENCE_GATE,
+        Material.ACACIA_FENCE_GATE,
+        Material.DARK_OAK_FENCE_GATE,
         Material.CHEST,
         Material.BOOKSHELF,
         Material.BED_BLOCK,
@@ -73,9 +84,19 @@ public final class CircuitManager{
         Material.LEVER,
         Material.IRON_DOOR_BLOCK,
         Material.WOODEN_DOOR,
+        Material.SPRUCE_DOOR,
+        Material.BIRCH_DOOR,
+        Material.JUNGLE_DOOR,
+        Material.ACACIA_DOOR ,
+        Material.DARK_OAK_DOOR,
         Material.TRAP_DOOR,
         Material.POWERED_RAIL,
         Material.FENCE_GATE,
+        Material.SPRUCE_FENCE_GATE,
+        Material.BIRCH_FENCE_GATE,
+        Material.JUNGLE_FENCE_GATE,
+        Material.ACACIA_FENCE_GATE,
+        Material.DARK_OAK_FENCE_GATE,
         Material.REDSTONE_LAMP_OFF,
         Material.REDSTONE_LAMP_ON,
         //Material.REDSTONE_TORCH_OFF,
@@ -267,8 +288,18 @@ public final class CircuitManager{
             return (iData & 0x08) == 0x08 ? 15 : 0;
         }else if(mBlock == Material.IRON_DOOR_BLOCK
                 || mBlock == Material.WOODEN_DOOR
+                || mBlock == Material.SPRUCE_DOOR
+                || mBlock == Material.BIRCH_DOOR
+                || mBlock == Material.JUNGLE_DOOR
+                || mBlock == Material.ACACIA_DOOR
+                || mBlock == Material.DARK_OAK_DOOR
                 || mBlock == Material.TRAP_DOOR
-                || mBlock == Material.FENCE_GATE){
+                || mBlock == Material.FENCE_GATE
+                || mBlock == Material.SPRUCE_FENCE_GATE
+                || mBlock == Material.BIRCH_FENCE_GATE
+                || mBlock == Material.JUNGLE_FENCE_GATE
+                || mBlock == Material.ACACIA_FENCE_GATE
+                || mBlock == Material.DARK_OAK_FENCE_GATE){
             return (iData & 0x04) == 0x04 ? 15 : 0;
         }else if(mBlock == Material.REDSTONE_LAMP_OFF
                  || mBlock == Material.REDSTONE_LAMP_ON
@@ -367,7 +398,12 @@ public final class CircuitManager{
             block.setData((byte) iData);
         }
         else if(mBlock == Material.IRON_DOOR_BLOCK 
-               || mBlock == Material.WOODEN_DOOR) {
+               || mBlock == Material.WOODEN_DOOR
+                || mBlock == Material.SPRUCE_DOOR
+                || mBlock == Material.BIRCH_DOOR
+                || mBlock == Material.JUNGLE_DOOR
+                || mBlock == Material.ACACIA_DOOR
+                || mBlock == Material.DARK_OAK_DOOR) {
             Block bOtherPiece = block.getRelative(((iData & 0x08) == 0x08) ? BlockFace.DOWN : BlockFace.UP);
             int iOtherPieceData = (int) bOtherPiece.getData();
 
@@ -383,7 +419,12 @@ public final class CircuitManager{
             block.getWorld().playEffect(block.getLocation(), Effect.DOOR_TOGGLE, 0, 10);
         }
         else if(mBlock == Material.TRAP_DOOR
-               || mBlock == Material.FENCE_GATE){
+               || mBlock == Material.FENCE_GATE
+                || mBlock == Material.SPRUCE_FENCE_GATE
+                || mBlock == Material.BIRCH_FENCE_GATE
+                || mBlock == Material.JUNGLE_FENCE_GATE
+                || mBlock == Material.ACACIA_FENCE_GATE
+                || mBlock == Material.DARK_OAK_FENCE_GATE){
             if (powerOn && (iData & 0x04) != 0x04) {
                 iData |= 0x04;//send open
             } else if (!powerOn && (iData & 0x04) == 0x04) {
@@ -438,7 +479,8 @@ public final class CircuitManager{
     }
 
     private static void setStaticStatus(net.minecraft.server.v1_10_R1.World w, boolean isStatic) throws NoSuchFieldException, IllegalAccessException {
-        java.lang.reflect.Field field = net.minecraft.server.v1_10_R1.World.class.getDeclaredField("isStatic");
+        java.lang.reflect.Field field = net.minecraft.server.v1_10_R1.World.class.getDeclaredField("isClientSide");
+
 
         field.setAccessible(true);
 
