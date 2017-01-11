@@ -7,8 +7,9 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.minecraft.server.v1_10_R1.BlockPosition;
-import net.minecraft.server.v1_10_R1.SoundEffect;
+import net.minecraft.server.v1_11_R1.BlockPosition;
+import net.minecraft.server.v1_11_R1.MinecraftKey;
+import net.minecraft.server.v1_11_R1.SoundEffect;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,8 +19,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.v1_10_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_10_R1.block.CraftBlock;
+import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_11_R1.block.CraftBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.material.Lever;
 
@@ -334,7 +335,7 @@ public final class CircuitManager{
                 {
                     CraftBlock cbBlock = (CraftBlock) block;
                     BlockState cbState = cbBlock.getState();
-                    net.minecraft.server.v1_10_R1.WorldServer w = ((CraftWorld) block.getWorld()).getHandle();
+                    net.minecraft.server.v1_11_R1.WorldServer w = ((CraftWorld) block.getWorld()).getHandle();
 
 
                     Location l = block.getLocation();
@@ -349,33 +350,35 @@ public final class CircuitManager{
                     int j1 = blockData & 7;
                     int k1 = 8 - (blockData & 8);
 
-                    net.minecraft.server.v1_10_R1.Block netBlock =  w.getType(bp).getBlock();
+                    net.minecraft.server.v1_11_R1.Block netBlock =  w.getType(bp).getBlock();
 
                     w.setTypeAndData(bp,netBlock.fromLegacyData(j1 + k1),3);
 
+                    w.a(new BlockPosition((double) blockX + 0.5D, (double) blockY + 0.5D, (double) blockZ + 0.5D), new SoundEffect(new MinecraftKey("random.click")));
                     //w.makeSound((double) blockX + 0.5D, (double) blockY + 0.5D, (double) blockZ + 0.5D, "random.click", 0.3F, k1 > 0 ? 0.6F : 0.5F);
 
-                    w.applyPhysics(bp, netBlock);
+                    w.applyPhysics(bp, netBlock, false);
 
                     if (j1 == 1) {
-                        w.applyPhysics(new BlockPosition(blockX - 1, blockY, blockZ), netBlock);
+                        w.applyPhysics(new BlockPosition(blockX - 1, blockY, blockZ), netBlock, false);
                     }
                     else if (j1 == 2) {
-                        w.applyPhysics(new BlockPosition(blockX + 1, blockY, blockZ), netBlock);
+                        w.applyPhysics(new BlockPosition(blockX + 1, blockY, blockZ), netBlock, false);
                     }
                     else if (j1 == 3) {
-                        w.applyPhysics(new BlockPosition(blockX, blockY, blockZ - 1), netBlock);
+                        w.applyPhysics(new BlockPosition(blockX, blockY, blockZ - 1), netBlock, false);
+                        new BlockPosition(blockX,blockY,blockZ);
                     }
                     else if (j1 == 4) {
-                        w.applyPhysics(new BlockPosition(blockX, blockY, blockZ + 1), netBlock);
+                        w.applyPhysics(new BlockPosition(blockX, blockY, blockZ + 1), netBlock, false);
                     }
                     else if (j1 != 5 && j1 != 6) {
                         if(j1 == 0 || j1 == 7) {
-                            w.applyPhysics(new BlockPosition(blockX, blockY + 1, blockZ), netBlock);
+                            w.applyPhysics(new BlockPosition(blockX, blockY + 1, blockZ), netBlock, false);
                         }
                     }
                     else {
-                        w.applyPhysics(new BlockPosition(blockX, blockY - 1, blockZ), netBlock);
+                        w.applyPhysics(new BlockPosition(blockX, blockY - 1, blockZ), netBlock, false);
                     }
                 }
             }
@@ -461,7 +464,7 @@ public final class CircuitManager{
             if (powerOn) {
                 keepAlives.add(block);
 
-                net.minecraft.server.v1_10_R1.World w = ((CraftWorld) block.getWorld()).getHandle();
+                net.minecraft.server.v1_11_R1.World w = ((CraftWorld) block.getWorld()).getHandle();
 
                 try {
                     setStaticStatus(w, true);
@@ -478,8 +481,8 @@ public final class CircuitManager{
         }
     }
 
-    private static void setStaticStatus(net.minecraft.server.v1_10_R1.World w, boolean isStatic) throws NoSuchFieldException, IllegalAccessException {
-        java.lang.reflect.Field field = net.minecraft.server.v1_10_R1.World.class.getDeclaredField("isClientSide");
+    private static void setStaticStatus(net.minecraft.server.v1_11_R1.World w, boolean isStatic) throws NoSuchFieldException, IllegalAccessException {
+        java.lang.reflect.Field field = net.minecraft.server.v1_11_R1.World.class.getDeclaredField("isClientSide");
 
 
         field.setAccessible(true);
