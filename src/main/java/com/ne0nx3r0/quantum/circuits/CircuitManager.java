@@ -21,11 +21,11 @@ import java.util.logging.Logger;
 
 public final class CircuitManager {
     // Temporary Holders for circuit creation
-    public Map<String, PendingCircuit> pendingCircuits;
+    private Map<String, PendingCircuit> pendingCircuits;
     // keepAlives - lamps/torches/etc that should stay powered regardless of redstone events
-    public ArrayList<Block> keepAlives;
+    private ArrayList<Block> keepAlives;
     // Allow circuitTypes/circuits
-    public Map<String, Integer> circuitTypes = new HashMap<String, Integer>();
+    private Map<String, Integer> circuitTypes = new HashMap<String, Integer>();
     private QuantumConnectors plugin;
     private QSWorld qsWorld;
     // Lookup/Storage for circuits, and subsequently their receivers
@@ -109,7 +109,7 @@ public final class CircuitManager {
         }
 
         //Create a holder for pending circuits
-        pendingCircuits = new HashMap<>();
+        this.pendingCircuits = new HashMap<>();
 
         //Convert circuits.yml to new structure
         if (new File(plugin.getDataFolder(), "circuits.yml").exists()) {
@@ -208,9 +208,9 @@ public final class CircuitManager {
             Receiver r;
             for (int i = 0; i < receivers.size(); i++) {
                 r = (Receiver) receivers.get(i);
-                iType = r.type;
-                iDelay = r.delay;
-                Block b = r.location.getBlock();
+                iType = r.getType();
+                iDelay = r.getDelay();
+                Block b = r.getLocation().getBlock();
 
                 if (isValidReceiver(b)) {
                     if (iType == CircuitTypes.QUANTUM.getId()) {
@@ -245,7 +245,7 @@ public final class CircuitManager {
                         chain++;
                     }
                     if (chain <= QuantumConnectors.MAX_CHAIN_LINKS && circuitExists(b.getLocation())) {
-                        activateCircuit(r.location, getBlockCurrent(b), chain);
+                        activateCircuit(r.getLocation(), getBlockCurrent(b), chain);
                     }
                 } else {
                     circuit.delReceiver(r);
@@ -575,12 +575,12 @@ public final class CircuitManager {
 
                     tempReceiverObj = new HashMap<String, Object>();
 
-                    tempReceiverObj.put("z", r.location.getBlockZ());
-                    tempReceiverObj.put("y", r.location.getBlockY());
-                    tempReceiverObj.put("x", r.location.getBlockX());
+                    tempReceiverObj.put("z", r.getLocation().getBlockZ());
+                    tempReceiverObj.put("y", r.getLocation().getBlockY());
+                    tempReceiverObj.put("x", r.getLocation().getBlockX());
 
-                    tempReceiverObj.put("d", r.delay);
-                    tempReceiverObj.put("t", r.type);
+                    tempReceiverObj.put("d", r.getDelay());
+                    tempReceiverObj.put("t", r.getType());
 
                     tempReceiverObjs.add(tempReceiverObj);
                 }

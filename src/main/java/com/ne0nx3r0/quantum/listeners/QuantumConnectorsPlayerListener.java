@@ -161,29 +161,7 @@ public class QuantumConnectorsPlayerListener implements Listener {
                 circuitManager.activateCircuit(lChest, 5, 0);
             }
         } else if (ih instanceof DoubleChest) {
-            DoubleChest dc = (DoubleChest) ih;
-
-            Location lLeft = null;
-            try {
-                lLeft = ((Chest) dc.getLeftSide()).getLocation();
-            } catch (NullPointerException npe) {
-            }
-
-            if (lLeft != null && circuitManager.circuitExists(lLeft)) {
-                // send off
-                circuitManager.activateCircuit(lLeft, 0, 5);
-            }
-
-            Location lRight = null;
-            try {
-                lRight = ((Chest) dc.getRightSide()).getLocation();
-            } catch (NullPointerException npe) {
-            }
-
-            if (lRight != null && circuitManager.circuitExists(lRight)) {
-                // send off
-                circuitManager.activateCircuit(lRight, 0, 5);
-            }
+            activeDoubleChest((DoubleChest) ih);
         }
     }
 
@@ -204,29 +182,7 @@ public class QuantumConnectorsPlayerListener implements Listener {
                 circuitManager.activateCircuit(lChest, 0, 5);
             }
         } else if (ih instanceof DoubleChest) {
-            DoubleChest dc = (DoubleChest) ih;
-
-            Location lLeft = null;
-            try {
-                lLeft = ((Chest) dc.getLeftSide()).getLocation();
-            } catch (NullPointerException npe) {
-            }
-
-            if (lLeft != null && circuitManager.circuitExists(lLeft)) {
-                // send off
-                circuitManager.activateCircuit(lLeft, 0, 5);
-            }
-
-            Location lRight = null;
-            try {
-                lRight = ((Chest) dc.getRightSide()).getLocation();
-            } catch (NullPointerException npe) {
-            }
-
-            if (lRight != null && circuitManager.circuitExists(lRight)) {
-                // send off
-                circuitManager.activateCircuit(lRight, 0, 5);
-            }
+            activeDoubleChest((DoubleChest) ih);
         }
     }
 
@@ -262,4 +218,30 @@ public class QuantumConnectorsPlayerListener implements Listener {
             return b.getRelative(bed.getFacing()).getLocation();
         }
     }
+
+    private void activeDoubleChest(DoubleChest dc) {
+
+        Location lLeft = null;
+        try {
+            lLeft = ((Chest) dc.getLeftSide()).getLocation();
+        } catch (NullPointerException npe) {
+        }
+
+        if (lLeft != null && circuitManager.circuitExists(lLeft)) {
+            // send off
+            circuitManager.activateCircuit(lLeft, 0, 5);
+        }
+
+        Location lRight = null;
+        try {
+            lRight = ((Chest) dc.getRightSide()).getLocation();
+        } catch (NullPointerException npe) {
+        }
+
+        if (lRight != null && circuitManager.circuitExists(lRight)) {
+            // send off
+            circuitManager.activateCircuit(lRight, 0, 5);
+        }
+    }
+
 }
