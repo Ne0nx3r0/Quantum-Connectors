@@ -13,9 +13,11 @@ import org.bukkit.entity.Player;
 
 public class QuantumConnectorsCommandExecutor implements CommandExecutor {
     private QuantumConnectors plugin;
-    
-    public QuantumConnectorsCommandExecutor(QuantumConnectors plugin){
+    private CircuitManager circuitManager;
+
+    public QuantumConnectorsCommandExecutor(QuantumConnectors plugin, CircuitManager circuitManager) {
         this.plugin = plugin;
+        this.circuitManager = circuitManager;
     }
     
     @Override
@@ -38,8 +40,8 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
         if(args.length == 0 || args[0].equalsIgnoreCase("?")){    
             plugin.msg(player, plugin.getMessage("usage"));
 
-            String s = "";	  	
-            for(String sKey : CircuitManager.getValidCircuitTypes().keySet()) {
+            String s = "";
+            for (String sKey : circuitManager.getValidCircuitTypes().keySet()) {
                 s += sKey + ", ";
             }
 
@@ -49,9 +51,9 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
         else if(args[0].equalsIgnoreCase("cancel") || args[0].equalsIgnoreCase("c")){
         
         //Pending circuit exists
-            if(CircuitManager.hasPendingCircuit(player)){
-                
-                CircuitManager.removePendingCircuit(player);
+            if (circuitManager.hasPendingCircuit(player)) {
+
+                circuitManager.removePendingCircuit(player);
                 
                 plugin.msg(player, plugin.getMessage("cancelled"));
             }
@@ -65,13 +67,13 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
         else if(args[0].equalsIgnoreCase("done")){
         
         //They typed "/qc <circuit>"
-            if(CircuitManager.hasPendingCircuit(player)){
-                PendingCircuit pc = CircuitManager.getPendingCircuit(player);
+            if (circuitManager.hasPendingCircuit(player)) {
+                PendingCircuit pc = circuitManager.getPendingCircuit(player);
             //They also setup a sender
                 if(pc.hasSenderLocation()){
                 //Finally, they also setup at least one receiver
                     if(pc.hasReceiver()){
-                        CircuitManager.addCircuit(pc); 
+                        circuitManager.addCircuit(pc);
                         
                     // I hate doors, I hate all the wooden doors.
                     // I just want to break them all, but I can't
@@ -88,10 +90,10 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
 
                             //TODO: Clone instead of reference the circuit?
                             //TODO: On break check if the circuit has a twin
-                            CircuitManager.addCircuit(bOtherPiece.getLocation(),pc.getCircuit());
+                            circuitManager.addCircuit(bOtherPiece.getLocation(), pc.getCircuit());
                         }
-                        
-                        CircuitManager.removePendingCircuit(player);
+
+                        circuitManager.removePendingCircuit(player);
 
                         plugin.msg(player, plugin.getMessage("circuit_created"));
                     }
@@ -110,7 +112,7 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
         }
         
 // Command was: "/qc <valid circuit type>"
-        else if(CircuitManager.isValidCircuitType(args[0])){
+        else if (circuitManager.isValidCircuitType(args[0])) {
             
         //Player has permission to create the circuit
             if(player.hasPermission("QuantumConnectors.create."+args[0])){
@@ -139,20 +141,20 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
                 sDelayMsg = " ";
                 
                 int iDelayTicks = (int) Math.round(dDelay*20);
-                
-                if(!CircuitManager.hasPendingCircuit(player)){
-                    CircuitManager.addPendingCircuit(
+
+                if (!circuitManager.hasPendingCircuit(player)) {
+                    circuitManager.addPendingCircuit(
                             player,
-                            CircuitManager.getCircuitType(args[0]),
+                            circuitManager.getCircuitType(args[0]),
                             iDelayTicks);
                     
                     plugin.msg(player,plugin.getMessage("circuit_ready")
                             .replace("%circuit%",args[0].toUpperCase())
                             .replace("%delay%",new Double(dDelay).toString()));
                 }
-                else{       
-                    CircuitManager.getPendingCircuit(player).setCircuitType(
-                            CircuitManager.getCircuitType(args[0]),
+                else{
+                    circuitManager.getPendingCircuit(player).setCircuitType(
+                            circuitManager.getCircuitType(args[0]),
                             iDelayTicks);
                     
                     plugin.msg(player, plugin.getMessage("circuit_changed")

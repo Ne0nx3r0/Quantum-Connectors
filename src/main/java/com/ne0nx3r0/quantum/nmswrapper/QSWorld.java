@@ -1,30 +1,32 @@
 package com.ne0nx3r0.quantum.nmswrapper;
 
-import net.minecraft.server.v1_11_R1.World;
-import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
+import org.bukkit.World;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Created by ysl3000 on 09.12.16.
  */
 public class QSWorld {
 
-    private World nmsWorld;
 
-    public QSWorld(org.bukkit.World world){
-        nmsWorld = ((CraftWorld) world).getHandle();
+    private ClassRegistry classRegistry;
+
+    public QSWorld(ClassRegistry classRegistry) {
+        this.classRegistry = classRegistry;
     }
 
 
-    public void setStatic(boolean isStatic){
-
-        java.lang.reflect.Field field = null;
+    public void setStatic(World world, boolean isStatic) {
         try {
-            field = World.class.getDeclaredField("isClientSide");
+            Object nmsWorld = classRegistry.getNmsWorldField().invoke(world);
+            Field field = classRegistry.getIsClientSide();
             field.setAccessible(true);
             field.set(nmsWorld, isStatic);
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
         } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
             e.printStackTrace();
         }
     }

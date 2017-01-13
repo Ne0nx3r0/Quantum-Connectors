@@ -3,11 +3,11 @@ package com.ne0nx3r0.quantum.circuits;
 import org.bukkit.Location;
 
 public class Receiver{
-    public Location location;
-    public int type;
-    public int delay = 0;
-    public int blockMaterial = -1;
-    public byte blockData = -1;
+    private Location location;
+    private int type;
+    private int delay = 0;
+    private int blockMaterial = -1;
+    private byte blockData = -1;
     
     public Receiver(Location location,int type,int delay,int material,byte data){
         this.location = location;
@@ -26,5 +26,25 @@ public class Receiver{
     public Receiver(Location location,int type){
         this.location = location;
         this.type = type;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public int getDelay() {
+        return delay;
+    }
+
+    public int getBlockMaterial() {
+        return blockMaterial;
+    }
+
+    public byte getBlockData() {
+        return blockData;
     }
 }

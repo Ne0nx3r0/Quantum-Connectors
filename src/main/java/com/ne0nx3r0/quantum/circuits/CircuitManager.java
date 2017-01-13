@@ -21,15 +21,16 @@ import java.util.logging.Logger;
 
 public final class CircuitManager {
     // Temporary Holders for circuit creation
-    public static Map<String, PendingCircuit> pendingCircuits;
+    private Map<String, PendingCircuit> pendingCircuits;
     // keepAlives - lamps/torches/etc that should stay powered regardless of redstone events
-    public static ArrayList<Block> keepAlives;
+    private ArrayList<Block> keepAlives;
     // Allow circuitTypes/circuits
-    public static Map<String, Integer> circuitTypes = new HashMap<String, Integer>();
-    private static QuantumConnectors plugin;
+    private Map<String, Integer> circuitTypes = new HashMap<String, Integer>();
+    private QuantumConnectors plugin;
+    private QSWorld qsWorld;
     // Lookup/Storage for circuits, and subsequently their receivers
-    private static Map<World, Map<Location, Circuit>> worlds = new HashMap<World, Map<Location, Circuit>>();
-    private static Material[] validSenders = new Material[]{
+    private Map<World, Map<Location, Circuit>> worlds = new HashMap<World, Map<Location, Circuit>>();
+    private Material[] validSenders = new Material[]{
             Material.LEVER,
             Material.REDSTONE_WIRE,
             Material.STONE_BUTTON,
@@ -71,7 +72,7 @@ public final class CircuitManager {
             //Material.PISTON_BASE,
             //Material.PISTON_STICKY_BASE,//TODO: Pistons as senders
     };
-    private static Material[] validReceivers = new Material[]{
+    private Material[] validReceivers = new Material[]{
             Material.LEVER,
             Material.IRON_DOOR_BLOCK,
             Material.WOODEN_DOOR,
@@ -97,9 +98,10 @@ public final class CircuitManager {
     };
 
     // Main
-    public CircuitManager(final QuantumConnectors qc) {
-        CircuitManager.plugin = qc;
-        CircuitManager.keepAlives = new ArrayList<Block>();
+    public CircuitManager(final QuantumConnectors qc, QSWorld qsWorld) {
+        this.plugin = qc;
+        this.qsWorld = qsWorld;
+        this.keepAlives = new ArrayList<>();
 
         //Setup available circuit types
         for (CircuitTypes t : CircuitTypes.values()) {
@@ -107,7 +109,7 @@ public final class CircuitManager {
         }
 
         //Create a holder for pending circuits
-        pendingCircuits = new HashMap<String, PendingCircuit>();
+        this.pendingCircuits = new HashMap<>();
 
         //Convert circuits.yml to new structure
         if (new File(plugin.getDataFolder(), "circuits.yml").exists()) {
@@ -120,7 +122,7 @@ public final class CircuitManager {
         }
     }
 
-    public static boolean isValidReceiver(Block block) {
+    public boolean isValidReceiver(Block block) {
         Material mBlock = block.getType();
         for (int i = 0; i < validReceivers.length; i++) {
             if (mBlock == validReceivers[i]) {
@@ -132,7 +134,7 @@ public final class CircuitManager {
     }
 
     // Sender/Receiver checks
-    public static boolean isValidSender(Block block) {
+    public boolean isValidSender(Block block) {
         Material mBlock = block.getType();
         for (int i = 0; i < validSenders.length; i++) {
             if (mBlock == validSenders[i]) {
@@ -143,11 +145,11 @@ public final class CircuitManager {
         return false;
     }
 
-    public static boolean shouldLeaveReceiverOn(Block block) {
+    public boolean shouldLeaveReceiverOn(Block block) {
         return keepAlives.contains(block);
     }
 
-    public static String getValidSendersString() {
+    public String getValidSendersString() {
         String msg = "";
         for (int i = 0; i < validSenders.length; i++) {
             msg += (i != 0 ? ", " : "") + validSenders[i].name().toLowerCase().replace("_", " ");
@@ -156,7 +158,7 @@ public final class CircuitManager {
         return msg;
     }
 
-    public static String getValidReceiversString() {
+    public String getValidReceiversString() {
         String msg = "";
         for (int i = 0; i < validReceivers.length; i++) {
             msg += (i != 0 ? ", " : "") + validReceivers[i].name().toLowerCase().replace("_", " ");
@@ -166,36 +168,36 @@ public final class CircuitManager {
     }
 
     // Circuit (sender) CRUD
-    public static void addCircuit(Location circuitLocation, Circuit newCircuit) {
+    public void addCircuit(Location circuitLocation, Circuit newCircuit) {
         //Notably circuits are now created from a temporary copy, rather than piecemeal here.
         worlds.get(circuitLocation.getWorld()).put(circuitLocation, newCircuit);
     }
 
-    public static void addCircuit(PendingCircuit pc) {
+    public void addCircuit(PendingCircuit pc) {
         worlds.get(pc.getSenderLocation().getWorld())
                 .put(pc.getSenderLocation(), pc.getCircuit());
     }
 
-    public static Circuit getCircuit(Location circuitLocation) {
+    public Circuit getCircuit(Location circuitLocation) {
         return worlds.get(circuitLocation.getWorld()).get(circuitLocation);
     }
 
-    public static void removeCircuit(Location circuitLocation) {
+    public void removeCircuit(Location circuitLocation) {
         if (circuitExists(circuitLocation)) {
             worlds.get(circuitLocation.getWorld()).remove(circuitLocation);
         }
     }
 
-    public static boolean circuitExists(Location circuitLocation) {
+    public boolean circuitExists(Location circuitLocation) {
         return worlds.get(circuitLocation.getWorld()).containsKey(circuitLocation);
     }
 
     // Circuit activation
-    public static void activateCircuit(Location lSender, int oldCurrent, int newCurrent) {
+    public void activateCircuit(Location lSender, int oldCurrent, int newCurrent) {
         activateCircuit(lSender, oldCurrent, newCurrent, 0);
     }
 
-    public static void activateCircuit(Location lSender, int oldCurrent, int newCurrent, int chain) {
+    public void activateCircuit(Location lSender, int oldCurrent, int newCurrent, int chain) {
         Circuit circuit = getCircuit(lSender);
         List receivers = circuit.getReceivers();
 
@@ -206,9 +208,9 @@ public final class CircuitManager {
             Receiver r;
             for (int i = 0; i < receivers.size(); i++) {
                 r = (Receiver) receivers.get(i);
-                iType = r.type;
-                iDelay = r.delay;
-                Block b = r.location.getBlock();
+                iType = r.getType();
+                iDelay = r.getDelay();
+                Block b = r.getLocation().getBlock();
 
                 if (isValidReceiver(b)) {
                     if (iType == CircuitTypes.QUANTUM.getId()) {
@@ -243,7 +245,7 @@ public final class CircuitManager {
                         chain++;
                     }
                     if (chain <= QuantumConnectors.MAX_CHAIN_LINKS && circuitExists(b.getLocation())) {
-                        activateCircuit(r.location, getBlockCurrent(b), chain);
+                        activateCircuit(r.getLocation(), getBlockCurrent(b), chain);
                     }
                 } else {
                     circuit.delReceiver(r);
@@ -252,7 +254,7 @@ public final class CircuitManager {
         }
     }
 
-    public static int getBlockCurrent(Block b) {
+    public int getBlockCurrent(Block b) {
         Material mBlock = b.getType();
         MaterialData md = b.getState().getData();
         if (md instanceof Redstone) {
@@ -267,7 +269,7 @@ public final class CircuitManager {
         return b.getBlockPower();
     }
 
-    private static void setReceiver(Block block, boolean on, int iDelay) {
+    private void setReceiver(Block block, boolean on, int iDelay) {
         if (iDelay == 0) {
             setReceiver(block, on);
         } else {
@@ -278,7 +280,7 @@ public final class CircuitManager {
         }
     }
 
-    private static void setReceiver(Block block, boolean powerOn) {
+    private void setReceiver(Block block, boolean powerOn) {
         Material mBlock = block.getType();
 
         BlockState state = block.getState();
@@ -313,18 +315,16 @@ public final class CircuitManager {
         } else if (mBlock == Material.REDSTONE_LAMP_OFF) {
             if (powerOn) {
                 keepAlives.add(block);
-
-                QSWorld w = new QSWorld(block.getWorld());
-                w.setStatic(true);
+                this.qsWorld.setStatic(state.getWorld(), true);
                 block.setType(Material.REDSTONE_LAMP_ON);
-                w.setStatic(false);
+                this.qsWorld.setStatic(state.getWorld(), false);
             }
         }
     }
 
     // Temporary circuit stuff
 // I really don't know what order this deserves among the existing class methods
-    public static PendingCircuit addPendingCircuit(Player player, int type, int delay) {
+    public PendingCircuit addPendingCircuit(Player player, int type, int delay) {
         PendingCircuit pc = new PendingCircuit(player.getName(), type, delay);
 
         pendingCircuits.put(player.getName(), pc);
@@ -332,28 +332,28 @@ public final class CircuitManager {
         return pc;
     }
 
-    public static PendingCircuit getPendingCircuit(Player player) {
+    public PendingCircuit getPendingCircuit(Player player) {
         return pendingCircuits.get(player.getName());
     }
 
-    public static boolean hasPendingCircuit(Player player) {
+    public boolean hasPendingCircuit(Player player) {
         return pendingCircuits.containsKey(player.getName());
     }
 
-    public static void removePendingCircuit(Player player) {
+    public void removePendingCircuit(Player player) {
         pendingCircuits.remove(player.getName());
     }
 
     //Circuit Types
-    public static boolean isValidCircuitType(String type) {
+    public boolean isValidCircuitType(String type) {
         return circuitTypes.containsKey(type);
     }
 
-    public static int getCircuitType(String sType) {
+    public int getCircuitType(String sType) {
         return circuitTypes.get(sType);
     }
 
-    public static Map<String, Integer> getValidCircuitTypes() {
+    public Map<String, Integer> getValidCircuitTypes() {
         return circuitTypes;
     }
 
@@ -473,7 +473,7 @@ public final class CircuitManager {
                         (Integer) tempReceiverObj.get("y"),
                         (Integer) tempReceiverObj.get("z"));
 
-                if (CircuitManager.isValidReceiver(tempReceiverLoc.getBlock())) {
+                if (isValidReceiver(tempReceiverLoc.getBlock())) {
                     tempCircuit.addReceiver(
                             tempReceiverLoc,
                             (Integer) tempReceiverObj.get("t"),
@@ -498,7 +498,7 @@ public final class CircuitManager {
                         (Integer) tempCircuitObj.get("z"));
 
                 //Verify the sender is a valid type
-                if (CircuitManager.isValidSender(tempCircuitObjLoc.getBlock())) {
+                if (isValidSender(tempCircuitObjLoc.getBlock())) {
                     worldCircuits.put(tempCircuitObjLoc, tempCircuit);
                 }
                 //Invalid sender type
@@ -575,12 +575,12 @@ public final class CircuitManager {
 
                     tempReceiverObj = new HashMap<String, Object>();
 
-                    tempReceiverObj.put("z", r.location.getBlockZ());
-                    tempReceiverObj.put("y", r.location.getBlockY());
-                    tempReceiverObj.put("x", r.location.getBlockX());
+                    tempReceiverObj.put("z", r.getLocation().getBlockZ());
+                    tempReceiverObj.put("y", r.getLocation().getBlockY());
+                    tempReceiverObj.put("x", r.getLocation().getBlockX());
 
-                    tempReceiverObj.put("d", r.delay);
-                    tempReceiverObj.put("t", r.type);
+                    tempReceiverObj.put("d", r.getDelay());
+                    tempReceiverObj.put("t", r.getType());
 
                     tempReceiverObjs.add(tempReceiverObj);
                 }
@@ -610,7 +610,7 @@ public final class CircuitManager {
         return worlds.get(w).keySet();
     }
 
-    private static class DelayedSetReceiver implements Runnable {
+    private class DelayedSetReceiver implements Runnable {
         private final Block block;
         private final boolean on;
 

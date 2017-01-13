@@ -16,22 +16,24 @@ import org.bukkit.event.inventory.FurnaceBurnEvent;
 public class QuantumConnectorsBlockListener implements Listener
 {
     public static String string;
-    private static QuantumConnectors plugin;
+    private QuantumConnectors plugin;
+    private CircuitManager circuitManager;
 
-    public QuantumConnectorsBlockListener(final QuantumConnectors plugin)
+    public QuantumConnectorsBlockListener(final QuantumConnectors plugin, CircuitManager circuitManager)
     {
-        QuantumConnectorsBlockListener.plugin = plugin;
+        this.plugin = plugin;
+        this.circuitManager = circuitManager;
     }
 
     @EventHandler(priority = EventPriority.LOW)
     public void onBlockRedstoneChange(BlockRedstoneEvent e)
     {
-        if (CircuitManager.circuitExists(e.getBlock().getLocation()))
+        if (circuitManager.circuitExists(e.getBlock().getLocation()))
         {
-            CircuitManager.activateCircuit(e.getBlock().getLocation(), e.getOldCurrent(), e.getNewCurrent());
+            circuitManager.activateCircuit(e.getBlock().getLocation(), e.getOldCurrent(), e.getNewCurrent());
         }
 
-        if(CircuitManager.shouldLeaveReceiverOn(e.getBlock())){
+        if (circuitManager.shouldLeaveReceiverOn(e.getBlock())) {
             e.setNewCurrent(15);
         }
     }
@@ -40,20 +42,20 @@ public class QuantumConnectorsBlockListener implements Listener
     public void onBlockBreak(BlockBreakEvent event)
     {
         Location l = event.getBlock().getLocation();
-        if (CircuitManager.circuitExists(l)) { // Breaking Sender
-            CircuitManager.removeCircuit(l);
+        if (circuitManager.circuitExists(l)) { // Breaking Sender
+            circuitManager.removeCircuit(l);
         }
     }
     
     @EventHandler(priority = EventPriority.NORMAL)
     public void onFuranceBurn(FurnaceBurnEvent e)
-    {        
-        if(CircuitManager.circuitExists(e.getBlock().getLocation())){          
+    {
+        if (circuitManager.circuitExists(e.getBlock().getLocation())) {
             if(e.isBurning()){
                 Location lFurnace = e.getBlock().getLocation();
                 
                 //SEND ON
-                CircuitManager.activateCircuit(lFurnace, 0, 1);
+                circuitManager.activateCircuit(lFurnace, 0, 1);
                 
                 //Schedule a check to send the corresponding OFF
                 Bukkit.getScheduler().scheduleSyncDelayedTask(
@@ -64,8 +66,8 @@ public class QuantumConnectorsBlockListener implements Listener
             }
         }
     }
-    
-    private static class DelayedFurnaceCoolCheck implements Runnable
+
+    private class DelayedFurnaceCoolCheck implements Runnable
     {
         private final Location lFurnace;
 
@@ -84,9 +86,9 @@ public class QuantumConnectorsBlockListener implements Listener
             if(bFurnace.getType() == Material.FURNACE)
             {
                 //Send OFF
-                if(CircuitManager.circuitExists(lFurnace))
+                if (circuitManager.circuitExists(lFurnace))
                 {
-                    CircuitManager.activateCircuit(lFurnace, 1, 0);
+                    circuitManager.activateCircuit(lFurnace, 1, 0);
                 }
             }
         }
@@ -100,9 +102,9 @@ public class QuantumConnectorsBlockListener implements Listener
             Location l = e.getEntity().getLocation();
 
             if(l.getBlock().getType() == Material.WOOD_BUTTON
-            && CircuitManager.circuitExists(l))
+            && circuitManager.circuitExists(l))
             {
-                CircuitManager.
+                circuitManager.
             }
         }
     }*/
