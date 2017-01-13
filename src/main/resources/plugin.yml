@@ -1,6 +1,6 @@
 name: QuantumConnectors
 main: com.ne0nx3r0.quantum.QuantumConnectors
-version: '1.10.2'
+version: '1.10.2+'
 database: false
 startup: postworld
 description: Wireless redstone connections
