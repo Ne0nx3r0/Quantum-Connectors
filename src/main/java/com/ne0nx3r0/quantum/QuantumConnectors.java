@@ -4,6 +4,13 @@ import com.ne0nx3r0.quantum.circuits.CircuitManager;
 import com.ne0nx3r0.quantum.listeners.QuantumConnectorsBlockListener;
 import com.ne0nx3r0.quantum.listeners.QuantumConnectorsPlayerListener;
 import com.ne0nx3r0.quantum.listeners.QuantumConnectorsWorldListener;
+import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -12,36 +19,25 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class QuantumConnectors extends JavaPlugin{    
 
-// Register events
-    private final QuantumConnectorsPlayerListener playerListener = new QuantumConnectorsPlayerListener(this);
-    private final QuantumConnectorsBlockListener blockListener = new QuantumConnectorsBlockListener(this);
-    private final QuantumConnectorsWorldListener worldListener = new QuantumConnectorsWorldListener(this);
-
 // Circuit Manager
     public static CircuitManager circuitManager;
-    
 // Configurables
     public static int MAX_CHAIN_LINKS = 3;
     public static int MAX_DELAY_TIME = 10;//in seconds
     public static int MAX_RECEIVERS_PER_CIRCUIT = 20;
     public static boolean VERBOSE_LOGGING = false;
-    private boolean UPDATE_NOTIFICATIONS = false;
-
     private static int AUTOSAVE_INTERVAL = 30;//specified here in minutes
     private static int AUTO_SAVE_ID = -1;
-    
 // Localized Messages
     private static Map<String,String> messages;
-    
+    // Register events
+    private final QuantumConnectorsPlayerListener playerListener = new QuantumConnectorsPlayerListener(this);
+    private final QuantumConnectorsBlockListener blockListener = new QuantumConnectorsBlockListener(this);
+    private final QuantumConnectorsWorldListener worldListener = new QuantumConnectorsWorldListener(this);
+    private boolean UPDATE_NOTIFICATIONS = false;
 // Updater
     private boolean updateAvailable = false;
     private String updateName;
@@ -50,6 +46,13 @@ public class QuantumConnectors extends JavaPlugin{
     private String apiVersion;
     private String apiSupportedVersion = "v1_6_R2";
     private boolean outdated = false;
+    //Scheduled save mechanism
+    private Runnable autosaveCircuits = new Runnable() {
+        @Override
+        public void run() {
+            circuitManager.saveAllWorlds();
+        }
+    };
     
     @Override
     public void onDisable()
@@ -74,7 +77,7 @@ public class QuantumConnectors extends JavaPlugin{
         circuitManager = new CircuitManager(this);
 
     //Register qc command
-        getCommand("qc").setExecutor(new QuantumConnectorsCommandExecutor(this));   
+        getCommand("qc").setExecutor(new QuantumConnectorsCommandExecutor(this));
 
     //Register listeners
         PluginManager pm = getServer().getPluginManager();
@@ -91,11 +94,11 @@ public class QuantumConnectors extends JavaPlugin{
             autosaveCircuits,
             AUTOSAVE_INTERVAL,
             AUTOSAVE_INTERVAL);
-        
+
         String packageName = getServer().getClass().getPackage().getName();
         this.apiVersion = packageName.substring(packageName.lastIndexOf('.') + 1);
-    }	
-    
+    }
+
     public void msg(Player player, String sMessage) {
         player.sendMessage(ChatColor.LIGHT_PURPLE + "[QC] " + ChatColor.WHITE + sMessage);
     }
@@ -105,9 +108,11 @@ public class QuantumConnectors extends JavaPlugin{
         if(!sMessage.equals(""))
             getLogger().log(level,sMessage);
     }
+
     public void log(String sMessage){
         log(Level.INFO,sMessage);
     }
+
     public void error(String sMessage){
         log(Level.WARNING,sMessage);
     }
@@ -116,14 +121,6 @@ public class QuantumConnectors extends JavaPlugin{
     public String getMessage(String sMessageName){
         return messages.get(sMessageName);
     }
-    
-    //Scheduled save mechanism
-    private Runnable autosaveCircuits = new Runnable(){
-        @Override
-        public void run() {
-            circuitManager.saveAllWorlds();
-        }
-    };
 
     private void setupConfig(){
         this.reloadConfig();

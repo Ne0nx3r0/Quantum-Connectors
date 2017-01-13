@@ -1,8 +1,9 @@
 package com.ne0nx3r0.quantum.circuits;
 
+import org.bukkit.Location;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.bukkit.Location;
 
 //TODO: Allow naming of circuits
 
@@ -23,16 +24,16 @@ public class Circuit{
         receivers.add(new Receiver(loc,type,delay));
     }
     
-    public void setReceivers(List receivers){
-        this.receivers = receivers;
-    }
-    
     public Receiver getReceiver(int index){
-        return (Receiver) receivers.get(index);
+        return receivers.get(index);
     }
     
     public List<Receiver> getReceivers(){
         return receivers;
+    }
+
+    public void setReceivers(List receivers) {
+        this.receivers = receivers;
     }
     
     public int getReceiversCount(){
@@ -43,11 +44,11 @@ public class Circuit{
         receivers.remove(r);
     }
     
-    public void setOwner(String player){
-        this.playerName = player;
-    }
-    
     public String getOwner(){
         return playerName;
+    }
+
+    public void setOwner(String player) {
+        this.playerName = player;
     }
 }

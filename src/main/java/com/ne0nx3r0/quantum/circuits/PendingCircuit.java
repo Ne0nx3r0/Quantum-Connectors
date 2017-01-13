@@ -19,12 +19,12 @@ public class PendingCircuit{
         currentDelay = delay;
     }
     
-    public void setSenderLocation(Location loc){
-        senderLocation = loc;
-    }
-    
     public Location getSenderLocation(){
         return senderLocation;
+    }
+
+    public void setSenderLocation(Location loc) {
+        senderLocation = loc;
     }
     
     public boolean hasSenderLocation(){

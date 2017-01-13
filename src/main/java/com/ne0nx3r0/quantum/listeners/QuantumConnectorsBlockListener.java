@@ -15,8 +15,8 @@ import org.bukkit.event.inventory.FurnaceBurnEvent;
 
 public class QuantumConnectorsBlockListener implements Listener
 {
-    private static QuantumConnectors plugin;
     public static String string;
+    private static QuantumConnectors plugin;
 
     public QuantumConnectorsBlockListener(final QuantumConnectors plugin)
     {
