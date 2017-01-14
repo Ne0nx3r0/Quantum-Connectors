@@ -25,8 +25,6 @@ import java.util.logging.Level;
 
 public class QuantumConnectors extends JavaPlugin {
 
-    // Circuit Manager
-    public static CircuitManager circuitManager;
     // Configurables
     public static int MAX_CHAIN_LINKS = 3;
     public static int MAX_DELAY_TIME = 10;//in seconds
@@ -36,10 +34,12 @@ public class QuantumConnectors extends JavaPlugin {
     private static int AUTO_SAVE_ID = -1;
     // Localized Messages
     private static Map<String, String> messages;
+    private final QuantumConnectorsWorldListener worldListener = new QuantumConnectorsWorldListener(this);
+    // Circuit Manager
+    private CircuitManager circuitManager;
     // Register events
     private final QuantumConnectorsPlayerListener playerListener = new QuantumConnectorsPlayerListener(this, circuitManager);
     private final QuantumConnectorsBlockListener blockListener = new QuantumConnectorsBlockListener(this, circuitManager);
-    private final QuantumConnectorsWorldListener worldListener = new QuantumConnectorsWorldListener(this);
     private boolean UPDATE_NOTIFICATIONS = false;
     // Updater
     private boolean updateAvailable = false;
@@ -53,7 +53,7 @@ public class QuantumConnectors extends JavaPlugin {
     private Runnable autosaveCircuits = new Runnable() {
         @Override
         public void run() {
-            circuitManager.saveAllWorlds();
+            circuitManager.getCircuitLoader().saveAllWorlds();
         }
     };
 
@@ -64,7 +64,7 @@ public class QuantumConnectors extends JavaPlugin {
     @Override
     public void onDisable() {
         if (circuitManager != null) {
-            circuitManager.saveAllWorlds();
+            circuitManager.getCircuitLoader().saveAllWorlds();
         }
     }
 
@@ -79,6 +79,7 @@ public class QuantumConnectors extends JavaPlugin {
 
 
         try {
+            // TODO: 14.01.17 replace with actual version getting
             this.classRegistry = new ClassRegistry(Bukkit.getServer().getBukkitVersion());
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -90,8 +91,9 @@ public class QuantumConnectors extends JavaPlugin {
 
         this.qsWorld = new QSWorld(this.classRegistry);
 
+
         //Create a circuit manager
-        circuitManager = new CircuitManager(this, qsWorld);
+        this.circuitManager = new CircuitManager(this, qsWorld);
 
         //Register qc command
         getCommand("qc").setExecutor(new QuantumConnectorsCommandExecutor(this, circuitManager));
@@ -114,29 +116,6 @@ public class QuantumConnectors extends JavaPlugin {
 
         String packageName = getServer().getClass().getPackage().getName();
         this.apiVersion = packageName.substring(packageName.lastIndexOf('.') + 1);
-    }
-
-    public void msg(Player player, String sMessage) {
-        player.sendMessage(ChatColor.LIGHT_PURPLE + "[QC] " + ChatColor.WHITE + sMessage);
-    }
-
-    //Generic wrappers for console messages
-    public void log(Level level, String sMessage) {
-        if (!sMessage.equals(""))
-            getLogger().log(level, sMessage);
-    }
-
-    public void log(String sMessage) {
-        log(Level.INFO, sMessage);
-    }
-
-    public void error(String sMessage) {
-        log(Level.WARNING, sMessage);
-    }
-
-    //Wrapper for getting localized messages
-    public String getMessage(String sMessageName) {
-        return messages.get(sMessageName);
     }
 
     private void setupConfig() {
@@ -188,6 +167,29 @@ public class QuantumConnectors extends JavaPlugin {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void msg(Player player, String sMessage) {
+        player.sendMessage(ChatColor.LIGHT_PURPLE + "[QC] " + ChatColor.WHITE + sMessage);
+    }
+
+    public void log(String sMessage) {
+        log(Level.INFO, sMessage);
+    }
+
+    //Generic wrappers for console messages
+    public void log(Level level, String sMessage) {
+        if (!sMessage.equals(""))
+            getLogger().log(level, sMessage);
+    }
+
+    public void error(String sMessage) {
+        log(Level.WARNING, sMessage);
+    }
+
+    //Wrapper for getting localized messages
+    public String getMessage(String sMessageName) {
+        return messages.get(sMessageName);
     }
 
     public boolean isUpdateAvailable() {
