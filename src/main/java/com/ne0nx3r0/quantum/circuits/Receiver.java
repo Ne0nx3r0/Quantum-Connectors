@@ -23,18 +23,6 @@ public class Receiver {
         this.type = type;
     }
 
-    public Location getLocation() {
-        return location;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public int getDelay() {
-        return delay;
-    }
-
 
     public void setActive(boolean powerOn) {
 
@@ -59,10 +47,10 @@ public class Receiver {
     }
 
     public int getBlockMaterial() {
-        return blockMaterial;
+        return location.getBlock().getTypeId();
     }
 
     public byte getBlockData() {
-        return blockData;
+        return location.getBlock().getData();
     }
 }
