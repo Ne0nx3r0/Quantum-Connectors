@@ -1,4 +1,4 @@
-package com.ne0nx3r0.quantum;
+package com.ne0nx3r0.quantum.utils;
 
 import org.bukkit.Material;
 

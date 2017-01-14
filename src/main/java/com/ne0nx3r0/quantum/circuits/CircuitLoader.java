@@ -2,6 +2,7 @@ package com.ne0nx3r0.quantum.circuits;
 
 import com.ne0nx3r0.quantum.QuantumConnectors;
 import com.ne0nx3r0.quantum.receiver.ReceiverTypes;
+import com.ne0nx3r0.quantum.utils.MessageLogger;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -23,13 +24,15 @@ public class CircuitLoader {
     private Map<World, Map<Location, Circuit>> worlds;
     private CircuitManager circuitManager;
     private QuantumConnectors plugin;
+    private MessageLogger messageLogger;
 
     private ReceiverTypes receiverTypes;
 
-    public CircuitLoader(QuantumConnectors plugin, Map<World, Map<Location, Circuit>> worlds, CircuitManager circuitManager) {
+    public CircuitLoader(QuantumConnectors plugin, Map<World, Map<Location, Circuit>> worlds, CircuitManager circuitManager, MessageLogger messageLogger) {
         this.plugin = plugin;
         this.worlds = worlds;
         this.circuitManager = circuitManager;
+        this.messageLogger = messageLogger;
     }
 
 
@@ -40,11 +43,11 @@ public class CircuitLoader {
         File ymlFile = new File(plugin.getDataFolder(), world.getName() + ".circuits.yml");
 
         if (QuantumConnectors.VERBOSE_LOGGING)
-            plugin.log(plugin.getMessage("loading").replace("%file%", ymlFile.getName()));
+            messageLogger.log(messageLogger.getMessage("loading").replace("%file%", ymlFile.getName()));
 
         if (!ymlFile.exists()) {
             if (QuantumConnectors.VERBOSE_LOGGING)
-                plugin.error(plugin.getMessage("loading_not_found").replace("%file%", ymlFile.getName()));
+                messageLogger.error(messageLogger.getMessage("loading_not_found").replace("%file%", ymlFile.getName()));
             return;
         }
 
@@ -53,7 +56,7 @@ public class CircuitLoader {
         List<Map<String, Object>> tempCircuits = (List<Map<String, Object>>) yml.get("circuits");
 
         if (tempCircuits == null) {
-            plugin.log(plugin.getMessage("loading_no_circuits").replace("%file%", ymlFile.getName()));
+            messageLogger.log(messageLogger.getMessage("loading_no_circuits").replace("%file%", ymlFile.getName()));
             return;
         }
 
@@ -94,8 +97,8 @@ public class CircuitLoader {
                 }
                 //Invalid receiver block type
                 else {
-                    if (QuantumConnectors.VERBOSE_LOGGING) plugin.log(
-                            plugin.getMessage("receiver_removed")
+                    if (QuantumConnectors.VERBOSE_LOGGING) messageLogger.log(
+                            messageLogger.getMessage("receiver_removed")
                                     .replace("%world%", world.getName())
                                     .replace("%block%", tempReceiverLoc.getBlock().getType().name())
                     );
@@ -117,7 +120,7 @@ public class CircuitLoader {
                 //Invalid sender type
                 else {
                     if (QuantumConnectors.VERBOSE_LOGGING)
-                        plugin.log(plugin.getMessage("circuit_removed_invalid")
+                        messageLogger.log(messageLogger.getMessage("circuit_removed_invalid")
                                 .replace("%world", world.getName())
                                 .replace("%block%", tempCircuitObjLoc.getBlock().getType().name()));
                 }
@@ -125,7 +128,7 @@ public class CircuitLoader {
             // No valid receivers for this circuit
             else {
                 if (QuantumConnectors.VERBOSE_LOGGING)
-                    plugin.log(plugin.getMessage("circuit_removed_no_receivers")
+                    messageLogger.log(messageLogger.getMessage("circuit_removed_no_receivers")
                             .replace("%world%", world.getName()));
             }
         }
@@ -148,13 +151,13 @@ public class CircuitLoader {
                 try {
                     ymlFile.createNewFile();
                 } catch (IOException ex) {
-                    plugin.error("Could not create " + ymlFile.getName());
+                    messageLogger.error("Could not create " + ymlFile.getName());
                 }
             }
             FileConfiguration yml = YamlConfiguration.loadConfiguration(ymlFile);
 
             if (QuantumConnectors.VERBOSE_LOGGING)
-                plugin.log(plugin.getMessage("saving").replace("%file", ymlFile.getName()));
+                messageLogger.log(messageLogger.getMessage("saving").replace("%file", ymlFile.getName()));
 
             //Prep this world's data for saving
             List<Object> tempCircuits = new ArrayList<Object>();
@@ -210,12 +213,12 @@ public class CircuitLoader {
                 yml.save(ymlFile);
 
                 if (QuantumConnectors.VERBOSE_LOGGING)
-                    plugin.log(plugin.getMessage("saved").replace("%file", ymlFile.getName()));
+                    messageLogger.log(messageLogger.getMessage("saved").replace("%file", ymlFile.getName()));
             } catch (IOException IO) {
-                plugin.error(plugin.getMessage("save_failed").replace("%world", world.getName()));
+                messageLogger.error(messageLogger.getMessage("save_failed").replace("%world", world.getName()));
             }
         } else {
-            plugin.error(plugin.getMessage("save_failed").replace("%world", world.getName()));
+            messageLogger.error(messageLogger.getMessage("save_failed").replace("%world", world.getName()));
         }
     }
 

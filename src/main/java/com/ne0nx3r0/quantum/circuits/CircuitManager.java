@@ -2,8 +2,9 @@ package com.ne0nx3r0.quantum.circuits;
 
 import com.ne0nx3r0.quantum.ConfigConverter;
 import com.ne0nx3r0.quantum.QuantumConnectors;
-import com.ne0nx3r0.quantum.ValidMaterials;
 import com.ne0nx3r0.quantum.nmswrapper.QSWorld;
+import com.ne0nx3r0.quantum.utils.MessageLogger;
+import com.ne0nx3r0.quantum.utils.ValidMaterials;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -17,25 +18,27 @@ import java.io.File;
 import java.util.*;
 
 public final class CircuitManager {
+    private MessageLogger messageLogger;
     // Temporary Holders for circuit creation
     private Map<String, PendingCircuit> pendingCircuits;
     // keepAlives - lamps/torches/etc that should stay powered regardless of redstone events
     private ArrayList<Block> keepAlives;
     // Allow circuitTypes/circuits
-    private Map<String, Integer> circuitTypes = new HashMap<String, Integer>();
+    private Map<String, Integer> circuitTypes = new HashMap<>();
     private QuantumConnectors plugin;
     private QSWorld qsWorld;
     // Lookup/Storage for circuits, and subsequently their receivers
-    private Map<World, Map<Location, Circuit>> worlds = new HashMap<World, Map<Location, Circuit>>();
+    private Map<World, Map<Location, Circuit>> worlds = new HashMap<>();
 
 
     private CircuitLoader circuitLoader;
     // Main
-    public CircuitManager(final QuantumConnectors qc, QSWorld qsWorld) {
+    public CircuitManager(MessageLogger messageLogger, final QuantumConnectors qc, QSWorld qsWorld) {
+        this.messageLogger = messageLogger;
         this.plugin = qc;
         this.qsWorld = qsWorld;
         this.keepAlives = new ArrayList<>();
-        this.circuitLoader = new CircuitLoader(qc, worlds, this);
+        this.circuitLoader = new CircuitLoader(qc, worlds, this, messageLogger);
 
         //Setup available circuit types
         for (CircuitTypes t : CircuitTypes.values()) {
@@ -47,7 +50,7 @@ public final class CircuitManager {
 
         //Convert circuits.yml to new structure
         if (new File(plugin.getDataFolder(), "circuits.yml").exists()) {
-            new ConfigConverter(plugin).convertOldCircuitsYml();
+            new ConfigConverter(plugin, this.messageLogger).convertOldCircuitsYml();
         }
 
         //Init any loaded worlds

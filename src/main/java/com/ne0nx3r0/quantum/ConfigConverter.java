@@ -1,6 +1,7 @@
 package com.ne0nx3r0.quantum;
 
 import com.ne0nx3r0.quantum.circuits.CircuitManager;
+import com.ne0nx3r0.quantum.utils.MessageLogger;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -19,9 +20,11 @@ public class ConfigConverter {
 
 
     private QuantumConnectors plugin;
+    private MessageLogger messageLogger;
 
-    public ConfigConverter(QuantumConnectors plugin) {
+    public ConfigConverter(QuantumConnectors plugin, MessageLogger messageLogger) {
         this.plugin = plugin;
+        this.messageLogger = messageLogger;
     }
 
 
@@ -29,7 +32,7 @@ public class ConfigConverter {
     public void convertOldCircuitsYml() {
         File oldYmlFile = new File(plugin.getDataFolder(), "circuits.yml");
         if (oldYmlFile.exists()) {
-            plugin.log(plugin.getMessage("found_old_file").replace("%file%", oldYmlFile.getName()));
+            messageLogger.log(messageLogger.getMessage("found_old_file").replace("%file%", oldYmlFile.getName()));
 
             FileConfiguration oldYml = YamlConfiguration.loadConfiguration(oldYmlFile);
 
@@ -83,7 +86,7 @@ public class ConfigConverter {
                 try {
                     newYml.save(newYmlFile);
                 } catch (IOException ex) {
-                    plugin.error(plugin.getMessage("unable_to_save").replace("%file%", newYmlFile.getName()));
+                    messageLogger.error(messageLogger.getMessage("unable_to_save").replace("%file%", newYmlFile.getName()));
 
                     Logger.getLogger(CircuitManager.class.getName()).log(Level.SEVERE, null, ex);
                 }

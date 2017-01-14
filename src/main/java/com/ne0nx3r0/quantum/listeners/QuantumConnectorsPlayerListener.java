@@ -3,6 +3,7 @@ package com.ne0nx3r0.quantum.listeners;
 import com.ne0nx3r0.quantum.QuantumConnectors;
 import com.ne0nx3r0.quantum.circuits.CircuitManager;
 import com.ne0nx3r0.quantum.circuits.PendingCircuit;
+import com.ne0nx3r0.quantum.utils.MessageLogger;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -26,10 +27,12 @@ public class QuantumConnectorsPlayerListener implements Listener {
     private final QuantumConnectors plugin;
 
     private CircuitManager circuitManager;
+    private MessageLogger messageLogger;
 
-    public QuantumConnectorsPlayerListener(QuantumConnectors instance, CircuitManager circuitManager) {
+    public QuantumConnectorsPlayerListener(QuantumConnectors instance, CircuitManager circuitManager, MessageLogger messageLogger) {
         this.plugin = instance;
         this.circuitManager = circuitManager;
+        this.messageLogger = messageLogger;
     }
 
     @EventHandler
@@ -62,27 +65,27 @@ public class QuantumConnectorsPlayerListener implements Listener {
                 if (circuitManager.isValidSender(block)) {
                     //There is already a circuit there
                     if (circuitManager.circuitExists(clickedLoc)) {
-                        plugin.msg(player, ChatColor.YELLOW + "A circuit already sends from this location!");
-                        plugin.msg(player, "Break the block to remove it.");
+                        messageLogger.msg(player, ChatColor.YELLOW + "A circuit already sends from this location!");
+                        messageLogger.msg(player, "Break the block to remove it.");
                     }
                     //Set the sender location
                     else {
                         pc.setSenderLocation(clickedLoc);
 
-                        plugin.msg(player, "Sender saved!");
+                        messageLogger.msg(player, "Sender saved!");
                     }
                 }
                 //Invalid sender
                 else {
-                    plugin.msg(player, ChatColor.RED + "Invalid sender!");
-                    plugin.msg(player, ChatColor.YELLOW + "Senders: " + ChatColor.WHITE + circuitManager.getValidSendersString());
+                    messageLogger.msg(player, ChatColor.RED + "Invalid sender!");
+                    messageLogger.msg(player, ChatColor.YELLOW + "Senders: " + ChatColor.WHITE + circuitManager.getValidSendersString());
                 }
             }
             //Adding a receiver
             else {
                 //Player clicked the sender block again
                 if (pc.getSenderLocation().toString().equals(clickedLoc.toString())) {
-                    plugin.msg(player, ChatColor.YELLOW + "A block cannot be the sender AND the receiver!");
+                    messageLogger.msg(player, ChatColor.YELLOW + "A block cannot be the sender AND the receiver!");
                 }
                 //Player clicked a valid receiver block
                 else if (circuitManager.isValidReceiver(block)) {
@@ -96,24 +99,24 @@ public class QuantumConnectorsPlayerListener implements Listener {
                             //Add the receiver to our new/found circuit
                             pc.addReceiver(clickedLoc);
 
-                            plugin.msg(player, "Added a receiver! (#" + pc.getCircuit().getReceiversCount() + ")" + ChatColor.YELLOW + " ('/qc done', or add more)");
+                            messageLogger.msg(player, "Added a receiver! (#" + pc.getCircuit().getReceiversCount() + ")" + ChatColor.YELLOW + " ('/qc done', or add more)");
                         }
                         //Went over max circuits
                         else {
-                            plugin.msg(player, "You cannot add anymore receivers! (" + pc.getCircuit().getReceiversCount() + ")");
-                            plugin.msg(player, "'/qc done' to finish circuit, or '/qc cancel' to void it");
+                            messageLogger.msg(player, "You cannot add anymore receivers! (" + pc.getCircuit().getReceiversCount() + ")");
+                            messageLogger.msg(player, "'/qc done' to finish circuit, or '/qc cancel' to void it");
                         }
                     }
                     //Receiver was in a different world
                     else {
-                        plugin.msg(player, ChatColor.RED + "Receivers must be in the same world as their sender! Sorry :|");
+                        messageLogger.msg(player, ChatColor.RED + "Receivers must be in the same world as their sender! Sorry :|");
                     }
                 }
                 //Player clicked an invalid receiver block
                 else {
-                    plugin.msg(player, ChatColor.RED + "Invalid receiver!");
-                    plugin.msg(player, ChatColor.YELLOW + "Receivers: " + ChatColor.WHITE + circuitManager.getValidReceiversString());
-                    plugin.msg(player, "('/qc done' if you are finished)");
+                    messageLogger.msg(player, ChatColor.RED + "Invalid receiver!");
+                    messageLogger.msg(player, ChatColor.YELLOW + "Receivers: " + ChatColor.WHITE + circuitManager.getValidReceiversString());
+                    messageLogger.msg(player, "('/qc done' if you are finished)");
                 }
             }
         }
@@ -165,6 +168,31 @@ public class QuantumConnectorsPlayerListener implements Listener {
         }
     }
 
+    private void activeDoubleChest(DoubleChest dc) {
+
+        Location lLeft = null;
+        try {
+            lLeft = ((Chest) dc.getLeftSide()).getLocation();
+        } catch (NullPointerException npe) {
+        }
+
+        if (lLeft != null && circuitManager.circuitExists(lLeft)) {
+            // send off
+            circuitManager.activateCircuit(lLeft, 0, 5);
+        }
+
+        Location lRight = null;
+        try {
+            lRight = ((Chest) dc.getRightSide()).getLocation();
+        } catch (NullPointerException npe) {
+        }
+
+        if (lRight != null && circuitManager.circuitExists(lRight)) {
+            // send off
+            circuitManager.activateCircuit(lRight, 0, 5);
+        }
+    }
+
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent e) {
         InventoryHolder ih;
@@ -198,18 +226,6 @@ public class QuantumConnectorsPlayerListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onLeaveBed(PlayerBedLeaveEvent e) {
-        if (circuitManager.circuitExists(e.getBed().getLocation())) {
-            // send off
-            circuitManager.activateCircuit(e.getBed().getLocation(), 0, 5);
-        }
-        if (circuitManager.circuitExists(this.getTwinLocation(e.getBed()))) {
-            // send off
-            circuitManager.activateCircuit(this.getTwinLocation(e.getBed()), 0, 5);
-        }
-    }
-
     private Location getTwinLocation(Block b) {
         Bed bed = (Bed) b.getState().getData();
         if (bed.isHeadOfBed()) {
@@ -219,28 +235,15 @@ public class QuantumConnectorsPlayerListener implements Listener {
         }
     }
 
-    private void activeDoubleChest(DoubleChest dc) {
-
-        Location lLeft = null;
-        try {
-            lLeft = ((Chest) dc.getLeftSide()).getLocation();
-        } catch (NullPointerException npe) {
-        }
-
-        if (lLeft != null && circuitManager.circuitExists(lLeft)) {
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    public void onLeaveBed(PlayerBedLeaveEvent e) {
+        if (circuitManager.circuitExists(e.getBed().getLocation())) {
             // send off
-            circuitManager.activateCircuit(lLeft, 0, 5);
+            circuitManager.activateCircuit(e.getBed().getLocation(), 0, 5);
         }
-
-        Location lRight = null;
-        try {
-            lRight = ((Chest) dc.getRightSide()).getLocation();
-        } catch (NullPointerException npe) {
-        }
-
-        if (lRight != null && circuitManager.circuitExists(lRight)) {
+        if (circuitManager.circuitExists(this.getTwinLocation(e.getBed()))) {
             // send off
-            circuitManager.activateCircuit(lRight, 0, 5);
+            circuitManager.activateCircuit(this.getTwinLocation(e.getBed()), 0, 5);
         }
     }
 
