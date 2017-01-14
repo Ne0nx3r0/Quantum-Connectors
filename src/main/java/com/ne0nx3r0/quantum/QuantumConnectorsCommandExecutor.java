@@ -21,6 +21,7 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
         this.plugin = plugin;
         this.circuitManager = circuitManager;
         this.messageLogger = messageLogger;
+
     }
 
     @Override
@@ -59,6 +60,7 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
                 circuitManager.removePendingCircuit(player);
 
                 messageLogger.msg(player, messageLogger.getMessage("cancelled"));
+
             }
             //No pending circuit
             else {
@@ -87,6 +89,7 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
                                 || pc.getSenderLocation().getBlock().getType() == Material.JUNGLE_DOOR
                                 || pc.getSenderLocation().getBlock().getType() == Material.ACACIA_DOOR
                                 || pc.getSenderLocation().getBlock().getType() == Material.DARK_OAK_DOOR) {
+
                             Block bDoor = pc.getSenderLocation().getBlock();
                             int iData = (int) bDoor.getData();
                             Block bOtherPiece = bDoor.getRelative((iData & 0x08) == 0x08 ? BlockFace.DOWN : BlockFace.UP);
@@ -95,6 +98,7 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
                             //TODO: On break check if the circuit has a twin
                             circuitManager.addCircuit(bOtherPiece.getLocation(), pc.getCircuit());
                         }
+
 
                         circuitManager.removePendingCircuit(player);
 
@@ -120,6 +124,7 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
             //Player has permission to create the circuit
             if (player.hasPermission("QuantumConnectors.create." + args[0])) {
 
+
                 //Figure out if there's a delay, or use 0 for no delay
                 double dDelay = 0;
 
@@ -144,6 +149,7 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
 
                 int iDelayTicks = (int) Math.round(dDelay * 20);
 
+
                 if (!circuitManager.hasPendingCircuit(player)) {
                     circuitManager.addPendingCircuit(
                             player,
@@ -154,6 +160,7 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
                             .replace("%circuit%", args[0].toUpperCase())
                             .replace("%delay%", new Double(dDelay).toString()));
                 } else {
+
                     circuitManager.getPendingCircuit(player).setCircuitType(
                             circuitManager.getCircuitType(args[0]),
                             iDelayTicks);

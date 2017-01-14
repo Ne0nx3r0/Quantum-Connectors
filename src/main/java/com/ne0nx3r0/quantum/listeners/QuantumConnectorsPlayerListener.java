@@ -33,6 +33,7 @@ public class QuantumConnectorsPlayerListener implements Listener {
         this.plugin = instance;
         this.circuitManager = circuitManager;
         this.messageLogger = messageLogger;
+
     }
 
     @EventHandler
@@ -67,18 +68,21 @@ public class QuantumConnectorsPlayerListener implements Listener {
                     if (circuitManager.circuitExists(clickedLoc)) {
                         messageLogger.msg(player, ChatColor.YELLOW + "A circuit already sends from this location!");
                         messageLogger.msg(player, "Break the block to remove it.");
+
                     }
                     //Set the sender location
                     else {
                         pc.setSenderLocation(clickedLoc);
 
                         messageLogger.msg(player, "Sender saved!");
+
                     }
                 }
                 //Invalid sender
                 else {
                     messageLogger.msg(player, ChatColor.RED + "Invalid sender!");
                     messageLogger.msg(player, ChatColor.YELLOW + "Senders: " + ChatColor.WHITE + circuitManager.getValidSendersString());
+
                 }
             }
             //Adding a receiver
@@ -86,6 +90,7 @@ public class QuantumConnectorsPlayerListener implements Listener {
                 //Player clicked the sender block again
                 if (pc.getSenderLocation().toString().equals(clickedLoc.toString())) {
                     messageLogger.msg(player, ChatColor.YELLOW + "A block cannot be the sender AND the receiver!");
+
                 }
                 //Player clicked a valid receiver block
                 else if (circuitManager.isValidReceiver(block)) {
@@ -105,11 +110,13 @@ public class QuantumConnectorsPlayerListener implements Listener {
                         else {
                             messageLogger.msg(player, "You cannot add anymore receivers! (" + pc.getCircuit().getReceiversCount() + ")");
                             messageLogger.msg(player, "'/qc done' to finish circuit, or '/qc cancel' to void it");
+
                         }
                     }
                     //Receiver was in a different world
                     else {
                         messageLogger.msg(player, ChatColor.RED + "Receivers must be in the same world as their sender! Sorry :|");
+
                     }
                 }
                 //Player clicked an invalid receiver block
@@ -117,6 +124,7 @@ public class QuantumConnectorsPlayerListener implements Listener {
                     messageLogger.msg(player, ChatColor.RED + "Invalid receiver!");
                     messageLogger.msg(player, ChatColor.YELLOW + "Receivers: " + ChatColor.WHITE + circuitManager.getValidReceiversString());
                     messageLogger.msg(player, "('/qc done' if you are finished)");
+
                 }
             }
         }
@@ -193,6 +201,7 @@ public class QuantumConnectorsPlayerListener implements Listener {
         }
     }
 
+
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent e) {
         InventoryHolder ih;
@@ -226,6 +235,7 @@ public class QuantumConnectorsPlayerListener implements Listener {
         }
     }
 
+
     private Location getTwinLocation(Block b) {
         Bed bed = (Bed) b.getState().getData();
         if (bed.isHeadOfBed()) {
@@ -234,6 +244,7 @@ public class QuantumConnectorsPlayerListener implements Listener {
             return b.getRelative(bed.getFacing()).getLocation();
         }
     }
+
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onLeaveBed(PlayerBedLeaveEvent e) {
@@ -246,5 +257,4 @@ public class QuantumConnectorsPlayerListener implements Listener {
             circuitManager.activateCircuit(this.getTwinLocation(e.getBed()), 0, 5);
         }
     }
-
 }

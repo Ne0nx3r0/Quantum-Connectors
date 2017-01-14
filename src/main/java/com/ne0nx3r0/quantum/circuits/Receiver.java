@@ -12,6 +12,7 @@ public class Receiver {
     private int delay = 0;
 
     public Receiver(Location location, int type, int delay) {
+
         this.location = location;
         this.type = type;
         this.delay = delay;
@@ -43,5 +44,25 @@ public class Receiver {
         BlockState state = block.getState();
         MaterialData data = state.getData();
 
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public int getDelay() {
+        return delay;
+    }
+
+    public int getBlockMaterial() {
+        return blockMaterial;
+    }
+
+    public byte getBlockData() {
+        return blockData;
     }
 }

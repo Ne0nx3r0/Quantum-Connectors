@@ -145,6 +145,7 @@ public final class CircuitManager {
             Receiver r;
             for (int i = 0; i < receivers.size(); i++) {
                 r = receivers.get(i);
+
                 iType = r.getType();
                 iDelay = r.getDelay();
                 Block b = r.getLocation().getBlock();
@@ -207,6 +208,7 @@ public final class CircuitManager {
     }
 
     private void setReceiver(Receiver receiver, boolean on, int iDelay) {
+
         if (iDelay == 0) {
             setReceiver(receiver, on);
         } else {
@@ -225,6 +227,7 @@ public final class CircuitManager {
 // I really don't know what order this deserves among the existing class methods
     public PendingCircuit addPendingCircuit(Player player, int type, int delay) {
         PendingCircuit pc = new PendingCircuit(player.getUniqueId(), type, delay);
+
 
         pendingCircuits.put(player.getName(), pc);
 
@@ -267,6 +270,7 @@ public final class CircuitManager {
 
     private class DelayedSetReceiver implements Runnable {
         private final Receiver receiver;
+
         private final boolean on;
 
         DelayedSetReceiver(Receiver receiver, boolean on) {

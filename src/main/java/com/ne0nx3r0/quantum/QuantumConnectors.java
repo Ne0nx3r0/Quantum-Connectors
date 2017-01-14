@@ -9,6 +9,7 @@ import com.ne0nx3r0.quantum.nmswrapper.QSWorld;
 import com.ne0nx3r0.quantum.utils.FileUtils;
 import com.ne0nx3r0.quantum.utils.MessageLogger;
 import org.bukkit.Bukkit;
+
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -35,6 +36,7 @@ public class QuantumConnectors extends JavaPlugin {
     private QuantumConnectorsBlockListener blockListener;
     private MessageLogger messageLogger;
 
+
     private boolean UPDATE_NOTIFICATIONS = false;
     // Updater
     private boolean updateAvailable = false;
@@ -59,6 +61,7 @@ public class QuantumConnectors extends JavaPlugin {
     public void onDisable() {
         if (circuitManager != null) {
             circuitManager.getCircuitLoader().saveAllWorlds();
+
         }
     }
 
@@ -71,6 +74,7 @@ public class QuantumConnectors extends JavaPlugin {
         getDataFolder().mkdirs();
 
         // TODO: 14.01.17 move to Configloader
+
         //Load config options, localized messages
         setupConfig();
 
@@ -96,11 +100,13 @@ public class QuantumConnectors extends JavaPlugin {
 
         getCommand("qc").setExecutor(new QuantumConnectorsCommandExecutor(this, circuitManager, messageLogger));
 
+
         PluginManager pm = getServer().getPluginManager();
 
         pm.registerEvents(playerListener, this);
         pm.registerEvents(blockListener, this);
         pm.registerEvents(worldListener, this);
+
 
         AUTOSAVE_INTERVAL = AUTOSAVE_INTERVAL * 60 * 20;//convert to ~minutes
 
@@ -122,6 +128,7 @@ public class QuantumConnectors extends JavaPlugin {
 
         if (!configFile.exists()) {
             FileUtils.copy(this.getResource("config.yml"), configFile);
+
         }
 
         FileConfiguration config = this.getConfig();
@@ -132,7 +139,6 @@ public class QuantumConnectors extends JavaPlugin {
         MAX_RECEIVERS_PER_CIRCUIT = config.getInt("max_receivers_per_circuit", MAX_RECEIVERS_PER_CIRCUIT);
         AUTOSAVE_INTERVAL = config.getInt("autosave_interval_minutes", AUTOSAVE_INTERVAL);
         UPDATE_NOTIFICATIONS = config.getBoolean("update_notifications", UPDATE_NOTIFICATIONS);
-
 
     }
 
