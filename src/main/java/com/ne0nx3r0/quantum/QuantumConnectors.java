@@ -6,27 +6,19 @@ import com.ne0nx3r0.quantum.listeners.QuantumConnectorsPlayerListener;
 import com.ne0nx3r0.quantum.listeners.QuantumConnectorsWorldListener;
 import com.ne0nx3r0.quantum.nmswrapper.ClassRegistry;
 import com.ne0nx3r0.quantum.nmswrapper.QSWorld;
+import com.ne0nx3r0.quantum.utils.FileUtils;
+import com.ne0nx3r0.quantum.utils.MessageLogger;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
 
 public class QuantumConnectors extends JavaPlugin {
 
-    // Circuit Manager
-    public static CircuitManager circuitManager;
     // Configurables
     public static int MAX_CHAIN_LINKS = 3;
     public static int MAX_DELAY_TIME = 10;//in seconds
@@ -35,11 +27,16 @@ public class QuantumConnectors extends JavaPlugin {
     private static int AUTOSAVE_INTERVAL = 30;//specified here in minutes
     private static int AUTO_SAVE_ID = -1;
     // Localized Messages
-    private static Map<String, String> messages;
+    private Map<String, String> messages;
+    private QuantumConnectorsWorldListener worldListener;
+    // Circuit Manager
+    private CircuitManager circuitManager;
     // Register events
-    private final QuantumConnectorsPlayerListener playerListener = new QuantumConnectorsPlayerListener(this, circuitManager);
-    private final QuantumConnectorsBlockListener blockListener = new QuantumConnectorsBlockListener(this, circuitManager);
-    private final QuantumConnectorsWorldListener worldListener = new QuantumConnectorsWorldListener(this);
+    private QuantumConnectorsPlayerListener playerListener;
+    private QuantumConnectorsBlockListener blockListener;
+    private MessageLogger messageLogger;
+
+
     private boolean UPDATE_NOTIFICATIONS = false;
     // Updater
     private boolean updateAvailable = false;
@@ -47,13 +44,12 @@ public class QuantumConnectors extends JavaPlugin {
 
     // Version
     private String apiVersion;
-    private String apiSupportedVersion = "v1_6_R2";
     private boolean outdated = false;
     //Scheduled save mechanism
     private Runnable autosaveCircuits = new Runnable() {
         @Override
         public void run() {
-            circuitManager.saveAllWorlds();
+            circuitManager.getCircuitLoader().saveAllWorlds();
         }
     };
 
@@ -64,25 +60,29 @@ public class QuantumConnectors extends JavaPlugin {
     @Override
     public void onDisable() {
         if (circuitManager != null) {
-            circuitManager.saveAllWorlds();
+            circuitManager.getCircuitLoader().saveAllWorlds();
+
         }
     }
 
     @Override
     public void onEnable() {
 
+
+        // TODO: 14.01.17 move to Configloader
         //This might be outdated...
         getDataFolder().mkdirs();
+
+        // TODO: 14.01.17 move to Configloader
 
         //Load config options, localized messages
         setupConfig();
 
 
         try {
+            // TODO: 14.01.17 replace with actual version getting
             this.classRegistry = new ClassRegistry(Bukkit.getServer().getBukkitVersion());
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
+        } catch (ClassNotFoundException | NoSuchMethodException e) {
             e.printStackTrace();
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
@@ -90,20 +90,24 @@ public class QuantumConnectors extends JavaPlugin {
 
         this.qsWorld = new QSWorld(this.classRegistry);
 
+
         //Create a circuit manager
-        circuitManager = new CircuitManager(this, qsWorld);
+        this.circuitManager = new CircuitManager(messageLogger, this, qsWorld);
 
-        //Register qc command
-        getCommand("qc").setExecutor(new QuantumConnectorsCommandExecutor(this, circuitManager));
+        this.worldListener = new QuantumConnectorsWorldListener(this.circuitManager.getCircuitLoader());
+        this.blockListener = new QuantumConnectorsBlockListener(this, circuitManager);
+        this.playerListener = new QuantumConnectorsPlayerListener(this, circuitManager, messageLogger);
 
-        //Register listeners
+        getCommand("qc").setExecutor(new QuantumConnectorsCommandExecutor(this, circuitManager, messageLogger));
+
+
         PluginManager pm = getServer().getPluginManager();
 
         pm.registerEvents(playerListener, this);
         pm.registerEvents(blockListener, this);
         pm.registerEvents(worldListener, this);
 
-        //Schedule saves
+
         AUTOSAVE_INTERVAL = AUTOSAVE_INTERVAL * 60 * 20;//convert to ~minutes
 
         AUTO_SAVE_ID = getServer().getScheduler().scheduleSyncRepeatingTask(
@@ -116,36 +120,15 @@ public class QuantumConnectors extends JavaPlugin {
         this.apiVersion = packageName.substring(packageName.lastIndexOf('.') + 1);
     }
 
-    public void msg(Player player, String sMessage) {
-        player.sendMessage(ChatColor.LIGHT_PURPLE + "[QC] " + ChatColor.WHITE + sMessage);
-    }
-
-    //Generic wrappers for console messages
-    public void log(Level level, String sMessage) {
-        if (!sMessage.equals(""))
-            getLogger().log(level, sMessage);
-    }
-
-    public void log(String sMessage) {
-        log(Level.INFO, sMessage);
-    }
-
-    public void error(String sMessage) {
-        log(Level.WARNING, sMessage);
-    }
-
-    //Wrapper for getting localized messages
-    public String getMessage(String sMessageName) {
-        return messages.get(sMessageName);
-    }
-
+    // TODO: 14.01.17 move to Configloader
     private void setupConfig() {
         this.reloadConfig();
 
         File configFile = new File(this.getDataFolder(), "config.yml");
 
         if (!configFile.exists()) {
-            copy(this.getResource("config.yml"), configFile);
+            FileUtils.copy(this.getResource("config.yml"), configFile);
+
         }
 
         FileConfiguration config = this.getConfig();
@@ -157,37 +140,6 @@ public class QuantumConnectors extends JavaPlugin {
         AUTOSAVE_INTERVAL = config.getInt("autosave_interval_minutes", AUTOSAVE_INTERVAL);
         UPDATE_NOTIFICATIONS = config.getBoolean("update_notifications", UPDATE_NOTIFICATIONS);
 
-        messages = new HashMap<String, String>();
-
-        File messagesFile = new File(this.getDataFolder(), "messages.yml");
-
-        if (!messagesFile.exists()) {
-            messagesFile.getParentFile().mkdirs();
-            copy(this.getResource("messages.yml"), messagesFile);
-        }
-
-        FileConfiguration messagesYml = YamlConfiguration.loadConfiguration(messagesFile);
-
-        Set<String> messageList = messagesYml.getKeys(false);
-
-        for (String m : messageList) {
-            messages.put(m, messagesYml.getString(m));
-        }
-    }
-
-    private void copy(InputStream in, File file) {
-        try {
-            OutputStream out = new FileOutputStream(file);
-            byte[] buf = new byte[1024];
-            int len;
-            while ((len = in.read(buf)) > 0) {
-                out.write(buf, 0, len);
-            }
-            out.close();
-            in.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public boolean isUpdateAvailable() {

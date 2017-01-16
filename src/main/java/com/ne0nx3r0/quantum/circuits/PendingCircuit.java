@@ -2,16 +2,18 @@ package com.ne0nx3r0.quantum.circuits;
 
 import org.bukkit.Location;
 
+import java.util.UUID;
+
 public class PendingCircuit{
     private Location senderLocation;
     private Circuit circuit;
     private int currentType;
     private int currentDelay;
 
-    public PendingCircuit(String ownerName,int type,int delay){
+    public PendingCircuit(UUID ownerUUID, int type, int delay) {
         currentType = type;
         currentDelay = delay;
-        circuit = new Circuit(ownerName);
+        circuit = new Circuit(ownerUUID);
     }
     
     public void setCircuitType(int type,int delay){
