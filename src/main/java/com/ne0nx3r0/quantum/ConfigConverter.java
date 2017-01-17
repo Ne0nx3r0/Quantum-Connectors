@@ -13,9 +13,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Created by ysl3000 on 13.01.17.
- */
 public class ConfigConverter {
 
 
@@ -92,7 +89,6 @@ public class ConfigConverter {
                 }
             }
 
-            //I dunno man. Java file operations are a mystery to me. These lines worked.
             File testFile = new File(plugin.getDataFolder(), "circuits.yml.bak");
             new File(plugin.getDataFolder(), "circuits.yml").renameTo(testFile);
         }
