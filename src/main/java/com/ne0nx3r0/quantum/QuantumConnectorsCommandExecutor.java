@@ -1,6 +1,7 @@
 package com.ne0nx3r0.quantum;
 
 import com.ne0nx3r0.quantum.circuits.CircuitManager;
+import com.ne0nx3r0.quantum.circuits.CircuitTypes;
 import com.ne0nx3r0.quantum.circuits.PendingCircuit;
 import com.ne0nx3r0.quantum.utils.MessageLogger;
 import org.bukkit.ChatColor;
@@ -102,7 +103,8 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
 
                         circuitManager.removePendingCircuit(player);
 
-                        messageLogger.msg(player, messageLogger.getMessage("circuit_created"));
+                        messageLogger.msg(player, messageLogger.getMessage("circuit_created")
+                                .replace("%circuit%", CircuitTypes.getName(pc.getCurrentType())));
                     }
                     //They have not setup at least one receiver
                     else {
@@ -145,7 +147,6 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
 
                 String sDelayMsg = " (" + args[0] + " " + dDelay + "s delay)";
 
-                sDelayMsg = " ";
 
                 int iDelayTicks = (int) Math.round(dDelay * 20);
 
@@ -158,7 +159,7 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
 
                     messageLogger.msg(player, messageLogger.getMessage("circuit_ready")
                             .replace("%circuit%", args[0].toUpperCase())
-                            .replace("%delay%", new Double(dDelay).toString()));
+                            .replace("%delay%", Double.toString(dDelay)));
                 } else {
 
                     circuitManager.getPendingCircuit(player).setCircuitType(
@@ -167,7 +168,7 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
 
                     messageLogger.msg(player, messageLogger.getMessage("circuit_changed")
                             .replace("%circuit%", args[0].toUpperCase())
-                            .replace("%delay%", new Double(dDelay).toString()));
+                            .replace("%delay%", Double.toString(dDelay)));
                 }
             }
 

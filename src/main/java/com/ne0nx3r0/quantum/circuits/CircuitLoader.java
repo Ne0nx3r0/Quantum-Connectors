@@ -1,7 +1,7 @@
 package com.ne0nx3r0.quantum.circuits;
 
 import com.ne0nx3r0.quantum.QuantumConnectors;
-import com.ne0nx3r0.quantum.receiver.ReceiverTypes;
+import com.ne0nx3r0.quantum.receiver.Receiver;
 import com.ne0nx3r0.quantum.utils.MessageLogger;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -10,23 +10,16 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-/**
- * Created by ysl3000 on 14.01.17.
- */
+
 public class CircuitLoader {
-
 
     private Map<World, Map<Location, Circuit>> worlds;
     private CircuitManager circuitManager;
     private QuantumConnectors plugin;
     private MessageLogger messageLogger;
 
-    private ReceiverTypes receiverTypes;
 
     public CircuitLoader(QuantumConnectors plugin, Map<World, Map<Location, Circuit>> worlds, CircuitManager circuitManager, MessageLogger messageLogger) {
         this.plugin = plugin;
@@ -38,7 +31,7 @@ public class CircuitLoader {
 
     public void loadWorld(World world) {
         //at least create a blank holder
-        worlds.put(world, new HashMap<Location, Circuit>());
+        worlds.put(world, new HashMap<>());
 
         File ymlFile = new File(plugin.getDataFolder(), world.getName() + ".circuits.yml");
 
@@ -52,31 +45,49 @@ public class CircuitLoader {
         }
 
         FileConfiguration yml = YamlConfiguration.loadConfiguration(ymlFile);
+        yml.getMapList("circuits");
 
-        List<Map<String, Object>> tempCircuits = (List<Map<String, Object>>) yml.get("circuits");
+/*
 
-        if (tempCircuits == null) {
+        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+        List <Map<String, Object>> listInList = new ArrayList<Map<String, Object>>();
+        list = new ArrayList(yml.getMapList("mainlist"));
+        for (Map<String, Object> m: list) {*/
+
+        List<Map<String, Object>> tempCircuits;
+        tempCircuits = new ArrayList(yml.getMapList("circuits"));
+        System.out.println("Debug: Anzahl Schaltungen " + tempCircuits.size());
+
+        if (tempCircuits.size() == 0) {
             messageLogger.log(messageLogger.getMessage("loading_no_circuits").replace("%file%", ymlFile.getName()));
             return;
         }
 
         Map<Location, Circuit> worldCircuits = new HashMap<>();
-
         Location tempCircuitObjLoc;
-
-        List tempReceiverObjs;
         Map<String, Object> tempReceiverObj;
+        ArrayList<Receiver> tempReceiverObjs;
         Location tempReceiverLoc;
 
         for (Map<String, Object> tempCircuitObj : tempCircuits) {
-
-
-            com.ne0nx3r0.quantum.receiver.Receiver receiver = receiverTypes.fromType((Location) tempCircuitObj.get("location"), (int) tempCircuitObj.get("type"), (int) tempCircuitObj.get("delay"));
-
-
             //dummy value of # for owners
-            Circuit tempCircuit = (Circuit) tempCircuitObj;
-            tempReceiverObjs = tempCircuit.getReceivers();
+            /*System.out.println(tempCircuitObj.get("r"));
+            Circuit tempCircuit = new Circuit(tempCircuitObj, circuitManager);
+
+            tempReceiverObjs = (ArrayList) tempCircuitObj.get("r");
+
+            //TODO: circuit/receiver verification
+            for(int i = 0; i < tempReceiverObjs.size(); i++) {
+                tempReceiverObj = (Map<String, Object>) tempReceiverObjs.get(i);
+                tempReceiverLoc = tempReceiverObj.getLocation();
+
+                if (circuitManager.isValidReceiver(tempReceiverLoc.getBlock())) {
+                    tempCircuit.addReceiver(tempReceiverLoc, tempReceiverObj.getType(), tempReceiverObj.getDelay());
+                    System.out.println("Debug: Receiver " + tempReceiverObjs.indexOf(tempReceiverObj) + " akzeptiert");
+                }*/
+
+            Circuit tempCircuit = new Circuit(UUID.fromString((String) (tempCircuitObj.get("o") == null ? "" : tempCircuitObj.get("o"))), circuitManager);
+            tempReceiverObjs = (ArrayList) tempCircuitObj.get("r");
 
             //TODO: circuit/receiver verification
             for (int i = 0; i < tempReceiverObjs.size(); i++) {
@@ -88,13 +99,13 @@ public class CircuitLoader {
                         (Integer) tempReceiverObj.get("z"));
 
                 if (circuitManager.isValidReceiver(tempReceiverLoc.getBlock())) {
-
-
                     tempCircuit.addReceiver(
                             tempReceiverLoc,
                             (Integer) tempReceiverObj.get("t"),
                             (Integer) tempReceiverObj.get("d"));
                 }
+
+
                 //Invalid receiver block type
                 else {
                     if (QuantumConnectors.VERBOSE_LOGGING) messageLogger.log(
@@ -179,8 +190,8 @@ public class CircuitLoader {
                 tempCircuitObj.put("x", cLoc.getBlockX());
                 tempCircuitObj.put("y", cLoc.getBlockY());
                 tempCircuitObj.put("z", cLoc.getBlockZ());
-
-                tempCircuitObj.put("o", currentCircuit.getOwner());
+                System.out.println(currentCircuit.getOwner().toString());
+                tempCircuitObj.put("o", (String) currentCircuit.getOwner().toString());
 
                 currentReceivers = currentCircuit.getReceivers();
 

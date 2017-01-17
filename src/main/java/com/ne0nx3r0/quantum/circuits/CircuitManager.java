@@ -3,6 +3,7 @@ package com.ne0nx3r0.quantum.circuits;
 import com.ne0nx3r0.quantum.ConfigConverter;
 import com.ne0nx3r0.quantum.QuantumConnectors;
 import com.ne0nx3r0.quantum.nmswrapper.QSWorld;
+import com.ne0nx3r0.quantum.receiver.*;
 import com.ne0nx3r0.quantum.utils.MessageLogger;
 import com.ne0nx3r0.quantum.utils.ValidMaterials;
 import org.bukkit.Location;
@@ -32,6 +33,7 @@ public final class CircuitManager {
 
 
     private CircuitLoader circuitLoader;
+
     // Main
     public CircuitManager(MessageLogger messageLogger, final QuantumConnectors qc, QSWorld qsWorld) {
         this.messageLogger = messageLogger;
@@ -70,7 +72,7 @@ public final class CircuitManager {
         return false;
     }
 
-    // Sender/Receiver checks
+    // Sender/Receiver_old checks
     public boolean isValidSender(Block block) {
         Material mBlock = block.getType();
         for (int i = 0; i < ValidMaterials.validSenders.length; i++) {
@@ -137,11 +139,9 @@ public final class CircuitManager {
     public void activateCircuit(Location lSender, int oldCurrent, int newCurrent, int chain) {
         Circuit circuit = getCircuit(lSender);
         List<Receiver> receivers = circuit.getReceivers();
-
         if (!receivers.isEmpty()) {
             int iType;
             int iDelay;
-
             Receiver r;
             for (int i = 0; i < receivers.size(); i++) {
                 r = receivers.get(i);
@@ -226,7 +226,7 @@ public final class CircuitManager {
     // Temporary circuit stuff
 // I really don't know what order this deserves among the existing class methods
     public PendingCircuit addPendingCircuit(Player player, int type, int delay) {
-        PendingCircuit pc = new PendingCircuit(player.getUniqueId(), type, delay);
+        PendingCircuit pc = new PendingCircuit(player.getUniqueId(), type, delay, this);
 
 
         pendingCircuits.put(player.getName(), pc);
@@ -282,5 +282,28 @@ public final class CircuitManager {
         public void run() {
             setReceiver(receiver, on);
         }
+    }
+
+    //Receiver_old Types
+    public Receiver fromType(Location location, int type, int delay) {
+        return fromType(location, type, delay, keepAlives, qsWorld);
+    }
+
+    public static Receiver fromType(Location location, int type, int delay, List<Block> keepAlives, QSWorld qsWorld) {
+        Material m = location.getBlock().getType();
+
+        if (ValidMaterials.LAMP.contains(m)) {
+            return new RedstoneLampReceiver(location, type, delay, keepAlives, qsWorld);
+        } else if (ValidMaterials.OPENABLE.contains(m)) {
+            return new OpenableReceiver(location, type, delay);
+        } else if (ValidMaterials.LEVER.contains(m)) {
+            return new LeverReceiver(location, type, delay);
+        } else if (ValidMaterials.RAIL.contains(m)) {
+            return new PoweredRailReceiver(location, type, delay);
+        } else if (ValidMaterials.PISTON.contains(m)) {
+            return new PistonReceiver(location, type, delay);
+        }
+        return null;
+
     }
 }

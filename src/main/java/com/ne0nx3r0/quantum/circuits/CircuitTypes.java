@@ -24,4 +24,22 @@ public enum CircuitTypes{
     public int getId(){
         return id;
     }
+    
+    public static String getName(int id){
+        if (id == CircuitTypes.QUANTUM.getId()) {
+            return "QUANTUM";
+        } else if (id == CircuitTypes.ON.getId()) {
+            return "ON";
+        } else if (id == CircuitTypes.OFF.getId()) {
+            return "OFF";
+        } else if (id == CircuitTypes.TOGGLE.getId()) {
+            return "TOGGLE";
+        } else if (id == CircuitTypes.REVERSE.getId()) {
+            return "REVERSE";
+        } else if (id == CircuitTypes.RANDOM.getId()) {
+            return "RANDOM";
+        } else {
+            return "unknown";
+        }
+    }
 }

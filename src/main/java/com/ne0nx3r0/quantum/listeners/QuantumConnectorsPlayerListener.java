@@ -113,10 +113,9 @@ public class QuantumConnectorsPlayerListener implements Listener {
 
                         }
                     }
-                    //Receiver was in a different world
+                    //Receiver_old was in a different world
                     else {
                         messageLogger.msg(player, ChatColor.RED + "Receivers must be in the same world as their sender! Sorry :|");
-
                     }
                 }
                 //Player clicked an invalid receiver block

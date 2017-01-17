@@ -5,9 +5,7 @@ import org.bukkit.World;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
-/**
- * Created by ysl3000 on 09.12.16.
- */
+
 public class QSWorld {
 
 
@@ -24,9 +22,8 @@ public class QSWorld {
             Field field = classRegistry.getIsClientSide();
             field.setAccessible(true);
             field.set(nmsWorld, isStatic);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
+
+        } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
     }
