@@ -1,5 +1,6 @@
 package com.ne0nx3r0.quantum.circuits;
 
+import com.ne0nx3r0.quantum.receiver.Receiver;
 import org.bukkit.Location;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
@@ -10,18 +11,30 @@ import java.util.*;
 public class Circuit implements ConfigurationSerializable {
     private List<Receiver> receivers;
     private UUID playerUUID;
+    private CircuitManager circuitManager;
 
-    public Circuit(UUID playerUUID) {
-        this(playerUUID, Collections.EMPTY_LIST);
+    public Circuit(UUID playerUUID, CircuitManager cmanager) {
+        this(playerUUID, Collections.EMPTY_LIST, cmanager);
     }
 
-    public Circuit(UUID playerUUID, List<Receiver> receivers) {
+    public Circuit(UUID playerUUID, List<Receiver> receivers, CircuitManager cmanager) {
         this.playerUUID = playerUUID;
-        this.receivers = receivers;
+        if (receivers == null) {
+            this.receivers = new ArrayList<Receiver>();
+        } else
+            this.receivers = new ArrayList<Receiver>(receivers);
+        circuitManager = cmanager;
+    }
+
+    public Circuit(Map<String, Object> map, CircuitManager circuitManager) {
+
+        this(UUID.fromString((String) map.get("o")), (List<Receiver>) map.get("r"), circuitManager);
+        //return circuit;
+
     }
 
     public void addReceiver(Location loc, int type, int delay) {
-        receivers.add(new Receiver(loc, type, delay));
+        receivers.add(circuitManager.fromType(loc, type, delay));
     }
 
     public List<Receiver> getReceivers() {
@@ -55,4 +68,6 @@ public class Circuit implements ConfigurationSerializable {
         return map;
 
     }
+
+
 }

@@ -31,7 +31,7 @@ public class QuantumConnectorsWorldListener implements Listener {
     {
         Location loc = (Location)i$.next();
         
-        for(Receiver r : CircuitManager.getCircuit(loc).getReceivers())
+        for(Receiver_old r : CircuitManager.getCircuit(loc).getReceivers())
         {
             Location l = r.location;
             

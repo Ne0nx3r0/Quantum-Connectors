@@ -1,9 +1,9 @@
 #player interactions
 usage: "To create a quantum circuit, use /qc <circuit>; and click on a sender and then a receiver with redstone."
-available_circuits: "Available circuits:"
+available_circuits: "Available circuits: "
 cancelled: "Your pending circuit has been removed!"
 no_pending_circuit: "No pending circuit to remove."
-circuit_created: "Quantum circuit created!"
+circuit_created: "%circuit% circuit created!"
 no_sender: "You need to setup a sender and receiver first!"
 no_receivers: "You need to setup at least one receiver first!"
 no_pending_action: "No pending action to finish."

@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 /**
- * Created by Yannick on 13.01.2017.
+ * Class will import specific Minecraft-Version dependent things.
  */
 public class ClassRegistry {
 
@@ -18,9 +18,10 @@ public class ClassRegistry {
     public ClassRegistry(String version) throws ClassNotFoundException, NoSuchMethodException, NoSuchFieldException {
         this.craftWorldClass = Class.forName("org.bukkit.craftbukkit." + version + ".CraftWorld");
         this.nmsWorldClass = Class.forName("net.minecraft.server." + version + ".World");
-        this.nmsWorldHandle = craftWorldClass.getDeclaredMethod("getHandle", craftWorldClass);
+        this.nmsWorldHandle = craftWorldClass.getDeclaredMethod("getHandle");
         this.isClientSide = nmsWorldClass.getDeclaredField("isClientSide");
     }
+
 
     public Method getNmsWorldField() {
         return nmsWorldHandle;
