@@ -47,13 +47,6 @@ public class CircuitLoader {
         FileConfiguration yml = YamlConfiguration.loadConfiguration(ymlFile);
         yml.getMapList("circuits");
 
-/*
-
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        List <Map<String, Object>> listInList = new ArrayList<Map<String, Object>>();
-        list = new ArrayList(yml.getMapList("mainlist"));
-        for (Map<String, Object> m: list) {*/
-
         List<Map<String, Object>> tempCircuits;
         tempCircuits = new ArrayList(yml.getMapList("circuits"));
         System.out.println("Debug: Anzahl Schaltungen " + tempCircuits.size());
@@ -71,21 +64,6 @@ public class CircuitLoader {
 
         for (Map<String, Object> tempCircuitObj : tempCircuits) {
             //dummy value of # for owners
-            /*System.out.println(tempCircuitObj.get("r"));
-            Circuit tempCircuit = new Circuit(tempCircuitObj, circuitManager);
-
-            tempReceiverObjs = (ArrayList) tempCircuitObj.get("r");
-
-            //TODO: circuit/receiver verification
-            for(int i = 0; i < tempReceiverObjs.size(); i++) {
-                tempReceiverObj = (Map<String, Object>) tempReceiverObjs.get(i);
-                tempReceiverLoc = tempReceiverObj.getLocation();
-
-                if (circuitManager.isValidReceiver(tempReceiverLoc.getBlock())) {
-                    tempCircuit.addReceiver(tempReceiverLoc, tempReceiverObj.getType(), tempReceiverObj.getDelay());
-                    System.out.println("Debug: Receiver " + tempReceiverObjs.indexOf(tempReceiverObj) + " akzeptiert");
-                }*/
-
             Circuit tempCircuit = new Circuit(UUID.fromString((String) (tempCircuitObj.get("o") == null ? "" : tempCircuitObj.get("o"))), circuitManager);
             tempReceiverObjs = (ArrayList) tempCircuitObj.get("r");
 
