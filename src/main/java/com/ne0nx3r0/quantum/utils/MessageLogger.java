@@ -16,7 +16,7 @@ public class MessageLogger {
     private Map<String, String> messages;
     private Logger logger;
 
-    public MessageLogger(Logger logger, Map messages) {
+    public MessageLogger(Logger logger, Map<String, String> messages) {
         this.logger = logger;
         this.messages = messages;
     }

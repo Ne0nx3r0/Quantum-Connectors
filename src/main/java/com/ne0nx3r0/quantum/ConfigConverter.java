@@ -88,7 +88,6 @@ public class ConfigConverter {
                     Logger.getLogger(CircuitManager.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-
             File testFile = new File(plugin.getDataFolder(), "circuits.yml.bak");
             new File(plugin.getDataFolder(), "circuits.yml").renameTo(testFile);
         }

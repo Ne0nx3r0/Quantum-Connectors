@@ -29,6 +29,7 @@ public class CircuitLoader {
     }
 
 
+    // TODO: 19.01.17 CircuitLoader needs a rewrite
     public void loadWorld(World world) {
         //at least create a blank holder
         worlds.put(world, new HashMap<>());
@@ -65,6 +66,11 @@ public class CircuitLoader {
         for (Map<String, Object> tempCircuitObj : tempCircuits) {
             //dummy value of # for owners
             Circuit tempCircuit = new Circuit(UUID.fromString(tempCircuitObj.get("o") == null ? "" : tempCircuitObj.get("o")), circuitManager);
+            tempReceiverObjs = (ArrayList) tempCircuitObj.get("r");
+
+
+            //dummy value of # for owners
+            tempCircuit = new Circuit(UUID.fromString((String) (tempCircuitObj.get("o") == null ? "" : tempCircuitObj.get("o"))), circuitManager);
             tempReceiverObjs = (ArrayList) tempCircuitObj.get("r");
 
             //TODO: circuit/receiver verification
@@ -122,6 +128,8 @@ public class CircuitLoader {
             }
         }
 
+        // TODO: 19.01.17 to here
+
         worlds.put(world, worldCircuits);
     }
 
@@ -170,7 +178,6 @@ public class CircuitLoader {
                 tempCircuitObj.put("z", cLoc.getBlockZ());
                 System.out.println(currentCircuit.getOwner().toString());
                 tempCircuitObj.put("o", currentCircuit.getOwner().toString());
-
                 currentReceivers = currentCircuit.getReceivers();
 
                 tempReceiverObjs = new ArrayList<>();

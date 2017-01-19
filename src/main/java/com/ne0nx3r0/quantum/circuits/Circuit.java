@@ -51,6 +51,7 @@ public class Circuit implements ConfigurationSerializable {
 
     public UUID getOwner() {
         return playerUUID;
+
     }
 
     public void setOwner(UUID playerUUID) {
