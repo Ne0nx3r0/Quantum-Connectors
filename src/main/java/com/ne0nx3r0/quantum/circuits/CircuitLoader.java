@@ -65,7 +65,12 @@ public class CircuitLoader {
 
         for (Map<String, Object> tempCircuitObj : tempCircuits) {
             //dummy value of # for owners
-            Circuit tempCircuit = new Circuit(UUID.fromString(tempCircuitObj.get("o") == null ? "" : (String) tempCircuitObj.get("o")), circuitManager);
+            Circuit tempCircuit = new Circuit(
+                    UUID.fromString(tempCircuitObj.get("o") == null ? "" : (String) tempCircuitObj.get("o")),
+                    circuitManager,
+                    CircuitTypes.getByName((String) tempCircuitObj.get("type"))
+            );
+
             tempReceiverObjs = (ArrayList) tempCircuitObj.get("r");
 
             //TODO: circuit/receiver verification
@@ -80,8 +85,8 @@ public class CircuitLoader {
                 if (circuitManager.isValidReceiver(tempReceiverLoc.getBlock())) {
                     tempCircuit.addReceiver(
                             tempReceiverLoc,
-                            (Integer) tempReceiverObj.get("t"),
-                            (Integer) tempReceiverObj.get("d"));
+                            (Long) tempReceiverObj.get("d")
+                    );
                 }
 
 

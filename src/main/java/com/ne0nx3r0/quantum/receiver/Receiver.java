@@ -1,6 +1,5 @@
 package com.ne0nx3r0.quantum.receiver;
 
-import com.ne0nx3r0.quantum.circuits.CircuitTypes;
 import org.bukkit.Location;
 
 public interface Receiver {
@@ -14,8 +13,6 @@ public interface Receiver {
      * @return the namedType of the receiver
      */
     String getType();
-
-    CircuitTypes getCircuitType();
 
     long getDelay();
 

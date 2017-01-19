@@ -14,22 +14,21 @@ public class Circuit {
     private List<Receiver> receivers;
     private UUID playerUUID;
     private CircuitManager circuitManager;
+    private CircuitTypes circuitTypes;
 
-    public Circuit(UUID playerUUID, CircuitManager cmanager) {
-        this(playerUUID, Collections.EMPTY_LIST, cmanager);
+    public Circuit(UUID playerUUID, CircuitManager cmanager, CircuitTypes circuitTypes) {
+        this(playerUUID, Collections.EMPTY_LIST, cmanager, circuitTypes);
     }
 
-    public Circuit(UUID playerUUID, List<Receiver> receivers, CircuitManager cmanager) {
+    public Circuit(UUID playerUUID, List<Receiver> receivers, CircuitManager cmanager, CircuitTypes circuitTypes) {
         this.playerUUID = playerUUID;
-        if (receivers == null) {
-            this.receivers = new ArrayList<Receiver>();
-        } else
-            this.receivers = new ArrayList<Receiver>(receivers);
+        this.circuitTypes = circuitTypes;
+        this.receivers = new ArrayList<>(receivers);
         circuitManager = cmanager;
     }
 
-    public void addReceiver(Location loc, int type, int delay) {
-        receivers.add(circuitManager.fromType(loc, type, delay));
+    public void addReceiver(Location loc, long delay) {
+        receivers.add(circuitManager.fromType(loc, delay));
     }
 
     public List<Receiver> getReceivers() {
@@ -49,7 +48,12 @@ public class Circuit {
 
     }
 
+
     public void setOwner(UUID playerUUID) {
         this.playerUUID = playerUUID;
+    }
+
+    public CircuitTypes getCircuitType() {
+        return circuitTypes;
     }
 }

@@ -1,6 +1,5 @@
 package com.ne0nx3r0.quantum.receiver;
 
-import com.ne0nx3r0.quantum.circuits.CircuitTypes;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -26,11 +25,6 @@ public class DelayedReceiver implements Receiver {
     @Override
     public String getType() {
         return receiver.getType();
-    }
-
-    @Override
-    public CircuitTypes getCircuitType() {
-        return receiver.getCircuitType();
     }
 
     @Override

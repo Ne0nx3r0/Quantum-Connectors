@@ -14,14 +14,14 @@ public class RedstoneLampReceiver extends AbstractReceiver {
     private List<Block> keepAlives;
     private QSWorld qsWorld;
 
-    public RedstoneLampReceiver(Location location, int type, int delay, List<Block> keepAlives, QSWorld qsWorld) {
-        super(location, type, delay);
+    public RedstoneLampReceiver(Location location, long delay, List<Block> keepAlives, QSWorld qsWorld) {
+        super(location, delay);
         this.keepAlives = keepAlives;
         this.qsWorld = qsWorld;
     }
 
-    public RedstoneLampReceiver(Location location, int type) {
-        super(location, type);
+    public RedstoneLampReceiver(Location location) {
+        super(location);
     }
 
     @Override

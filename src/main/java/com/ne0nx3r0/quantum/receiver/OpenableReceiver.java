@@ -6,16 +6,13 @@ import org.bukkit.block.BlockState;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.Openable;
 
-/**
- * Created by ysl3000 on 14.01.17.
- */
 public class OpenableReceiver extends AbstractReceiver {
-    public OpenableReceiver(Location location, int type) {
-        super(location, type);
+    public OpenableReceiver(Location location) {
+        super(location);
     }
 
-    public OpenableReceiver(Location location, int type, int delay) {
-        super(location, type, delay);
+    public OpenableReceiver(Location location, long delay) {
+        super(location, delay);
     }
 
     @Override

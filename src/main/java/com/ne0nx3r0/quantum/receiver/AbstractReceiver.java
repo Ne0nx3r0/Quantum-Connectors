@@ -1,6 +1,5 @@
 package com.ne0nx3r0.quantum.receiver;
 
-import com.ne0nx3r0.quantum.circuits.CircuitTypes;
 import org.bukkit.Location;
 
 /**
@@ -9,33 +8,21 @@ import org.bukkit.Location;
 public abstract class AbstractReceiver implements Receiver {
 
     protected Location location;
-    protected CircuitTypes circuitTypes;
     protected long delay;
 
 
-    public AbstractReceiver(Location location, int type) {
-        this(location, type, 0);
+    public AbstractReceiver(Location location) {
+        this(location, 0);
     }
 
-    public AbstractReceiver(Location location, int type, int delay) {
-        this(location, CircuitTypes.getByID(type), delay);
-    }
-
-    public AbstractReceiver(Location location, CircuitTypes circuitTypes, long delay) {
+    public AbstractReceiver(Location location, long delay) {
         this.location = location;
-        this.circuitTypes = circuitTypes;
         this.delay = delay;
     }
-
 
     @Override
     public Location getLocation() {
         return location;
-    }
-
-    @Override
-    public CircuitTypes getCircuitType() {
-        return this.circuitTypes;
     }
 
     @Override

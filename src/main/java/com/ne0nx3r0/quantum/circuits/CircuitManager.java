@@ -5,6 +5,7 @@ import com.ne0nx3r0.quantum.QuantumConnectors;
 import com.ne0nx3r0.quantum.nmswrapper.QSWorld;
 import com.ne0nx3r0.quantum.receiver.*;
 import com.ne0nx3r0.quantum.utils.MessageLogger;
+import com.ne0nx3r0.quantum.utils.Normalizer;
 import com.ne0nx3r0.quantum.utils.ValidMaterials;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -25,7 +26,6 @@ public final class CircuitManager implements ICircuitManager {
     // keepAlives - lamps/torches/etc that should stay powered regardless of redstone events
     private ArrayList<Block> keepAlives;
     // Allow circuitTypes/circuits
-    private Map<String, Integer> circuitTypes = new HashMap<>();
     private QuantumConnectors plugin;
     private QSWorld qsWorld;
     // Lookup/Storage for circuits, and subsequently their receivers
@@ -39,11 +39,6 @@ public final class CircuitManager implements ICircuitManager {
         this.qsWorld = qsWorld;
         this.keepAlives = new ArrayList<>();
         this.circuitLoader = new CircuitLoader(qc, worlds, this, messageLogger);
-
-        //Setup available circuit types
-        for (CircuitTypes t : CircuitTypes.values()) {
-            circuitTypes.put(t.name, t.id);
-        }
 
         //Create a holder for pending circuits
         this.pendingCircuits = new HashMap<>();
@@ -77,7 +72,7 @@ public final class CircuitManager implements ICircuitManager {
     }
 
     private String getValidString(List<Material> materials) {
-        return String.join(", ", ValidMaterials.normalizeMaterialNames(materials, ValidMaterials.NORMALIZER));
+        return String.join(", ", Normalizer.normalizeEnumNames(materials, Normalizer.NORMALIZER));
     }
 
     public String getValidReceiversString() {
@@ -125,7 +120,7 @@ public final class CircuitManager implements ICircuitManager {
 
                 int receiverOldCurrent = getBlockCurrent(receiver.getLocation().getBlock());
 
-                switch (receiver.getCircuitType()) {
+                switch (circuit.getCircuitType()) {
 
                     case OFF:
                         if (newCurrent == 0 && oldCurrent > 0) {
@@ -202,7 +197,7 @@ public final class CircuitManager implements ICircuitManager {
 
     // Temporary circuit stuff
 // I really don't know what order this deserves among the existing class methods
-    public PendingCircuit addPendingCircuit(Player player, int type, int delay) {
+    public PendingCircuit addPendingCircuit(Player player, CircuitTypes type, int delay) {
         PendingCircuit pc = new PendingCircuit(player.getUniqueId(), type, delay, this);
         pendingCircuits.put(player.getName(), pc);
 
@@ -223,15 +218,11 @@ public final class CircuitManager implements ICircuitManager {
 
     //Circuit Types
     public boolean isValidCircuitType(String type) {
-        return circuitTypes.containsKey(type);
+        return CircuitTypes.getByName(type) != null;
     }
 
-    public int getCircuitType(String sType) {
-        return circuitTypes.get(sType);
-    }
-
-    public Map<String, Integer> getValidCircuitTypes() {
-        return circuitTypes;
+    public CircuitTypes getCircuitType(String sType) {
+        return CircuitTypes.getByName(sType);
     }
 
     public CircuitLoader getCircuitLoader() {
@@ -243,23 +234,23 @@ public final class CircuitManager implements ICircuitManager {
     }
 
     //Receiver_old Types
-    public Receiver fromType(Location location, int type, int delay) {
-        return fromType(location, type, delay, keepAlives, qsWorld);
+    public Receiver fromType(Location location, long delay) {
+        return fromType(location, delay, keepAlives, qsWorld);
     }
 
-    public static Receiver fromType(Location location, int type, int delay, List<Block> keepAlives, QSWorld qsWorld) {
+    public static Receiver fromType(Location location, long delay, List<Block> keepAlives, QSWorld qsWorld) {
         Material m = location.getBlock().getType();
 
         if (ValidMaterials.LAMP.contains(m)) {
-            return new RedstoneLampReceiver(location, type, delay, keepAlives, qsWorld);
+            return new RedstoneLampReceiver(location, delay, keepAlives, qsWorld);
         } else if (ValidMaterials.OPENABLE.contains(m)) {
-            return new OpenableReceiver(location, type, delay);
+            return new OpenableReceiver(location, delay);
         } else if (ValidMaterials.LEVER.contains(m)) {
-            return new LeverReceiver(location, type, delay);
+            return new LeverReceiver(location, delay);
         } else if (ValidMaterials.RAIL.contains(m)) {
-            return new PoweredRailReceiver(location, type, delay);
+            return new PoweredRailReceiver(location, delay);
         } else if (ValidMaterials.PISTON.contains(m)) {
-            return new PistonReceiver(location, type, delay);
+            return new PistonReceiver(location, delay);
         }
         return null;
 

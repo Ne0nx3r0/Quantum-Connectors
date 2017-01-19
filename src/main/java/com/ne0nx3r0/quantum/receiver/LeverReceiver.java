@@ -8,12 +8,12 @@ import org.bukkit.material.Lever;
  * Created by ysl3000 on 14.01.17.
  */
 public class LeverReceiver extends AbstractReceiver {
-    public LeverReceiver(Location location, int type) {
-        super(location, type);
+    public LeverReceiver(Location location) {
+        this(location, 0);
     }
 
-    public LeverReceiver(Location location, int type, int delay) {
-        super(location, type, delay);
+    public LeverReceiver(Location location, long delay) {
+        super(location, delay);
     }
 
     /**

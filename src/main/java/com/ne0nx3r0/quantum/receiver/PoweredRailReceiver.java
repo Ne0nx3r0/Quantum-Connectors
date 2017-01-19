@@ -4,16 +4,13 @@ import org.bukkit.Location;
 import org.bukkit.block.BlockState;
 import org.bukkit.material.PoweredRail;
 
-/**
- * Created by ysl3000 on 14.01.17.
- */
 public class PoweredRailReceiver extends AbstractReceiver {
-    public PoweredRailReceiver(Location location, int type) {
-        super(location, type);
+    public PoweredRailReceiver(Location location) {
+        super(location);
     }
 
-    public PoweredRailReceiver(Location location, int type, int delay) {
-        super(location, type, delay);
+    public PoweredRailReceiver(Location location, long delay) {
+        super(location, delay);
     }
 
     @Override

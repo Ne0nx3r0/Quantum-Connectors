@@ -7,22 +7,22 @@ import java.util.UUID;
 public class PendingCircuit {
     private Location senderLocation;
     private Circuit circuit;
-    private int currentType;
-    private int currentDelay;
+    private long currentDelay;
+    private CircuitTypes circuitType;
 
-    public PendingCircuit(UUID ownerUUID, int type, int delay, CircuitManager cmanager) {
-        currentType = type;
+    public PendingCircuit(UUID ownerUUID, CircuitTypes type, int delay, CircuitManager cmanager) {
         currentDelay = delay;
-        circuit = new Circuit(ownerUUID, cmanager);
+        this.circuitType = type;
+        circuit = new Circuit(ownerUUID, cmanager, circuitType);
     }
 
-    public void setCircuitType(int type, int delay) {
-        currentType = type;
+    public void setCircuitType(CircuitTypes type, long delay) {
+        circuitType = type;
         currentDelay = delay;
     }
 
-    public int getCurrentType() {
-        return currentType;
+    public CircuitTypes getCurrentType() {
+        return circuitType;
     }
 
     public Location getSenderLocation() {
@@ -44,7 +44,7 @@ public class PendingCircuit {
     // Note there is no remove receiver function, because this is a one way road
     // If the player cancels, this whole object gets blown away. 
     public void addReceiver(Location loc) {
-        this.circuit.addReceiver(loc, this.currentType, this.currentDelay);
+        this.circuit.addReceiver(loc, this.currentDelay);
     }
 
     public boolean hasReceiver() {

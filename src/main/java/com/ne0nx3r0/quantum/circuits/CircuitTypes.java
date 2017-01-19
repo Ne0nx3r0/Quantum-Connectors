@@ -45,4 +45,6 @@ public enum CircuitTypes {
     public static CircuitTypes getByName(String name) {
         return BY_NAME.get(name);
     }
+
+
 }

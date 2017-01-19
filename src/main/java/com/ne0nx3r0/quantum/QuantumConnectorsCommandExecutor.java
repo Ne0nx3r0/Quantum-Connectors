@@ -4,6 +4,7 @@ import com.ne0nx3r0.quantum.circuits.CircuitManager;
 import com.ne0nx3r0.quantum.circuits.CircuitTypes;
 import com.ne0nx3r0.quantum.circuits.PendingCircuit;
 import com.ne0nx3r0.quantum.utils.MessageLogger;
+import com.ne0nx3r0.quantum.utils.Normalizer;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -12,6 +13,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.Arrays;
 
 public class QuantumConnectorsCommandExecutor implements CommandExecutor {
     private QuantumConnectors plugin;
@@ -46,12 +49,9 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
         if (args.length == 0 || args[0].equalsIgnoreCase("?")) {
             messageLogger.msg(player, messageLogger.getMessage("usage"));
 
-            String s = "";
-            for (String sKey : circuitManager.getValidCircuitTypes().keySet()) {
-                s += sKey + ", ";
-            }
-
-            messageLogger.msg(player, ChatColor.YELLOW + messageLogger.getMessage("available_circuits") + ChatColor.WHITE + s.substring(0, s.length() - 2));
+            messageLogger.msg(player, ChatColor.YELLOW +
+                    messageLogger.getMessage("available_circuits") + ChatColor.WHITE +
+                    Normalizer.normalizeEnumNames(Arrays.asList(CircuitTypes.values()), Normalizer.NORMALIZER));
         }
 
 // Command was: "/qc cancel" or "/qc abort"
@@ -107,7 +107,7 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
 
 
                         messageLogger.msg(player, messageLogger.getMessage("circuit_created")
-                                .replace("%circuit%", CircuitTypes.getByID(pc.getCurrentType()).name));
+                                .replace("%circuit%", pc.getCurrentType().name));
                     }
                     //They have not setup at least one receiver
                     else {
@@ -144,7 +144,9 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
                             || (dDelay > QuantumConnectors.MAX_DELAY_TIME && !player.hasPermission("QuantumConnectors.ignoreLimits"))) {
                         dDelay = 0;
 
-                        messageLogger.msg(player, ChatColor.RED + messageLogger.getMessage("invalid_delay").replaceAll("%maxdelay%", new Integer(QuantumConnectors.MAX_DELAY_TIME).toString()));
+                        messageLogger.msg(player, ChatColor.RED +
+                                messageLogger.getMessage("invalid_delay").
+                                        replaceAll("%maxdelay%", Integer.toString(QuantumConnectors.MAX_DELAY_TIME)));
                     }
                 }
 

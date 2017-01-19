@@ -7,12 +7,12 @@ import org.bukkit.material.PistonBaseMaterial;
  * Created by ysl3000 on 14.01.17.
  */
 public class PistonReceiver extends AbstractReceiver {
-    public PistonReceiver(Location location, int type) {
-        super(location, type);
+    public PistonReceiver(Location location) {
+        super(location);
     }
 
-    public PistonReceiver(Location location, int type, int delay) {
-        super(location, type, delay);
+    public PistonReceiver(Location location, long delay) {
+        super(location, delay);
     }
 
     @Override
