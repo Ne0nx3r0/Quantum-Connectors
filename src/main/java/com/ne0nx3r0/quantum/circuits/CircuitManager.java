@@ -59,24 +59,6 @@ public final class CircuitManager {
         }
     }
 
-    public static Receiver fromType(Location location, int type, int delay, List<Block> keepAlives, QSWorld qsWorld) {
-        Material m = location.getBlock().getType();
-
-        if (ValidMaterials.LAMP.contains(m)) {
-            return new RedstoneLampReceiver(location, type, delay, keepAlives, qsWorld);
-        } else if (ValidMaterials.OPENABLE.contains(m)) {
-            return new OpenableReceiver(location, type, delay);
-        } else if (ValidMaterials.LEVER.contains(m)) {
-            return new LeverReceiver(location, type, delay);
-        } else if (ValidMaterials.RAIL.contains(m)) {
-            return new PoweredRailReceiver(location, type, delay);
-        } else if (ValidMaterials.PISTON.contains(m)) {
-            return new PistonReceiver(location, type, delay);
-        }
-        return null;
-
-    }
-
     public boolean isValidReceiver(Block block) {
         Material mBlock = block.getType();
         for (int i = 0; i < ValidMaterials.validReceivers.length; i++) {
@@ -156,37 +138,37 @@ public final class CircuitManager {
         Circuit circuit = getCircuit(lSender);
         List<Receiver> receivers = circuit.getReceivers();
         if (!receivers.isEmpty()) {
-            int iType;
+            CircuitTypes type;
             int iDelay;
             Receiver r;
             for (int i = 0; i < receivers.size(); i++) {
                 r = receivers.get(i);
 
-                iType = r.getType();
+                type = CircuitTypes.getByID(r.getType());
                 iDelay = r.getDelay();
                 Block b = r.getLocation().getBlock();
                 int receiverOldCurrent = getBlockCurrent(b);
 
                 if (isValidReceiver(b)) {
-                    if (iType == CircuitTypes.QUANTUM.getId()) {
+                    if (type == CircuitTypes.QUANTUM) {
                         setReceiver(r, newCurrent > 0, iDelay);
-                    } else if (iType == CircuitTypes.ON.getId()) {
+                    } else if (type == CircuitTypes.ON) {
                         if (newCurrent > 0 && oldCurrent == 0) {
                             setReceiver(r, true, iDelay);
                         }
-                    } else if (iType == CircuitTypes.OFF.getId()) {
+                    } else if (type == CircuitTypes.OFF) {
                         if (newCurrent == 0 && oldCurrent > 0) {
                             setReceiver(r, false, iDelay);
                         }
-                    } else if (iType == CircuitTypes.TOGGLE.getId()) {
+                    } else if (type == CircuitTypes.TOGGLE) {
                         if (newCurrent > 0 && oldCurrent == 0) {
                             setReceiver(r, getBlockCurrent(b) <= 0, iDelay);
                         }
-                    } else if (iType == CircuitTypes.REVERSE.getId()) {
+                    } else if (type == CircuitTypes.REVERSE) {
                         if (oldCurrent == 0 || newCurrent == 0) {
                             setReceiver(r, newCurrent <= 0, iDelay);
                         }
-                    } else if (iType == CircuitTypes.RANDOM.getId()) {
+                    } else if (type == CircuitTypes.RANDOM) {
                         if (newCurrent > 0 && (oldCurrent == 0 || newCurrent == 0)) {
                             setReceiver(r, new Random().nextBoolean(), iDelay);
                         }
@@ -196,11 +178,11 @@ public final class CircuitManager {
                         circuit.delReceiver(r);
                     }
 
-                    if (chain <= QuantumConnectors.MAX_CHAIN_LINKS-2 && circuitExists(b.getLocation())) {
+                    if (chain <= QuantumConnectors.MAX_CHAIN_LINKS - 2 && circuitExists(b.getLocation())) {
                         if (QuantumConnectors.MAX_CHAIN_LINKS > 0) { //allow zero to be infinite
                             chain++;
                         }
-                        activateCircuit(r.getLocation(), receiverOldCurrent, getBlockCurrent(b),chain);
+                        activateCircuit(r.getLocation(), receiverOldCurrent, getBlockCurrent(b), chain);
                     }
                 } else {
                     circuit.delReceiver(r);
@@ -287,27 +269,6 @@ public final class CircuitManager {
         return fromType(location, type, delay, keepAlives, qsWorld);
     }
 
-    private class DelayedSetReceiver implements Runnable {
-        private final Receiver receiver;
-
-        private final boolean on;
-
-        DelayedSetReceiver(Receiver receiver, boolean on) {
-            this.receiver = receiver;
-            this.on = on;
-        }
-
-        @Override
-        public void run() {
-            setReceiver(receiver, on);
-        }
-    }
-
-    //Receiver_old Types
-    public Receiver fromType(Location location, int type, int delay) {
-        return fromType(location, type, delay, keepAlives, qsWorld);
-    }
-
     public static Receiver fromType(Location location, int type, int delay, List<Block> keepAlives, QSWorld qsWorld) {
         Material m = location.getBlock().getType();
 
@@ -324,5 +285,21 @@ public final class CircuitManager {
         }
         return null;
 
+    }
+
+    private class DelayedSetReceiver implements Runnable {
+        private final Receiver receiver;
+
+        private final boolean on;
+
+        DelayedSetReceiver(Receiver receiver, boolean on) {
+            this.receiver = receiver;
+            this.on = on;
+        }
+
+        @Override
+        public void run() {
+            setReceiver(receiver, on);
+        }
     }
 }

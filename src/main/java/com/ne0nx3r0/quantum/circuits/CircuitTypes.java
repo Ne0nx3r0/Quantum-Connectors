@@ -1,6 +1,10 @@
 package com.ne0nx3r0.quantum.circuits;
 
-public enum CircuitTypes{
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+public enum CircuitTypes {
     QUANTUM(0),
     ON(1),
     OFF(2),
@@ -8,56 +12,37 @@ public enum CircuitTypes{
     REVERSE(4),
     RANDOM(5);
 
-    public int id;
-    public String name;
+    private final static Map<Integer, CircuitTypes> BY_ID = new HashMap<>();
+    private final static Map<String, CircuitTypes> BY_NAME = new HashMap<>();
 
-    CircuitTypes(int id, String name){
+    static {
+
+        Arrays.asList(CircuitTypes.values()).forEach(c -> {
+            BY_ID.put(c.id, c);
+            BY_NAME.put(c.name, c);
+        });
+
+
+    }
+
+    public final int id;
+    public final String name;
+
+    CircuitTypes(int id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    CircuitTypes(int id){
+    CircuitTypes(int id) {
         this.id = id;
         this.name = this.name().toLowerCase();
     }
 
-    public static String getName(int id) {
-        if (id == CircuitTypes.QUANTUM.getId()) {
-            return "QUANTUM";
-        } else if (id == CircuitTypes.ON.getId()) {
-            return "ON";
-        } else if (id == CircuitTypes.OFF.getId()) {
-            return "OFF";
-        } else if (id == CircuitTypes.TOGGLE.getId()) {
-            return "TOGGLE";
-        } else if (id == CircuitTypes.REVERSE.getId()) {
-            return "REVERSE";
-        } else if (id == CircuitTypes.RANDOM.getId()) {
-            return "RANDOM";
-        } else {
-            return "unknown";
-        }
+    public static CircuitTypes getByID(int id) {
+        return BY_ID.get(id);
     }
-    
-    public int getId(){
-        return id;
-    }
-    
-    public static String getName(int id){
-        if (id == CircuitTypes.QUANTUM.getId()) {
-            return "QUANTUM";
-        } else if (id == CircuitTypes.ON.getId()) {
-            return "ON";
-        } else if (id == CircuitTypes.OFF.getId()) {
-            return "OFF";
-        } else if (id == CircuitTypes.TOGGLE.getId()) {
-            return "TOGGLE";
-        } else if (id == CircuitTypes.REVERSE.getId()) {
-            return "REVERSE";
-        } else if (id == CircuitTypes.RANDOM.getId()) {
-            return "RANDOM";
-        } else {
-            return "unknown";
-        }
+
+    public static CircuitTypes getByName(String name) {
+        return BY_NAME.get(name);
     }
 }

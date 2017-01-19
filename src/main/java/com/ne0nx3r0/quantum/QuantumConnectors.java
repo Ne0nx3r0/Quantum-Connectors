@@ -128,6 +128,9 @@ public class QuantumConnectors extends JavaPlugin {
         AUTOSAVE_INTERVAL = config.getInt("autosave_interval_minutes", AUTOSAVE_INTERVAL);
         UPDATE_NOTIFICATIONS = config.getBoolean("update_notifications", UPDATE_NOTIFICATIONS);
         this.saveConfig();
+
+        File messagesFile = new File(this.getDataFolder(), "messages.yml");
+
         messages = new HashMap<>();
         if (!messagesFile.exists()) {
             messagesFile.getParentFile().mkdirs();

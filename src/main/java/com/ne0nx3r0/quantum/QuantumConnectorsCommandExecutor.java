@@ -105,8 +105,9 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
 
                         circuitManager.removePendingCircuit(player);
 
+
                         messageLogger.msg(player, messageLogger.getMessage("circuit_created")
-                                .replace("%circuit%", CircuitTypes.getName(pc.getCurrentType())));
+                                .replace("%circuit%", CircuitTypes.getByID(pc.getCurrentType()).name));
                     }
                     //They have not setup at least one receiver
                     else {

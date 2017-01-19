@@ -2,13 +2,15 @@ package com.ne0nx3r0.quantum.circuits;
 
 import com.ne0nx3r0.quantum.receiver.Receiver;
 import org.bukkit.Location;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 //TODO: Allow naming of circuits
 
-public class Circuit implements ConfigurationSerializable {
+public class Circuit {
     private List<Receiver> receivers;
     private UUID playerUUID;
     private CircuitManager circuitManager;
@@ -24,13 +26,6 @@ public class Circuit implements ConfigurationSerializable {
         } else
             this.receivers = new ArrayList<Receiver>(receivers);
         circuitManager = cmanager;
-    }
-
-    public Circuit(Map<String, Object> map, CircuitManager circuitManager) {
-
-        this(UUID.fromString((String) map.get("o")), (List<Receiver>) map.get("r"), circuitManager);
-        //return circuit;
-
     }
 
     public void addReceiver(Location loc, int type, int delay) {
@@ -57,18 +52,4 @@ public class Circuit implements ConfigurationSerializable {
     public void setOwner(UUID playerUUID) {
         this.playerUUID = playerUUID;
     }
-
-    @Override
-    public Map<String, Object> serialize() {
-
-        Map<String, Object> map = new HashMap<>();
-
-        map.put("uuid", playerUUID.toString());
-        map.put("receivers", receivers);
-
-        return map;
-
-    }
-
-
 }
