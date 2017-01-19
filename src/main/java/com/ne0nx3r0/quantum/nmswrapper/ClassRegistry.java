@@ -23,7 +23,6 @@ public class ClassRegistry {
     }
 
 
-
     public Method getNmsWorldField() {
         return nmsWorldHandle;
     }

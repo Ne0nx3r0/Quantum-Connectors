@@ -161,7 +161,6 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
 
                     messageLogger.msg(player, messageLogger.getMessage("circuit_ready")
                             .replace("%circuit%", args[0].toUpperCase())
-
                             .replace("%delay%", Double.toString(dDelay)));
                 } else {
 
@@ -171,7 +170,6 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
 
                     messageLogger.msg(player, messageLogger.getMessage("circuit_changed")
                             .replace("%circuit%", args[0].toUpperCase())
-
                             .replace("%delay%", Double.toString(dDelay)));
                 }
             }

@@ -48,11 +48,9 @@ public class CircuitLoader {
         FileConfiguration yml = YamlConfiguration.loadConfiguration(ymlFile);
         yml.getMapList("circuits");
 
-
-        // TODO: 19.01.17 rewrite from here
-
-        ArrayList<Map<?, ?>> tempCircuits;
-        tempCircuits = new ArrayList<>(yml.getMapList("circuits"));
+        List<Map<String, Object>> tempCircuits;
+        tempCircuits = new ArrayList(yml.getMapList("circuits"));
+        System.out.println("Debug: Anzahl Schaltungen " + tempCircuits.size());
 
         if (tempCircuits.size() == 0) {
             messageLogger.log(messageLogger.getMessage("loading_no_circuits").replace("%file%", ymlFile.getName()));
@@ -60,22 +58,15 @@ public class CircuitLoader {
         }
 
         Map<Location, Circuit> worldCircuits = new HashMap<>();
-
         Location tempCircuitObjLoc;
-
-        List tempReceiverObjs;
         Map<String, Object> tempReceiverObj;
+        ArrayList<Receiver> tempReceiverObjs;
         Location tempReceiverLoc;
 
-        for (Map<?, ?> tempCircuitObj : tempCircuits) {
-
-
-            Receiver receiver = circuitManager.fromType((Location) tempCircuitObj.get("location"), (Integer) tempCircuitObj.get("type"), (Integer) tempCircuitObj.get("delay"));
-
-
+        for (Map<String, Object> tempCircuitObj : tempCircuits) {
             //dummy value of # for owners
-            Circuit tempCircuit = (Circuit) tempCircuitObj;
-            tempReceiverObjs = tempCircuit.getReceivers();
+            Circuit tempCircuit = new Circuit(UUID.fromString(tempCircuitObj.get("o") == null ? "" : tempCircuitObj.get("o")), circuitManager);
+            tempReceiverObjs = (ArrayList) tempCircuitObj.get("r");
 
 
             //dummy value of # for owners
@@ -97,6 +88,8 @@ public class CircuitLoader {
                             (Integer) tempReceiverObj.get("t"),
                             (Integer) tempReceiverObj.get("d"));
                 }
+
+
                 //Invalid receiver block type
                 else {
                     if (QuantumConnectors.VERBOSE_LOGGING) messageLogger.log(
@@ -183,8 +176,8 @@ public class CircuitLoader {
                 tempCircuitObj.put("x", cLoc.getBlockX());
                 tempCircuitObj.put("y", cLoc.getBlockY());
                 tempCircuitObj.put("z", cLoc.getBlockZ());
-                tempCircuitObj.put("o", (String) currentCircuit.getOwner().toString());
-
+                System.out.println(currentCircuit.getOwner().toString());
+                tempCircuitObj.put("o", currentCircuit.getOwner().toString());
                 currentReceivers = currentCircuit.getReceivers();
 
                 tempReceiverObjs = new ArrayList<>();

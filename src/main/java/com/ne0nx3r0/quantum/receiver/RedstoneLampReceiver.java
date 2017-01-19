@@ -28,13 +28,11 @@ public class RedstoneLampReceiver extends com.ne0nx3r0.quantum.receiver.Receiver
     public void setActive(boolean powerOn) {
         if (this.location.getBlock().getType() == Material.REDSTONE_LAMP_ON) {
             if (!powerOn) {
-
                 keepAlives.remove(location.getBlock());
                 this.getLocation().getBlock().setType(Material.REDSTONE_LAMP_OFF);
             }
         } else if (this.getLocation().getBlock().getType() == Material.REDSTONE_LAMP_OFF) {
             if (powerOn) {
-
                 keepAlives.add(location.getBlock());
                 this.qsWorld.setStatic(location.getWorld(), true);
                 location.getBlock().setType(Material.REDSTONE_LAMP_ON);

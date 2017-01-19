@@ -11,7 +11,6 @@ import java.util.*;
 public class Circuit implements ConfigurationSerializable {
     private List<Receiver> receivers;
     private UUID playerUUID;
-
     private CircuitManager circuitManager;
 
     public Circuit(UUID playerUUID, CircuitManager cmanager) {

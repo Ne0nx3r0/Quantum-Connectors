@@ -1,6 +1,5 @@
 package com.ne0nx3r0.quantum.utils;
 
-
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -8,7 +7,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/*
+/**
  * Loads all Messages from message.yml
  * Provides support for player messages
  */

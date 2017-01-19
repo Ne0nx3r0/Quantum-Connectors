@@ -4,7 +4,6 @@ import org.bukkit.Location;
 
 import java.util.UUID;
 
-
 public class PendingCircuit {
     private Location senderLocation;
     private Circuit circuit;

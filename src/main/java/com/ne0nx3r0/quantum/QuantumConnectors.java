@@ -29,6 +29,8 @@ public class QuantumConnectors extends JavaPlugin {
     public static boolean VERBOSE_LOGGING = false;
     private static int AUTOSAVE_INTERVAL = 30;//specified here in minutes
     private static int AUTO_SAVE_ID = -1;
+    // Version
+    public String apiVersion;
     // Localized Messages
     private Map<String, String> messages;
     private QuantumConnectorsWorldListener worldListener;
@@ -38,15 +40,10 @@ public class QuantumConnectors extends JavaPlugin {
     private QuantumConnectorsPlayerListener playerListener;
     private QuantumConnectorsBlockListener blockListener;
     private MessageLogger messageLogger;
-
-
     private boolean UPDATE_NOTIFICATIONS = false;
     // Updater
     private boolean updateAvailable = false;
     private String updateName;
-
-    // Version
-    public String apiVersion;
     //private boolean outdated = false;
     //Scheduled save mechanism
     private Runnable autosaveCircuits = new Runnable() {
@@ -131,12 +128,7 @@ public class QuantumConnectors extends JavaPlugin {
         AUTOSAVE_INTERVAL = config.getInt("autosave_interval_minutes", AUTOSAVE_INTERVAL);
         UPDATE_NOTIFICATIONS = config.getBoolean("update_notifications", UPDATE_NOTIFICATIONS);
         this.saveConfig();
-
-
         messages = new HashMap<>();
-
-        File messagesFile = new File(this.getDataFolder(), "messages.yml");
-
         if (!messagesFile.exists()) {
             messagesFile.getParentFile().mkdirs();
             copy(this.getResource("messages.yml"), messagesFile);
