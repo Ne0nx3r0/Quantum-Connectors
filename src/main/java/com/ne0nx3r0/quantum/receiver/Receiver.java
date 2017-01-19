@@ -7,6 +7,12 @@ public interface Receiver {
 
     Location getLocation();
 
+    /**
+     * default receivers return "qc:SimpleClassName"
+     * please define your own prefix to differentiate between plugins registering own Receiver
+     *
+     * @return the namedType of the receiver
+     */
     String getType();
 
     CircuitTypes getCircuitType();

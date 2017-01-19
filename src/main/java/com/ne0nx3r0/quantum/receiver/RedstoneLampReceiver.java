@@ -25,6 +25,16 @@ public class RedstoneLampReceiver extends AbstractReceiver {
     }
 
     @Override
+    public String getType() {
+        return "qc:" + getClass().getSimpleName();
+    }
+
+    @Override
+    public boolean isActive() {
+        return isValid() && this.location.getBlock().getType() == Material.REDSTONE_LAMP_ON;
+    }
+
+    @Override
     public void setActive(boolean powerOn) {
 
         if (isValid()) {
@@ -43,11 +53,6 @@ public class RedstoneLampReceiver extends AbstractReceiver {
                 }
             }
         }
-    }
-
-    @Override
-    public boolean isActive() {
-        return isValid() && this.location.getBlock().getType() == Material.REDSTONE_LAMP_ON;
     }
 
     @Override

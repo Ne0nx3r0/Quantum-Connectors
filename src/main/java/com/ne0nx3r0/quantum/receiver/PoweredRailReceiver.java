@@ -17,6 +17,11 @@ public class PoweredRailReceiver extends AbstractReceiver {
     }
 
     @Override
+    public String getType() {
+        return "qc:" + getClass().getSimpleName();
+    }
+
+    @Override
     public boolean isActive() {
         return ((PoweredRail) location.getBlock().getState().getData()).isPowered();
     }

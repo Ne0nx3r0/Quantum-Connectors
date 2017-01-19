@@ -34,11 +34,6 @@ public abstract class AbstractReceiver implements Receiver {
     }
 
     @Override
-    public String getType() {
-        return this.getClass().getSimpleName();
-    }
-
-    @Override
     public CircuitTypes getCircuitType() {
         return this.circuitTypes;
     }

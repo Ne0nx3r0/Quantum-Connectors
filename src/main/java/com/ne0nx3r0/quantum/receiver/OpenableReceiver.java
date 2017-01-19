@@ -19,6 +19,11 @@ public class OpenableReceiver extends AbstractReceiver {
     }
 
     @Override
+    public String getType() {
+        return "qc:" + getClass().getSimpleName();
+    }
+
+    @Override
     public boolean isActive() {
         return ((Openable) location.getBlock().getState().getData()).isOpen();
     }
