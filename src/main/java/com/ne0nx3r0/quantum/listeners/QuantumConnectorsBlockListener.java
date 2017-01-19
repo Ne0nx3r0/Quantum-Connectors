@@ -13,23 +13,19 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.inventory.FurnaceBurnEvent;
 
-public class QuantumConnectorsBlockListener implements Listener
-{
+public class QuantumConnectorsBlockListener implements Listener {
     public static String string;
     private QuantumConnectors plugin;
     private CircuitManager circuitManager;
 
-    public QuantumConnectorsBlockListener(final QuantumConnectors plugin, CircuitManager circuitManager)
-    {
+    public QuantumConnectorsBlockListener(final QuantumConnectors plugin, CircuitManager circuitManager) {
         this.plugin = plugin;
         this.circuitManager = circuitManager;
     }
 
     @EventHandler(priority = EventPriority.LOW)
-    public void onBlockRedstoneChange(BlockRedstoneEvent e)
-    {
-        if (circuitManager.circuitExists(e.getBlock().getLocation()))
-        {
+    public void onBlockRedstoneChange(BlockRedstoneEvent e) {
+        if (circuitManager.circuitExists(e.getBlock().getLocation())) {
             circuitManager.activateCircuit(e.getBlock().getLocation(), e.getOldCurrent(), e.getNewCurrent());
         }
 
@@ -39,73 +35,51 @@ public class QuantumConnectorsBlockListener implements Listener
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onBlockBreak(BlockBreakEvent event)
-    {
+    public void onBlockBreak(BlockBreakEvent event) {
         Location l = event.getBlock().getLocation();
         if (circuitManager.circuitExists(l)) { // Breaking Sender
             circuitManager.removeCircuit(l);
         }
     }
-    
+
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onFuranceBurn(FurnaceBurnEvent e)
-    {
+    public void onFuranceBurn(FurnaceBurnEvent e) {
         if (circuitManager.circuitExists(e.getBlock().getLocation())) {
-            if(e.isBurning()){
+            if (e.isBurning()) {
                 Location lFurnace = e.getBlock().getLocation();
-                
+
                 //SEND ON
                 circuitManager.activateCircuit(lFurnace, 0, 1);
-                
+
                 //Schedule a check to send the corresponding OFF
                 Bukkit.getScheduler().scheduleSyncDelayedTask(
-                    plugin,
-                    new DelayedFurnaceCoolCheck(lFurnace),
-                    e.getBurnTime()+5
-                ); 
+                        plugin,
+                        new DelayedFurnaceCoolCheck(lFurnace),
+                        e.getBurnTime() + 5
+                );
             }
         }
     }
 
-    private class DelayedFurnaceCoolCheck implements Runnable
-    {
+    private class DelayedFurnaceCoolCheck implements Runnable {
         private final Location lFurnace;
 
-        DelayedFurnaceCoolCheck(Location lFurnace)
-        {
+        DelayedFurnaceCoolCheck(Location lFurnace) {
             this.lFurnace = lFurnace;
         }
-        
+
         @Override
-        public void run()
-        {       
+        public void run() {
             Block bFurnace = lFurnace.getBlock();
 
             // If it's a BURNING_FURNACE it's still on and the next 
             // FurnaceBurnEvent is responsible for dispatching a delayed task
-            if(bFurnace.getType() == Material.FURNACE)
-            {
+            if (bFurnace.getType() == Material.FURNACE) {
                 //Send OFF
-                if (circuitManager.circuitExists(lFurnace))
-                {
+                if (circuitManager.circuitExists(lFurnace)) {
                     circuitManager.activateCircuit(lFurnace, 1, 0);
                 }
             }
         }
     }
-    
-    //Not technically a block event, but for our purposes it acts as one
-   /* public void arrowHit(ProjectileHitEvent e)
-    {
-        if(e.getEntityType() == EntityType.ARROW)
-        {
-            Location l = e.getEntity().getLocation();
-
-            if(l.getBlock().getType() == Material.WOOD_BUTTON
-            && circuitManager.circuitExists(l))
-            {
-                circuitManager.
-            }
-        }
-    }*/
 }

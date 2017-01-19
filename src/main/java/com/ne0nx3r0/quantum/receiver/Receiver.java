@@ -1,45 +1,29 @@
 package com.ne0nx3r0.quantum.receiver;
 
+import com.ne0nx3r0.quantum.circuits.CircuitTypes;
 import org.bukkit.Location;
 
-public abstract class Receiver {
+public interface Receiver {
 
-    protected Location location;
-    protected int type;
-    protected int delay;
+    Location getLocation();
 
+    String getType();
 
-    public Receiver(Location location, int type) {
-        this(location, type, 0);
-    }
+    CircuitTypes getCircuitType();
 
-    public Receiver(Location location, int type, int delay) {
-        this.location = location;
-        this.type = type;
-        this.delay = delay;
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public int getDelay() {
-        return delay;
-    }
+    long getDelay();
 
     @Deprecated
-    public int getBlockMaterial() {
-        return location.getBlock().getTypeId();
-    }
+    int getBlockMaterial();
 
     @Deprecated
-    public byte getBlockData() {
-        return location.getBlock().getData();
-    }
+    byte getBlockData();
 
-    public abstract void setActive(boolean powerOn);
+    boolean isActive();
+
+    void setActive(boolean powerOn);
+
+    boolean isValid();
+
+
 }

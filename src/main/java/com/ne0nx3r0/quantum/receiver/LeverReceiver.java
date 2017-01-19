@@ -7,7 +7,7 @@ import org.bukkit.material.Lever;
 /**
  * Created by ysl3000 on 14.01.17.
  */
-public class LeverReceiver extends Receiver {
+public class LeverReceiver extends AbstractReceiver {
     public LeverReceiver(Location location, int type) {
         super(location, type);
     }
@@ -17,11 +17,21 @@ public class LeverReceiver extends Receiver {
     }
 
     @Override
+    public boolean isActive() {
+        return ((Lever) location.getBlock().getState().getData()).isPowered();
+    }
+
+    @Override
     public void setActive(boolean powerOn) {
         BlockState state = location.getBlock().getState();
         Lever lever = (Lever) state.getData();
         lever.setPowered(powerOn);
         state.setData(lever);
         state.update();
+    }
+
+    @Override
+    public boolean isValid() {
+        return location.getBlock().getState().getData() instanceof Lever;
     }
 }

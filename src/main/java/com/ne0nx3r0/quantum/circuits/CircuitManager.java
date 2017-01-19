@@ -18,7 +18,7 @@ import org.bukkit.material.Redstone;
 import java.io.File;
 import java.util.*;
 
-public final class CircuitManager {
+public final class CircuitManager implements ICircuitManager {
     private MessageLogger messageLogger;
     // Temporary Holders for circuit creation
     private Map<String, PendingCircuit> pendingCircuits;
@@ -60,26 +60,12 @@ public final class CircuitManager {
     }
 
     public boolean isValidReceiver(Block block) {
-        Material mBlock = block.getType();
-        for (int i = 0; i < ValidMaterials.validReceivers.length; i++) {
-            if (mBlock == ValidMaterials.validReceivers[i]) {
-                return true;
-            }
-        }
-
-        return false;
+        return ValidMaterials.validReceivers.contains(block.getType());
     }
 
     // Sender/Receiver_old checks
     public boolean isValidSender(Block block) {
-        Material mBlock = block.getType();
-        for (int i = 0; i < ValidMaterials.validSenders.length; i++) {
-            if (mBlock == ValidMaterials.validSenders[i]) {
-                return true;
-            }
-        }
-
-        return false;
+        return ValidMaterials.validSenders.contains(block.getType());
     }
 
     public boolean shouldLeaveReceiverOn(Block block) {
@@ -88,8 +74,8 @@ public final class CircuitManager {
 
     public String getValidSendersString() {
         String msg = "";
-        for (int i = 0; i < ValidMaterials.validSenders.length; i++) {
-            msg += (i != 0 ? ", " : "") + ValidMaterials.validSenders[i].name().toLowerCase().replace("_", " ");
+        for (int i = 0; i < ValidMaterials.validSenders.size(); i++) {
+            msg += (i != 0 ? ", " : "") + ValidMaterials.validSenders.get(i).name().toLowerCase().replace("_", " ");
         }
 
         return msg;
@@ -97,8 +83,8 @@ public final class CircuitManager {
 
     public String getValidReceiversString() {
         String msg = "";
-        for (int i = 0; i < ValidMaterials.validReceivers.length; i++) {
-            msg += (i != 0 ? ", " : "") + ValidMaterials.validReceivers[i].name().toLowerCase().replace("_", " ");
+        for (int i = 0; i < ValidMaterials.validReceivers.size(); i++) {
+            msg += (i != 0 ? ", " : "") + ValidMaterials.validReceivers.get(i).name().toLowerCase().replace("_", " ");
         }
 
         return msg;
@@ -137,57 +123,63 @@ public final class CircuitManager {
     public void activateCircuit(Location lSender, int oldCurrent, int newCurrent, int chain) {
         Circuit circuit = getCircuit(lSender);
         List<Receiver> receivers = circuit.getReceivers();
-        if (!receivers.isEmpty()) {
-            CircuitTypes type;
-            int iDelay;
-            Receiver r;
-            for (int i = 0; i < receivers.size(); i++) {
-                r = receivers.get(i);
 
-                type = CircuitTypes.getByID(r.getType());
-                iDelay = r.getDelay();
-                Block b = r.getLocation().getBlock();
-                int receiverOldCurrent = getBlockCurrent(b);
+        for (Receiver receiver : receivers) {
 
-                if (isValidReceiver(b)) {
-                    if (type == CircuitTypes.QUANTUM) {
-                        setReceiver(r, newCurrent > 0, iDelay);
-                    } else if (type == CircuitTypes.ON) {
-                        if (newCurrent > 0 && oldCurrent == 0) {
-                            setReceiver(r, true, iDelay);
-                        }
-                    } else if (type == CircuitTypes.OFF) {
+
+            if (isValidReceiver(receiver.getLocation().getBlock())) {
+
+                int receiverOldCurrent = getBlockCurrent(receiver.getLocation().getBlock());
+
+                switch (receiver.getCircuitType()) {
+
+                    case OFF:
                         if (newCurrent == 0 && oldCurrent > 0) {
-                            setReceiver(r, false, iDelay);
+                            setReceiver(receiver, false);
                         }
-                    } else if (type == CircuitTypes.TOGGLE) {
+                        break;
+                    case ON:
                         if (newCurrent > 0 && oldCurrent == 0) {
-                            setReceiver(r, getBlockCurrent(b) <= 0, iDelay);
+                            setReceiver(receiver, true);
                         }
-                    } else if (type == CircuitTypes.REVERSE) {
-                        if (oldCurrent == 0 || newCurrent == 0) {
-                            setReceiver(r, newCurrent <= 0, iDelay);
-                        }
-                    } else if (type == CircuitTypes.RANDOM) {
+                        break;
+                    case QUANTUM:
+                        setReceiver(receiver, newCurrent > 0);
+                        break;
+                    case RANDOM:
                         if (newCurrent > 0 && (oldCurrent == 0 || newCurrent == 0)) {
-                            setReceiver(r, new Random().nextBoolean(), iDelay);
+                            setReceiver(receiver, new Random().nextBoolean());
                         }
-                    }
+                        break;
 
-                    if (b.getType() == Material.TNT) { // TnT is one time use!
-                        circuit.delReceiver(r);
-                    }
-
-                    if (chain <= QuantumConnectors.MAX_CHAIN_LINKS - 2 && circuitExists(b.getLocation())) {
-                        if (QuantumConnectors.MAX_CHAIN_LINKS > 0) { //allow zero to be infinite
-                            chain++;
+                    case REVERSE:
+                        if (oldCurrent == 0 || newCurrent == 0) {
+                            setReceiver(receiver, newCurrent <= 0);
                         }
-                        activateCircuit(r.getLocation(), receiverOldCurrent, getBlockCurrent(b), chain);
-                    }
-                } else {
-                    circuit.delReceiver(r);
+                        break;
+
+                    case TOGGLE:
+                        if (newCurrent > 0 && oldCurrent == 0) {
+                            setReceiver(receiver, getBlockCurrent(receiver.getLocation().getBlock()) <= 0);
+                        }
+                        break;
                 }
+
+                if (receiver.getLocation().getBlock().getType() == Material.TNT) { // TnT is one time use!
+                    circuit.delReceiver(receiver);
+                }
+
+                if (chain <= QuantumConnectors.MAX_CHAIN_LINKS - 2 && circuitExists(receiver.getLocation())) {
+                    if (QuantumConnectors.MAX_CHAIN_LINKS > 0) { //allow zero to be infinite
+                        chain++;
+                    }
+                    activateCircuit(receiver.getLocation(), receiverOldCurrent, getBlockCurrent(receiver.getLocation().getBlock()), chain);
+                }
+            } else {
+                circuit.delReceiver(receiver);
             }
+
+
         }
     }
 
@@ -206,20 +198,12 @@ public final class CircuitManager {
         return b.getBlockPower();
     }
 
-    private void setReceiver(Receiver receiver, boolean on, int iDelay) {
-
-        if (iDelay == 0) {
-            setReceiver(receiver, on);
+    private void setReceiver(Receiver receiver, boolean on) {
+        if (receiver.getDelay() > 0) {
+            receiver.setActive(on);
         } else {
-            plugin.getServer().getScheduler().scheduleSyncDelayedTask(
-                    plugin,
-                    new DelayedSetReceiver(receiver, on),
-                    iDelay);
+            new DelayedReceiver(this.plugin, receiver).setActive(on);
         }
-    }
-
-    private void setReceiver(Receiver receiver, boolean powerOn) {
-        receiver.setActive(powerOn);
     }
 
     // Temporary circuit stuff
@@ -285,21 +269,5 @@ public final class CircuitManager {
         }
         return null;
 
-    }
-
-    private class DelayedSetReceiver implements Runnable {
-        private final Receiver receiver;
-
-        private final boolean on;
-
-        DelayedSetReceiver(Receiver receiver, boolean on) {
-            this.receiver = receiver;
-            this.on = on;
-        }
-
-        @Override
-        public void run() {
-            setReceiver(receiver, on);
-        }
     }
 }

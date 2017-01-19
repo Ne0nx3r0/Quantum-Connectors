@@ -9,13 +9,18 @@ import org.bukkit.material.Openable;
 /**
  * Created by ysl3000 on 14.01.17.
  */
-public class OpenableReceiver extends Receiver {
+public class OpenableReceiver extends AbstractReceiver {
     public OpenableReceiver(Location location, int type) {
         super(location, type);
     }
 
     public OpenableReceiver(Location location, int type, int delay) {
         super(location, type, delay);
+    }
+
+    @Override
+    public boolean isActive() {
+        return ((Openable) location.getBlock().getState().getData()).isOpen();
     }
 
     @Override
@@ -26,5 +31,10 @@ public class OpenableReceiver extends Receiver {
         state.setData(data);
         state.update();
         location.getWorld().playEffect(location, Effect.DOOR_TOGGLE, 0, 10);
+    }
+
+    @Override
+    public boolean isValid() {
+        return location.getBlock().getState().getData() instanceof Openable;
     }
 }

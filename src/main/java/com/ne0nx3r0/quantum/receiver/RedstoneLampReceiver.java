@@ -8,7 +8,7 @@ import org.bukkit.block.Block;
 import java.util.List;
 
 
-public class RedstoneLampReceiver extends com.ne0nx3r0.quantum.receiver.Receiver {
+public class RedstoneLampReceiver extends AbstractReceiver {
 
 
     private List<Block> keepAlives;
@@ -26,21 +26,33 @@ public class RedstoneLampReceiver extends com.ne0nx3r0.quantum.receiver.Receiver
 
     @Override
     public void setActive(boolean powerOn) {
-        if (this.location.getBlock().getType() == Material.REDSTONE_LAMP_ON) {
-            if (!powerOn) {
-                keepAlives.remove(location.getBlock());
-                this.getLocation().getBlock().setType(Material.REDSTONE_LAMP_OFF);
-            }
-        } else if (this.getLocation().getBlock().getType() == Material.REDSTONE_LAMP_OFF) {
-            if (powerOn) {
-                keepAlives.add(location.getBlock());
-                this.qsWorld.setStatic(location.getWorld(), true);
-                location.getBlock().setType(Material.REDSTONE_LAMP_ON);
-                this.qsWorld.setStatic(location.getWorld(), false);
+
+        if (isValid()) {
+
+            if (isActive()) {
+                if (!powerOn) {
+                    keepAlives.remove(location.getBlock());
+                    this.getLocation().getBlock().setType(Material.REDSTONE_LAMP_OFF);
+                }
+            } else if (!isActive()) {
+                if (powerOn) {
+                    keepAlives.add(location.getBlock());
+                    this.qsWorld.setStatic(location.getWorld(), true);
+                    location.getBlock().setType(Material.REDSTONE_LAMP_ON);
+                    this.qsWorld.setStatic(location.getWorld(), false);
+                }
             }
         }
+    }
 
+    @Override
+    public boolean isActive() {
+        return isValid() && this.location.getBlock().getType() == Material.REDSTONE_LAMP_ON;
+    }
 
+    @Override
+    public boolean isValid() {
+        return this.location.getBlock().getType() == Material.REDSTONE_LAMP_ON || this.location.getBlock().getType() == Material.REDSTONE_LAMP_OFF;
     }
 
 

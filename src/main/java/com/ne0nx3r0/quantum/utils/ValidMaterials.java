@@ -5,12 +5,9 @@ import org.bukkit.Material;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created by ysl3000 on 14.01.17.
- */
 public class ValidMaterials {
 
-    public final static Material[] validSenders = new Material[]{
+    public final static List<Material> validSenders = Arrays.asList(
             Material.LEVER,
             Material.REDSTONE_WIRE,
             Material.STONE_BUTTON,
@@ -47,12 +44,12 @@ public class ValidMaterials {
             //Material.DAYLIGHT_DETECTOR,
             Material.DETECTOR_RAIL,
             Material.IRON_PLATE,
-            Material.GOLD_PLATE,
+            Material.GOLD_PLATE//,
             //Material.POWERED_RAIL,//TODO: Figure out powered rail as sender
             //Material.PISTON_BASE,
             //Material.PISTON_STICKY_BASE,//TODO: Pistons as senders
-    };
-    public final static Material[] validReceivers = new Material[]{
+    );
+    public final static List<Material> validReceivers = Arrays.asList(
             Material.LEVER,
             Material.IRON_DOOR_BLOCK,
             Material.WOODEN_DOOR,
@@ -70,12 +67,12 @@ public class ValidMaterials {
             Material.ACACIA_FENCE_GATE,
             Material.DARK_OAK_FENCE_GATE,
             Material.REDSTONE_LAMP_OFF,
-            Material.REDSTONE_LAMP_ON,
+            Material.REDSTONE_LAMP_ON//,
             //Material.REDSTONE_TORCH_OFF,
             //Material.REDSTONE_TORCH_ON,
             //Material.PISTON_BASE,
             //Material.PISTON_STICKY_BASE,//TODO: Pistons as receivers
-    };
+    );
 
     public final static List<Material> OPENABLE = Arrays.asList(Material.IRON_DOOR_BLOCK,
             Material.WOODEN_DOOR,
