@@ -1,6 +1,7 @@
 package com.ne0nx3r0.quantum.receiver;
 
 import com.ne0nx3r0.quantum.api.Receiver;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import java.util.HashMap;
@@ -23,6 +24,16 @@ public abstract class AbstractReceiver implements Receiver {
         this.location = location;
         this.delay = delay;
     }
+
+    public AbstractReceiver(Map<String, Object> map) {
+        this.location = new Location(
+                Bukkit.getWorld((String) map.get("location_world")),
+                (double) map.get("location_x"),
+                (double) map.get("location_y"),
+                (double) map.get("location_z"));
+        this.delay = (long) map.get("delay");
+    }
+
 
     @Override
     public Location getLocation() {

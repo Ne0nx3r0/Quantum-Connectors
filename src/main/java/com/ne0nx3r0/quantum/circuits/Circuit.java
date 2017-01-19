@@ -3,11 +3,13 @@ package com.ne0nx3r0.quantum.circuits;
 import com.ne0nx3r0.quantum.api.Receiver;
 import org.bukkit.Location;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.configuration.serialization.SerializableAs;
 
 import java.util.*;
 
 //TODO: Allow naming of circuits
 
+@SerializableAs("Circuit")
 public class Circuit implements ConfigurationSerializable {
     private List<Receiver> receivers;
     private UUID playerUUID;
@@ -43,7 +45,6 @@ public class Circuit implements ConfigurationSerializable {
 
     public UUID getOwner() {
         return playerUUID;
-
     }
 
 
@@ -62,8 +63,6 @@ public class Circuit implements ConfigurationSerializable {
         map.put("owner", playerUUID.toString());
         map.put("type", circuitTypes.name);
         map.put("receiver", receivers);
-
-
         return map;
     }
 }

@@ -7,6 +7,7 @@ import com.ne0nx3r0.quantum.utils.MessageLogger;
 import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -24,7 +25,6 @@ public class CircuitLoader implements ICircuitLoader {
     private CircuitManager circuitManager;
     private QuantumConnectors plugin;
     private MessageLogger messageLogger;
-
 
     public CircuitLoader(QuantumConnectors plugin, Map<World, Map<Location, Circuit>> worlds, CircuitManager circuitManager, MessageLogger messageLogger) {
         this.plugin = plugin;
@@ -141,7 +141,14 @@ public class CircuitLoader implements ICircuitLoader {
         }
 
         FileConfiguration yml = YamlConfiguration.loadConfiguration(ymlFile);
-        yml.getMapList("circuits");
+
+
+        System.out.println(String.join(", ", yml.getKeys(true)));
+
+        ConfigurationSection section = yml.getConfigurationSection("circuits");
+        System.out.println(String.join(", ", section != null ? section.getKeys(true) : new ArrayList<String>()));
+
+        // TODO: 19.01.17 read circuits
 
         List<Map<String, Object>> tempCircuits = new ArrayList(yml.getMapList("circuits"));
         System.out.println("Debug: Anzahl Schaltungen " + tempCircuits.size());
@@ -179,7 +186,7 @@ public class CircuitLoader implements ICircuitLoader {
                 if (circuitManager.isValidReceiver(tempReceiverLoc.getBlock())) {
                     tempCircuit.addReceiver(
                             tempReceiverLoc,
-                            (Long) tempReceiverObj.get("d")
+                            (Integer) tempReceiverObj.get("d")
                     );
                 }
 

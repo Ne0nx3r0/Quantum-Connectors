@@ -2,7 +2,9 @@ package com.ne0nx3r0.quantum.api;
 
 import org.bukkit.Location;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.configuration.serialization.SerializableAs;
 
+@SerializableAs("Receiver")
 public interface Receiver extends ConfigurationSerializable {
 
     Location getLocation();
