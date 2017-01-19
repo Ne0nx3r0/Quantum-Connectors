@@ -1,8 +1,10 @@
 package com.ne0nx3r0.quantum.circuits;
 
 import com.ne0nx3r0.quantum.QuantumConnectors;
-import com.ne0nx3r0.quantum.receiver.Receiver;
+import com.ne0nx3r0.quantum.api.ICircuitLoader;
+import com.ne0nx3r0.quantum.api.Receiver;
 import com.ne0nx3r0.quantum.utils.MessageLogger;
+import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -12,8 +14,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-
-public class CircuitLoader {
+/**
+ * Need a rewrite how data is loaded
+ */
+@Deprecated
+public class CircuitLoader implements ICircuitLoader {
 
     private Map<World, Map<Location, Circuit>> worlds;
     private CircuitManager circuitManager;
@@ -28,6 +33,95 @@ public class CircuitLoader {
         this.messageLogger = messageLogger;
     }
 
+    public void saveAllWorlds() {
+        for (World world : worlds.keySet()) {
+            saveWorld(world);
+        }
+        //huh, that was easy.
+    }
+
+    public void saveWorld(World world) {
+        if (worlds.containsKey(world)) {
+            //Alright let's do this!
+            File ymlFile = new File(plugin.getDataFolder(), world.getName() + ".circuits.yml");
+            if (!ymlFile.exists()) {
+                try {
+                    ymlFile.createNewFile();
+                } catch (IOException ex) {
+                    messageLogger.error("Could not create " + ymlFile.getName());
+                }
+            }
+            FileConfiguration yml = YamlConfiguration.loadConfiguration(ymlFile);
+
+            if (QuantumConnectors.VERBOSE_LOGGING)
+                messageLogger.log(messageLogger.getMessage("saving").replace("%file", ymlFile.getName()));
+
+            //Prep this world's data for saving
+            List<Object> tempCircuits = new ArrayList<Object>();
+
+            Map<String, Object> tempCircuitObj;
+            Map<String, Object> tempReceiverObj;
+            ArrayList<Map<String, Object>> tempReceiverObjs;
+            Circuit currentCircuit;
+            List<Receiver> currentReceivers;
+
+            Map<Location, Circuit> currentWorldCircuits = worlds.get(world);
+
+            for (Location cLoc : currentWorldCircuits.keySet()) {
+
+                currentCircuit = currentWorldCircuits.get(cLoc);
+
+                tempCircuitObj = new HashMap<String, Object>();
+
+                tempCircuitObj.put("x", cLoc.getBlockX());
+                tempCircuitObj.put("y", cLoc.getBlockY());
+                tempCircuitObj.put("z", cLoc.getBlockZ());
+                System.out.println(currentCircuit.getOwner().toString());
+                tempCircuitObj.put("o", currentCircuit.getOwner().toString());
+                currentReceivers = currentCircuit.getReceivers();
+
+                tempReceiverObjs = new ArrayList<>();
+                Receiver r;
+                for (int i = 0; i < currentReceivers.size(); i++) {
+                    r = currentReceivers.get(i);
+
+                    tempReceiverObj = new HashMap<>();
+
+                    tempReceiverObj.put("z", r.getLocation().getBlockZ());
+                    tempReceiverObj.put("y", r.getLocation().getBlockY());
+                    tempReceiverObj.put("x", r.getLocation().getBlockX());
+
+                    tempReceiverObj.put("d", r.getDelay());
+                    tempReceiverObj.put("t", r.getType());
+
+                    tempReceiverObjs.add(tempReceiverObj);
+                }
+
+                tempCircuitObj.put("r", tempReceiverObjs);
+
+                tempCircuits.add(tempCircuitObj);
+            }
+
+            yml.set("fileVersion", "2");
+            yml.set("circuits", tempCircuits);
+
+            try {
+                yml.save(ymlFile);
+
+                if (QuantumConnectors.VERBOSE_LOGGING)
+                    messageLogger.log(messageLogger.getMessage("saved").replace("%file", ymlFile.getName()));
+            } catch (IOException IO) {
+                messageLogger.error(messageLogger.getMessage("save_failed").replace("%world", world.getName()));
+            }
+        } else {
+            messageLogger.error(messageLogger.getMessage("save_failed").replace("%world", world.getName()));
+        }
+    }
+
+    @Override
+    public void loadWorlds() {
+        throw new NotImplementedException("load Worlds is not implemented atm.");
+    }
 
     // TODO: 19.01.17 CircuitLoader needs a rewrite
     public void loadWorld(World world) {
@@ -131,91 +225,6 @@ public class CircuitLoader {
         // TODO: 19.01.17 to here
 
         worlds.put(world, worldCircuits);
-    }
-
-    public void saveAllWorlds() {
-        for (World world : worlds.keySet()) {
-            saveWorld(world);
-        }
-        //huh, that was easy.
-    }
-
-    public void saveWorld(World world) {
-        if (worlds.containsKey(world)) {
-            //Alright let's do this!
-            File ymlFile = new File(plugin.getDataFolder(), world.getName() + ".circuits.yml");
-            if (!ymlFile.exists()) {
-                try {
-                    ymlFile.createNewFile();
-                } catch (IOException ex) {
-                    messageLogger.error("Could not create " + ymlFile.getName());
-                }
-            }
-            FileConfiguration yml = YamlConfiguration.loadConfiguration(ymlFile);
-
-            if (QuantumConnectors.VERBOSE_LOGGING)
-                messageLogger.log(messageLogger.getMessage("saving").replace("%file", ymlFile.getName()));
-
-            //Prep this world's data for saving
-            List<Object> tempCircuits = new ArrayList<Object>();
-
-            Map<String, Object> tempCircuitObj;
-            Map<String, Object> tempReceiverObj;
-            ArrayList<Map<String, Object>> tempReceiverObjs;
-            Circuit currentCircuit;
-            List<Receiver> currentReceivers;
-
-            Map<Location, Circuit> currentWorldCircuits = worlds.get(world);
-
-            for (Location cLoc : currentWorldCircuits.keySet()) {
-
-                currentCircuit = currentWorldCircuits.get(cLoc);
-
-                tempCircuitObj = new HashMap<String, Object>();
-
-                tempCircuitObj.put("x", cLoc.getBlockX());
-                tempCircuitObj.put("y", cLoc.getBlockY());
-                tempCircuitObj.put("z", cLoc.getBlockZ());
-                System.out.println(currentCircuit.getOwner().toString());
-                tempCircuitObj.put("o", currentCircuit.getOwner().toString());
-                currentReceivers = currentCircuit.getReceivers();
-
-                tempReceiverObjs = new ArrayList<>();
-                Receiver r;
-                for (int i = 0; i < currentReceivers.size(); i++) {
-                    r = currentReceivers.get(i);
-
-                    tempReceiverObj = new HashMap<>();
-
-                    tempReceiverObj.put("z", r.getLocation().getBlockZ());
-                    tempReceiverObj.put("y", r.getLocation().getBlockY());
-                    tempReceiverObj.put("x", r.getLocation().getBlockX());
-
-                    tempReceiverObj.put("d", r.getDelay());
-                    tempReceiverObj.put("t", r.getType());
-
-                    tempReceiverObjs.add(tempReceiverObj);
-                }
-
-                tempCircuitObj.put("r", tempReceiverObjs);
-
-                tempCircuits.add(tempCircuitObj);
-            }
-
-            yml.set("fileVersion", "2");
-            yml.set("circuits", tempCircuits);
-
-            try {
-                yml.save(ymlFile);
-
-                if (QuantumConnectors.VERBOSE_LOGGING)
-                    messageLogger.log(messageLogger.getMessage("saved").replace("%file", ymlFile.getName()));
-            } catch (IOException IO) {
-                messageLogger.error(messageLogger.getMessage("save_failed").replace("%world", world.getName()));
-            }
-        } else {
-            messageLogger.error(messageLogger.getMessage("save_failed").replace("%world", world.getName()));
-        }
     }
 
 

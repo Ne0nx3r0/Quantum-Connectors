@@ -1,6 +1,6 @@
 package com.ne0nx3r0.quantum.circuits;
 
-import com.ne0nx3r0.quantum.receiver.Receiver;
+import com.ne0nx3r0.quantum.api.Receiver;
 import org.bukkit.Location;
 
 import java.util.ArrayList;

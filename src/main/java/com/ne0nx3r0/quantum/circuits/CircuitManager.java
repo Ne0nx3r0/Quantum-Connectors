@@ -2,6 +2,8 @@ package com.ne0nx3r0.quantum.circuits;
 
 import com.ne0nx3r0.quantum.ConfigConverter;
 import com.ne0nx3r0.quantum.QuantumConnectors;
+import com.ne0nx3r0.quantum.api.ICircuitManager;
+import com.ne0nx3r0.quantum.api.Receiver;
 import com.ne0nx3r0.quantum.nmswrapper.QSWorld;
 import com.ne0nx3r0.quantum.receiver.*;
 import com.ne0nx3r0.quantum.utils.MessageLogger;

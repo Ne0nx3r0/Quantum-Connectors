@@ -1,5 +1,6 @@
 package com.ne0nx3r0.quantum.receiver;
 
+import com.ne0nx3r0.quantum.api.Receiver;
 import org.bukkit.Location;
 
 /**
