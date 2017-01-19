@@ -73,21 +73,15 @@ public final class CircuitManager implements ICircuitManager {
     }
 
     public String getValidSendersString() {
-        String msg = "";
-        for (int i = 0; i < ValidMaterials.validSenders.size(); i++) {
-            msg += (i != 0 ? ", " : "") + ValidMaterials.validSenders.get(i).name().toLowerCase().replace("_", " ");
-        }
+        return getValidString(ValidMaterials.validSenders);
+    }
 
-        return msg;
+    private String getValidString(List<Material> materials) {
+        return String.join(", ", ValidMaterials.normalizeMaterialNames(materials, ValidMaterials.NORMALIZER));
     }
 
     public String getValidReceiversString() {
-        String msg = "";
-        for (int i = 0; i < ValidMaterials.validReceivers.size(); i++) {
-            msg += (i != 0 ? ", " : "") + ValidMaterials.validReceivers.get(i).name().toLowerCase().replace("_", " ");
-        }
-
-        return msg;
+        return getValidString(ValidMaterials.validReceivers);
     }
 
     // Circuit (sender) CRUD
@@ -147,7 +141,7 @@ public final class CircuitManager implements ICircuitManager {
                         setReceiver(receiver, newCurrent > 0);
                         break;
                     case RANDOM:
-                        if (newCurrent > 0 && (oldCurrent == 0 || newCurrent == 0)) {
+                        if (newCurrent > 0 && oldCurrent == 0) {
                             setReceiver(receiver, new Random().nextBoolean());
                         }
                         break;

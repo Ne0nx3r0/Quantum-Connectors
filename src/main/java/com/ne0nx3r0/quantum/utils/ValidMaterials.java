@@ -2,6 +2,7 @@ package com.ne0nx3r0.quantum.utils;
 
 import org.bukkit.Material;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -94,6 +95,32 @@ public class ValidMaterials {
     public final static List<Material> LEVER = Arrays.asList(Material.LEVER);
     public final static List<Material> RAIL = Arrays.asList(Material.POWERED_RAIL);
     public final static List<Material> PISTON = Arrays.asList(Material.PISTON_BASE);
+    public final static Replacer<Material, String> NORMALIZER = new Normalizer();
+    public final static Replacer<Material, String> MATERIAL_NAME = new MaterialName();
+
+    public static List<String> normalizeMaterialNames(List<Material> materials, Replacer<Material, String> replacer) {
+        List<String> names = new ArrayList<>();
+        for (Material material : materials)
+            names.add(replacer.replace(material));
+        return names;
+    }
+
+    private static class Normalizer implements Replacer<Material, String> {
+        @Override
+        public String replace(Material in) {
+            return in.name().toLowerCase().replace("_", " ");
+        }
+    }
+
+    private static class MaterialName implements Replacer<Material, String> {
+        @Override
+        public String replace(Material in) {
+            return in.name();
+        }
+    }
+
+
+
 
 
 }
