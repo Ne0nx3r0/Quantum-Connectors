@@ -149,6 +149,7 @@ public final class CircuitManager {
                 iType = r.getType();
                 iDelay = r.getDelay();
                 Block b = r.getLocation().getBlock();
+                int receiverOldCurrent = getBlockCurrent(b);
 
                 if (isValidReceiver(b)) {
                     if (iType == CircuitTypes.QUANTUM.getId()) {
@@ -179,11 +180,11 @@ public final class CircuitManager {
                         circuit.delReceiver(r);
                     }
 
-                    if (QuantumConnectors.MAX_CHAIN_LINKS > 0) { //allow zero to be infinite
-                        chain++;
-                    }
-                    if (chain <= QuantumConnectors.MAX_CHAIN_LINKS && circuitExists(b.getLocation())) {
-                        activateCircuit(r.getLocation(), getBlockCurrent(b), chain);
+                    if (chain <= QuantumConnectors.MAX_CHAIN_LINKS-2 && circuitExists(b.getLocation())) {
+                        if (QuantumConnectors.MAX_CHAIN_LINKS > 0) { //allow zero to be infinite
+                            chain++;
+                        }
+                        activateCircuit(r.getLocation(), receiverOldCurrent, getBlockCurrent(b),chain);
                     }
                 } else {
                     circuit.delReceiver(r);

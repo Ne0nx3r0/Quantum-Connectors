@@ -34,7 +34,7 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
         }
 
         if (args.length > 0) {
-            if (args[0].equalsIgnoreCase("q")) args[0] = "quantum";
+            if (args[0].equalsIgnoreCase("q") || args[0].equalsIgnoreCase("normal")) args[0] = "quantum";
             else if (args[0].equalsIgnoreCase("t")) args[0] = "toggle";
             else if (args[0].equalsIgnoreCase("r")) args[0] = "reverse";
         }
@@ -52,8 +52,8 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
 
             messageLogger.msg(player, ChatColor.YELLOW + messageLogger.getMessage("available_circuits") + ChatColor.WHITE + s.substring(0, s.length() - 2));
         }
-// Command was: "/qc cancel"
-        else if (args[0].equalsIgnoreCase("cancel") || args[0].equalsIgnoreCase("c")) {
+// Command was: "/qc cancel" or "/qc abort"
+        else if (args[0].equalsIgnoreCase("cancel") || args[0].equalsIgnoreCase("c") || args[0].equalsIgnoreCase("abort")) {
 
             //Pending circuit exists
             if (circuitManager.hasPendingCircuit(player)) {

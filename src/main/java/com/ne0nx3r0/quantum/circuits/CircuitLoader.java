@@ -49,7 +49,6 @@ public class CircuitLoader {
 
         List<Map<String, Object>> tempCircuits;
         tempCircuits = new ArrayList(yml.getMapList("circuits"));
-        System.out.println("Debug: Anzahl Schaltungen " + tempCircuits.size());
 
         if (tempCircuits.size() == 0) {
             messageLogger.log(messageLogger.getMessage("loading_no_circuits").replace("%file%", ymlFile.getName()));
@@ -168,7 +167,6 @@ public class CircuitLoader {
                 tempCircuitObj.put("x", cLoc.getBlockX());
                 tempCircuitObj.put("y", cLoc.getBlockY());
                 tempCircuitObj.put("z", cLoc.getBlockZ());
-                System.out.println(currentCircuit.getOwner().toString());
                 tempCircuitObj.put("o", (String) currentCircuit.getOwner().toString());
 
                 currentReceivers = currentCircuit.getReceivers();
