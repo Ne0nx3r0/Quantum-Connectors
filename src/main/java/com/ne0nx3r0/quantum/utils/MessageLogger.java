@@ -1,24 +1,25 @@
 package com.ne0nx3r0.quantum.utils;
 
-import com.ne0nx3r0.quantum.config.MessageConfig;
+
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Created by ysl3000 on 14.01.17.
+/*
+ * Loads all Messages from message.yml
+ * Provides support for player messages
  */
 public class MessageLogger {
 
-
+    private Map<String, String> messages;
     private Logger logger;
-    private MessageConfig messageConfig;
 
-    public MessageLogger(Logger logger, MessageConfig messageConfig) {
+    public MessageLogger(Logger logger, Map<String, String> messages) {
         this.logger = logger;
-        this.messageConfig = messageConfig;
+        this.messages = messages;
     }
 
     public void msg(Player player, String sMessage) {
@@ -41,6 +42,6 @@ public class MessageLogger {
 
     //Wrapper for getting localized messages
     public String getMessage(String sMessageName) {
-        return messageConfig.getMessageFromKey(sMessageName);
+        return (messages.get(sMessageName));
     }
 }

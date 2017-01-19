@@ -1,6 +1,7 @@
 package com.ne0nx3r0.quantum;
 
 import com.ne0nx3r0.quantum.circuits.CircuitManager;
+import com.ne0nx3r0.quantum.circuits.CircuitTypes;
 import com.ne0nx3r0.quantum.circuits.PendingCircuit;
 import com.ne0nx3r0.quantum.utils.MessageLogger;
 import org.bukkit.ChatColor;
@@ -33,7 +34,8 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
         }
 
         if (args.length > 0) {
-            if (args[0].equalsIgnoreCase("q")) args[0] = "quantum";
+            if (args[0].equalsIgnoreCase("q") || args[0].equalsIgnoreCase("normal"))
+                args[0] = "quantum";
             else if (args[0].equalsIgnoreCase("t")) args[0] = "toggle";
             else if (args[0].equalsIgnoreCase("r")) args[0] = "reverse";
         }
@@ -51,8 +53,9 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
 
             messageLogger.msg(player, ChatColor.YELLOW + messageLogger.getMessage("available_circuits") + ChatColor.WHITE + s.substring(0, s.length() - 2));
         }
-// Command was: "/qc cancel"
-        else if (args[0].equalsIgnoreCase("cancel") || args[0].equalsIgnoreCase("c")) {
+
+// Command was: "/qc cancel" or "/qc abort"
+        else if (args[0].equalsIgnoreCase("cancel") || args[0].equalsIgnoreCase("c") || args[0].equalsIgnoreCase("abort")) {
 
             //Pending circuit exists
             if (circuitManager.hasPendingCircuit(player)) {
@@ -102,7 +105,8 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
 
                         circuitManager.removePendingCircuit(player);
 
-                        messageLogger.msg(player, messageLogger.getMessage("circuit_created"));
+                        messageLogger.msg(player, messageLogger.getMessage("circuit_created")
+                                .replace("%circuit%", CircuitTypes.getName(pc.getCurrentType())));
                     }
                     //They have not setup at least one receiver
                     else {
@@ -145,7 +149,6 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
 
                 String sDelayMsg = " (" + args[0] + " " + dDelay + "s delay)";
 
-                sDelayMsg = " ";
 
                 int iDelayTicks = (int) Math.round(dDelay * 20);
 
@@ -158,7 +161,8 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
 
                     messageLogger.msg(player, messageLogger.getMessage("circuit_ready")
                             .replace("%circuit%", args[0].toUpperCase())
-                            .replace("%delay%", new Double(dDelay).toString()));
+
+                            .replace("%delay%", Double.toString(dDelay)));
                 } else {
 
                     circuitManager.getPendingCircuit(player).setCircuitType(
@@ -167,7 +171,8 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
 
                     messageLogger.msg(player, messageLogger.getMessage("circuit_changed")
                             .replace("%circuit%", args[0].toUpperCase())
-                            .replace("%delay%", new Double(dDelay).toString()));
+
+                            .replace("%delay%", Double.toString(dDelay)));
                 }
             }
 
