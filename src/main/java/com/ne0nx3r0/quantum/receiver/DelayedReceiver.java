@@ -5,6 +5,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Map;
+
 /**
  * Created by ysl3000 on 19.01.17.
  */
@@ -34,18 +36,8 @@ public class DelayedReceiver implements Receiver {
     }
 
     @Override
-    public int getBlockMaterial() {
-        return receiver.getBlockMaterial();
-    }
-
-    @Override
-    public byte getBlockData() {
-        return receiver.getBlockData();
-    }
-
-    @Override
     public boolean isActive() {
-        return false;
+        return receiver.isActive();
     }
 
     @Override
@@ -56,12 +48,15 @@ public class DelayedReceiver implements Receiver {
                 receiver.setActive(powerOn);
             }
         }, receiver.getDelay());
-
-
     }
 
     @Override
     public boolean isValid() {
-        return false;
+        return receiver.isValid();
+    }
+
+    @Override
+    public Map<String, Object> serialize() {
+        return receiver.serialize();
     }
 }

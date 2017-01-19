@@ -71,13 +71,14 @@ public class CircuitLoader implements ICircuitLoader {
 
                 currentCircuit = currentWorldCircuits.get(cLoc);
 
-                tempCircuitObj = new HashMap<String, Object>();
+                tempCircuitObj = new HashMap<>();
 
                 tempCircuitObj.put("x", cLoc.getBlockX());
                 tempCircuitObj.put("y", cLoc.getBlockY());
                 tempCircuitObj.put("z", cLoc.getBlockZ());
                 System.out.println(currentCircuit.getOwner().toString());
                 tempCircuitObj.put("o", currentCircuit.getOwner().toString());
+                tempCircuitObj.put("type", currentCircuit.getCircuitType().name);
                 currentReceivers = currentCircuit.getReceivers();
 
                 tempReceiverObjs = new ArrayList<>();
@@ -102,7 +103,7 @@ public class CircuitLoader implements ICircuitLoader {
                 tempCircuits.add(tempCircuitObj);
             }
 
-            yml.set("fileVersion", "2");
+            yml.set("fileVersion", "3");
             yml.set("circuits", tempCircuits);
 
             try {
@@ -142,8 +143,7 @@ public class CircuitLoader implements ICircuitLoader {
         FileConfiguration yml = YamlConfiguration.loadConfiguration(ymlFile);
         yml.getMapList("circuits");
 
-        List<Map<String, Object>> tempCircuits;
-        tempCircuits = new ArrayList(yml.getMapList("circuits"));
+        List<Map<String, Object>> tempCircuits = new ArrayList(yml.getMapList("circuits"));
         System.out.println("Debug: Anzahl Schaltungen " + tempCircuits.size());
 
         if (tempCircuits.size() == 0) {

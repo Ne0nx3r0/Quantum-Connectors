@@ -1,8 +1,9 @@
 package com.ne0nx3r0.quantum.api;
 
 import org.bukkit.Location;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
-public interface Receiver {
+public interface Receiver extends ConfigurationSerializable {
 
     Location getLocation();
 
@@ -15,12 +16,6 @@ public interface Receiver {
     String getType();
 
     long getDelay();
-
-    @Deprecated
-    int getBlockMaterial();
-
-    @Deprecated
-    byte getBlockData();
 
     boolean isActive();
 
