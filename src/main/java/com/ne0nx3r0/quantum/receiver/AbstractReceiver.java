@@ -7,9 +7,6 @@ import org.bukkit.Location;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by ysl3000 on 19.01.17.
- */
 public abstract class AbstractReceiver implements Receiver {
 
     protected Location location;

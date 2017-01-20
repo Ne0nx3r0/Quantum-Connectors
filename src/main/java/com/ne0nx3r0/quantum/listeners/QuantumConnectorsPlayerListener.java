@@ -4,6 +4,7 @@ import com.ne0nx3r0.quantum.QuantumConnectors;
 import com.ne0nx3r0.quantum.circuits.Circuit;
 import com.ne0nx3r0.quantum.circuits.CircuitManager;
 import com.ne0nx3r0.quantum.utils.MessageLogger;
+import com.ne0nx3r0.quantum.utils.ValidMaterials;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -131,19 +132,7 @@ public class QuantumConnectorsPlayerListener implements Listener {
         else if (event.getClickedBlock() != null && circuitManager.circuitExists(event.getClickedBlock().getLocation())) {
             Block block = event.getClickedBlock();
 
-            if (block.getType() == Material.WOODEN_DOOR
-                    || block.getType() == Material.SPRUCE_DOOR
-                    || block.getType() == Material.BIRCH_DOOR
-                    || block.getType() == Material.JUNGLE_DOOR
-                    || block.getType() == Material.ACACIA_DOOR
-                    || block.getType() == Material.DARK_OAK_DOOR
-                    || block.getType() == Material.TRAP_DOOR
-                    || block.getType() == Material.FENCE_GATE
-                    || block.getType() == Material.SPRUCE_FENCE_GATE
-                    || block.getType() == Material.BIRCH_FENCE_GATE
-                    || block.getType() == Material.JUNGLE_FENCE_GATE
-                    || block.getType() == Material.ACACIA_FENCE_GATE
-                    || block.getType() == Material.DARK_OAK_FENCE_GATE) {
+            if (ValidMaterials.OPENABLE.contains(block.getType())) {
                 int current = circuitManager.getBlockCurrent(block);
 
                 circuitManager.activateCircuit(event.getClickedBlock().getLocation(), current, current > 0 ? 0 : 15);

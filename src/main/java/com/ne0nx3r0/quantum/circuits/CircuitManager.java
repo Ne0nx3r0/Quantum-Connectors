@@ -115,7 +115,7 @@ public final class CircuitManager implements ICircuitManager {
 
     public void activateCircuit(Location lSender, int oldCurrent, int newCurrent, int chain) {
         Circuit circuit = getCircuit(lSender);
-        List<Receiver> receivers = circuit.getReceivers();
+        List<Receiver> receivers = new ArrayList<>(circuit.getReceivers());
 
         for (Receiver receiver : receivers) {
 

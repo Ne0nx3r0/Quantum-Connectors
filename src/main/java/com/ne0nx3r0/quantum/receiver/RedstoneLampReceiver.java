@@ -7,6 +7,7 @@ import org.bukkit.block.Block;
 import org.bukkit.configuration.serialization.SerializableAs;
 
 import java.util.List;
+import java.util.Map;
 
 
 @SerializableAs("RedstoneLampReceiver")
@@ -22,12 +23,8 @@ public class RedstoneLampReceiver extends AbstractReceiver {
         this.qsWorld = qsWorld;
     }
 
-    public RedstoneLampReceiver(Location location, long delay) {
-        super(location, delay);
-    }
-
-    public RedstoneLampReceiver(Location location) {
-        super(location);
+    public RedstoneLampReceiver(Map<String, Object> map) {
+        super(map);
     }
 
     @Override
@@ -37,7 +34,7 @@ public class RedstoneLampReceiver extends AbstractReceiver {
 
     @Override
     public boolean isActive() {
-        return isValid() && this.location.getBlock().getType() == Material.REDSTONE_LAMP_ON;
+        return this.location.getBlock().getType() == Material.REDSTONE_LAMP_ON;
     }
 
     @Override
