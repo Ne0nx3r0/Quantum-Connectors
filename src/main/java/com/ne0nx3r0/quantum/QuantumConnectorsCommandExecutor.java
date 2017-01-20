@@ -6,9 +6,6 @@ import com.ne0nx3r0.quantum.circuits.CircuitType;
 import com.ne0nx3r0.quantum.utils.MessageLogger;
 import com.ne0nx3r0.quantum.utils.Normalizer;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -83,6 +80,8 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
                     if (!pc.getReceivers().isEmpty()) {
                         circuitManager.addCircuit(pc);
 
+
+                        /*
                         // I hate doors, I hate all the wooden doors.
                         // I just want to break them all, but I can't
                         // Can't break all wood doors.
@@ -100,7 +99,10 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
                             //TODO: Clone instead of reference the circuit?
                             //TODO: On break check if the circuit has a twin
                             circuitManager.addCircuit(bOtherPiece.getLocation(), pc);
-                        }
+
+
+                    }
+                     */
 
 
                         circuitManager.removePendingCircuit(player);
@@ -131,11 +133,11 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
 
 
                 //Figure out if there's a delay, or use 0 for no delay
-                long delay = 0;
+                int delay = 0;
 
                 if (args.length > 1) {
                     try {
-                        delay = Long.parseLong(args[1]);
+                        delay = Integer.valueOf(args[1]);
                     } catch (NumberFormatException e) {
                     }
 
@@ -150,7 +152,6 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
                 }
 
                 String sDelayMsg = " (" + args[0] + " " + delay + "s delay)";
-
 
 
                 if (!circuitManager.hasPendingCircuit(player)) {

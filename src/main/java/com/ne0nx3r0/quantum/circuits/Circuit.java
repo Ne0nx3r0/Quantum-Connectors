@@ -21,10 +21,10 @@ public class Circuit implements ConfigurationSerializable {
     private UUID playerUUID;
     private CircuitType circuitTypes;
     private Location location;
-    private long delay;
+    private int delay;
 
 
-    public Circuit(UUID playerUUID, CircuitType circuitTypes, long delay) {
+    public Circuit(UUID playerUUID, CircuitType circuitTypes, int delay) {
         this.playerUUID = playerUUID;
         this.circuitTypes = circuitTypes;
         this.delay = delay;
@@ -133,11 +133,11 @@ public class Circuit implements ConfigurationSerializable {
         this.location = location;
     }
 
-    public long getDelay() {
+    public int getDelay() {
         return delay;
     }
 
-    public void setDelay(long delay) {
+    public void setDelay(int delay) {
         this.delay = delay;
     }
 }

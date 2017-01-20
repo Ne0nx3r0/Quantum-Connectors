@@ -175,14 +175,13 @@ public final class CircuitManager implements ICircuitManager {
 
     // TODO: 19.01.2017 remove
     public int getBlockCurrent(Block b) {
-        Material mBlock = b.getType();
+        Material material = b.getType();
         MaterialData md = b.getState().getData();
         if (md instanceof Redstone) {
             return ((Redstone) md).isPowered() ? 15 : 0;
         } else if (md instanceof Openable) {
             return ((Openable) md).isOpen() ? 15 : 0;
-        } else if (mBlock == Material.REDSTONE_LAMP_OFF
-                || mBlock == Material.REDSTONE_LAMP_ON) {
+        } else if (ValidMaterials.LAMP.contains(material)) {
             return keepAlives.contains(b) ? 15 : 0;
         }
 
@@ -199,7 +198,7 @@ public final class CircuitManager implements ICircuitManager {
 
     // Temporary circuit stuff
 // I really don't know what order this deserves among the existing class methods
-    public Circuit addPendingCircuit(Player player, CircuitType type, long delay) {
+    public Circuit addPendingCircuit(Player player, CircuitType type, int delay) {
         Circuit pc = new Circuit(player.getUniqueId(), type, delay);
         pendingCircuits.put(player.getName(), pc);
         return pc;
