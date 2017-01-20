@@ -50,8 +50,8 @@ public abstract class AbstractReceiver implements Receiver {
         Map<String, Object> map = new HashMap<>();
         map.put("location_world", location.getWorld().getName());
         map.put("location_x", location.getBlockX());
-        map.put("location_x", location.getBlockY());
-        map.put("location_x", location.getBlockZ());
+        map.put("location_y", location.getBlockY());
+        map.put("location_z", location.getBlockZ());
         map.put("delay", delay);
         map.put("type", getType());
         return map;

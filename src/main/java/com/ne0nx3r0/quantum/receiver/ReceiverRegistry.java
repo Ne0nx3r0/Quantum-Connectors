@@ -6,7 +6,6 @@ import com.ne0nx3r0.quantum.utils.ValidMaterials;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Constructor;
@@ -23,7 +22,7 @@ public class ReceiverRegistry {
 
 
     public static void registerReceiver(JavaPlugin javaPlugin, Class<? extends AbstractReceiver> receiver) {
-        ConfigurationSerialization.registerClass(receiver);
+        //ConfigurationSerialization.registerClass(receiver);
         receiverMap.put(javaPlugin.getName() + receiver
                 .getSimpleName(), receiver);
     }

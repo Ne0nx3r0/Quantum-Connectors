@@ -11,6 +11,7 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,8 +55,14 @@ public class CircuitLoader implements ICircuitLoader {
 
             Map<Location, Circuit> currentWorldCircuits = worlds.get(world);
 
+            List<Map<String, Object>> mapList = new ArrayList<>();
+
+            for (Map.Entry<Location, Circuit> entry : currentWorldCircuits.entrySet()) {
+                mapList.add(entry.getValue().serialize());
+            }
+
             yml.set("fileVersion", "3");
-            yml.set("circuits", currentWorldCircuits.values());
+            yml.set("circuits", mapList);
 
             try {
                 yml.save(ymlFile);
