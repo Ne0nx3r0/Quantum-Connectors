@@ -7,7 +7,6 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.configuration.serialization.ConfigurationSerialization;
 
 import java.io.File;
 import java.io.IOException;
@@ -117,7 +116,7 @@ public class CircuitLoader implements ICircuitLoader {
             Map<String, ?> tempCircuitMap = (Map<String, ?>) tempCircuitObj;
 
             //dummy value of # for owners
-            Circuit tempCircuit = (Circuit) ConfigurationSerialization.deserializeObject(tempCircuitMap, Circuit.class);
+            Circuit tempCircuit = new Circuit(tempCircuitMap);
 
             // Verify there is at least one valid receiver
             if (!tempCircuit.getReceivers().isEmpty()) {

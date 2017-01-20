@@ -1,6 +1,5 @@
 package com.ne0nx3r0.quantum;
 
-import com.ne0nx3r0.quantum.circuits.Circuit;
 import com.ne0nx3r0.quantum.circuits.CircuitManager;
 import com.ne0nx3r0.quantum.listeners.QuantumConnectorsBlockListener;
 import com.ne0nx3r0.quantum.listeners.QuantumConnectorsPlayerListener;
@@ -11,7 +10,6 @@ import com.ne0nx3r0.quantum.receiver.*;
 import com.ne0nx3r0.quantum.utils.MessageLogger;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -72,8 +70,6 @@ public class QuantumConnectors extends JavaPlugin {
 
     @Override
     public void onEnable() {
-
-        ConfigurationSerialization.registerClass(Circuit.class);
 
         ReceiverRegistry.registerReceiver(this, LeverReceiver.class, OpenableReceiver.class, PistonReceiver.class, PoweredRailReceiver.class, RedstoneLampReceiver.class);
 

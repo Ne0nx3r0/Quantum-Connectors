@@ -7,10 +7,16 @@ import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.Openable;
 
+import java.util.Map;
+
 @SerializableAs("OpenableReceiver")
 public class OpenableReceiver extends AbstractReceiver {
     public OpenableReceiver(Location location) {
         super(location);
+    }
+
+    public OpenableReceiver(Map<String, Object> map) {
+        super(map);
     }
 
     public OpenableReceiver(Location location, long delay) {

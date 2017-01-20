@@ -4,10 +4,16 @@ import org.bukkit.Location;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.material.PistonBaseMaterial;
 
+import java.util.Map;
+
 @SerializableAs("PistonReceiver")
 public class PistonReceiver extends AbstractReceiver {
     public PistonReceiver(Location location) {
         super(location);
+    }
+
+    public PistonReceiver(Map<String, Object> map) {
+        super(map);
     }
 
     public PistonReceiver(Location location, long delay) {

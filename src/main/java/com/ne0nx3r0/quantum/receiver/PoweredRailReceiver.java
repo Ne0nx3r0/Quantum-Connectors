@@ -4,6 +4,8 @@ import org.bukkit.Location;
 import org.bukkit.block.BlockState;
 import org.bukkit.material.PoweredRail;
 
+import java.util.Map;
+
 public class PoweredRailReceiver extends AbstractReceiver {
     public PoweredRailReceiver(Location location) {
         super(location);
@@ -11,6 +13,10 @@ public class PoweredRailReceiver extends AbstractReceiver {
 
     public PoweredRailReceiver(Location location, long delay) {
         super(location, delay);
+    }
+
+    public PoweredRailReceiver(Map<String, Object> map) {
+        super(map);
     }
 
     @Override

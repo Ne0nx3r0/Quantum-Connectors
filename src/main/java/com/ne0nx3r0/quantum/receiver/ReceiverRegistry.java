@@ -18,23 +18,34 @@ import java.util.Map;
  */
 public class ReceiverRegistry {
 
-    private static Map<String, Class<? extends AbstractReceiver>> receiverMap = new HashMap<>();
+    private final static Map<String, Class<? extends AbstractReceiver>> receiverMap = new HashMap<>();
 
 
     public static void registerReceiver(JavaPlugin javaPlugin, Class<? extends AbstractReceiver> receiver) {
         //ConfigurationSerialization.registerClass(receiver);
-        receiverMap.put(javaPlugin.getName() + receiver
+        receiverMap.put(javaPlugin.getName().replaceAll("[a-z]", "").toLowerCase() + ":" + receiver
                 .getSimpleName(), receiver);
     }
 
     public static void registerReceiver(JavaPlugin javaPlugin, Class<? extends AbstractReceiver>... receivers) {
         for (Class<? extends AbstractReceiver> receiver : receivers)
-            registerReceiver(javaPlugin);
+            registerReceiver(javaPlugin, receiver);
     }
 
 
     public static Constructor<? extends AbstractReceiver> getReceiverInstance(String receiverType) throws NoSuchMethodException {
-        return receiverMap.get(receiverType).getConstructor(Map.class);
+
+        Class<? extends AbstractReceiver> clazz = receiverMap.get(receiverType);
+
+        Constructor<? extends AbstractReceiver> constructor = clazz.getConstructor(Map.class);
+
+        if (constructor == null) {
+            System.out.println("Constructor is null");
+            return null;
+        }
+
+
+        return constructor;
     }
 
     public static Receiver fromType(Location location, long delay, List<Block> keepAlives, QSWorld qsWorld) {

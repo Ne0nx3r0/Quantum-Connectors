@@ -31,7 +31,7 @@ public abstract class AbstractReceiver implements Receiver {
                 (Integer) map.get("location_x"),
                 (Integer) map.get("location_y"),
                 (Integer) map.get("location_z"));
-        this.delay = (long) map.get("delay");
+        this.delay = (Integer) map.get("delay");
     }
 
 

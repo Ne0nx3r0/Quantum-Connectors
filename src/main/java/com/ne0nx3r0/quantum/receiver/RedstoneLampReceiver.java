@@ -22,6 +22,10 @@ public class RedstoneLampReceiver extends AbstractReceiver {
         this.qsWorld = qsWorld;
     }
 
+    public RedstoneLampReceiver(Location location, long delay) {
+        super(location, delay);
+    }
+
     public RedstoneLampReceiver(Location location) {
         super(location);
     }

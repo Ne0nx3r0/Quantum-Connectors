@@ -39,7 +39,7 @@ public class Circuit implements ConfigurationSerializable {
         this.playerUUID = UUID.fromString((String) map.get("owner"));
         this.circuitTypes = CircuitType.getByName((String) map.get("type"));
         this.location = new Location(Bukkit.getWorld((String) map.get("world")), (Integer) map.get("x"), (Integer) map.get("y"), (Integer) map.get("z"));
-        this.delay = (Long) map.get("delay");
+        this.delay = (Integer) map.get("delay");
         List<?> reciverObjectList = (List<?>) map.get("receiver");
 
         for (Object receiverObject : reciverObjectList) {

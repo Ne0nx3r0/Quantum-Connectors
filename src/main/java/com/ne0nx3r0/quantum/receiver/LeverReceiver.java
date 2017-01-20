@@ -5,6 +5,8 @@ import org.bukkit.block.BlockState;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.material.Lever;
 
+import java.util.Map;
+
 /**
  * Created by ysl3000 on 14.01.17.
  */
@@ -16,6 +18,10 @@ public class LeverReceiver extends AbstractReceiver {
 
     public LeverReceiver(Location location, long delay) {
         super(location, delay);
+    }
+
+    public LeverReceiver(Map<String, Object> map) {
+        super(map);
     }
 
     /**
