@@ -4,7 +4,6 @@ import com.ne0nx3r0.quantum.ConfigConverter;
 import com.ne0nx3r0.quantum.QuantumConnectors;
 import com.ne0nx3r0.quantum.api.ICircuitManager;
 import com.ne0nx3r0.quantum.api.Receiver;
-import com.ne0nx3r0.quantum.nmswrapper.QSWorld;
 import com.ne0nx3r0.quantum.receiver.DelayedReceiver;
 import com.ne0nx3r0.quantum.receiver.ReceiverRegistry;
 import com.ne0nx3r0.quantum.utils.MessageLogger;
@@ -32,16 +31,14 @@ public final class CircuitManager implements ICircuitManager {
     private Map<String, Circuit> pendingCircuits;
     // Allow circuitTypes/circuits
     private QuantumConnectors plugin;
-    private QSWorld qsWorld;
     // Lookup/Storage for circuits, and subsequently their receivers
     private Map<World, Map<Location, Circuit>> worlds = new HashMap<>();
     private CircuitLoader circuitLoader;
 
     // Main
-    public CircuitManager(MessageLogger messageLogger, final QuantumConnectors qc, QSWorld qsWorld) {
+    public CircuitManager(MessageLogger messageLogger, final QuantumConnectors qc) {
         this.messageLogger = messageLogger;
         this.plugin = qc;
-        this.qsWorld = qsWorld;
         this.circuitLoader = new CircuitLoader(qc, worlds, this, messageLogger);
 
         //Create a holder for pending circuits
@@ -239,7 +236,7 @@ public final class CircuitManager implements ICircuitManager {
 
     //Receiver_old Types
     public Receiver fromType(Location location, long delay) {
-        return ReceiverRegistry.fromType(location, delay, qsWorld);
+        return ReceiverRegistry.fromType(location, delay);
     }
 
 

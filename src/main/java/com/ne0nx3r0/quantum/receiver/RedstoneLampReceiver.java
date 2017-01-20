@@ -14,11 +14,10 @@ import static com.ne0nx3r0.quantum.circuits.CircuitManager.keepAlives;
 public class RedstoneLampReceiver extends AbstractReceiver {
 
 
-    private QSWorld qsWorld;
+    private QSWorld qsWorld = QSWorld.instance;
 
-    public RedstoneLampReceiver(Location location, long delay, QSWorld qsWorld) {
+    public RedstoneLampReceiver(Location location, long delay) {
         super(location, delay);
-        this.qsWorld = qsWorld;
     }
 
     public RedstoneLampReceiver(Map<String, Object> map) {

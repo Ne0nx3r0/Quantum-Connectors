@@ -5,7 +5,6 @@ import com.ne0nx3r0.quantum.listeners.QuantumConnectorsBlockListener;
 import com.ne0nx3r0.quantum.listeners.QuantumConnectorsPlayerListener;
 import com.ne0nx3r0.quantum.listeners.QuantumConnectorsWorldListener;
 import com.ne0nx3r0.quantum.nmswrapper.ClassRegistry;
-import com.ne0nx3r0.quantum.nmswrapper.QSWorld;
 import com.ne0nx3r0.quantum.receiver.*;
 import com.ne0nx3r0.quantum.utils.MessageLogger;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -30,9 +29,8 @@ public class QuantumConnectors extends JavaPlugin {
     public static boolean VERBOSE_LOGGING = false;
     private static int AUTOSAVE_INTERVAL = 30;//specified here in minutes
     private static int AUTO_SAVE_ID = -1;
-    private static QSWorld qsWorld;
     // Version
-    public String apiVersion;
+    public String apiVersion = ClassRegistry.instance.getApiVersion();
     // Localized Messages
     private Map<String, String> messages;
     private QuantumConnectorsWorldListener worldListener;
@@ -55,10 +53,6 @@ public class QuantumConnectors extends JavaPlugin {
         }
     };
     private ClassRegistry classRegistry;
-
-    public static QSWorld getQsWorld() {
-        return qsWorld;
-    }
 
     @Override
     public void onDisable() {
@@ -83,20 +77,9 @@ public class QuantumConnectors extends JavaPlugin {
         //Load config options, localized messages
         setupConfig();
 
-
-        String packageName = getServer().getClass().getPackage().getName();
-        this.apiVersion = packageName.substring(packageName.lastIndexOf('.') + 1);
-        try {
-            this.classRegistry = new ClassRegistry(apiVersion);
-        } catch (ClassNotFoundException | NoSuchMethodException | NoSuchFieldException e) {
-            e.printStackTrace();
-        }
-
-        qsWorld = new QSWorld(this.classRegistry);
-
         this.messageLogger = new MessageLogger(this.getLogger(), messages);
         //Create a circuit manager
-        this.circuitManager = new CircuitManager(messageLogger, this, qsWorld);
+        this.circuitManager = new CircuitManager(messageLogger, this);
 
         this.worldListener = new QuantumConnectorsWorldListener(this.circuitManager.getCircuitLoader());
         this.blockListener = new QuantumConnectorsBlockListener(this, circuitManager);

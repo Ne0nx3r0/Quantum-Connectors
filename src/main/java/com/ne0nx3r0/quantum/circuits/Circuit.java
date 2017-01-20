@@ -1,6 +1,5 @@
 package com.ne0nx3r0.quantum.circuits;
 
-import com.ne0nx3r0.quantum.QuantumConnectors;
 import com.ne0nx3r0.quantum.api.Receiver;
 import com.ne0nx3r0.quantum.receiver.AbstractReceiver;
 import com.ne0nx3r0.quantum.receiver.ReceiverRegistry;
@@ -63,7 +62,7 @@ public class Circuit implements ConfigurationSerializable {
     }
 
     public void addReceiver(Location loc, long delay) {
-        receivers.add(ReceiverRegistry.fromType(loc, delay, QuantumConnectors.getQsWorld()));
+        receivers.add(ReceiverRegistry.fromType(loc, delay));
     }
 
     public List<Receiver> getReceivers() {

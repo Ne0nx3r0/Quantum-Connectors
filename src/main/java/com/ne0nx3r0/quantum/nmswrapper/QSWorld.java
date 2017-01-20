@@ -9,6 +9,8 @@ import java.lang.reflect.InvocationTargetException;
 public class QSWorld {
 
 
+    public static final QSWorld instance = new QSWorld(ClassRegistry.instance);
+
     private ClassRegistry classRegistry;
 
     public QSWorld(ClassRegistry classRegistry) {

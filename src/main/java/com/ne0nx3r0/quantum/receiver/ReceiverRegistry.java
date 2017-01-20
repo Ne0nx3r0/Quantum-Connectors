@@ -1,7 +1,6 @@
 package com.ne0nx3r0.quantum.receiver;
 
 import com.ne0nx3r0.quantum.api.Receiver;
-import com.ne0nx3r0.quantum.nmswrapper.QSWorld;
 import com.ne0nx3r0.quantum.utils.ValidMaterials;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -46,11 +45,11 @@ public class ReceiverRegistry {
         return constructor;
     }
 
-    public static Receiver fromType(Location location, long delay, QSWorld qsWorld) {
+    public static Receiver fromType(Location location, long delay) {
         Material m = location.getBlock().getType();
 
         if (ValidMaterials.LAMP.contains(m)) {
-            return new RedstoneLampReceiver(location, delay, qsWorld);
+            return new RedstoneLampReceiver(location, delay);
         } else if (ValidMaterials.OPENABLE.contains(m)) {
             return new OpenableReceiver(location, delay);
         } else if (ValidMaterials.LEVER.contains(m)) {
