@@ -60,7 +60,7 @@ public class PistonReceiver extends AbstractReceiver {
 
             } else {
                 if (powerOn) {
-                    behindPiston.setType(Material.REDSTONE_BLOCK);
+                    behindPiston.getState().setData(new MaterialData(Material.REDSTONE_BLOCK));
                     keepAlives.add(location.getBlock());
                     QSWorld.instance.setStatic(location.getWorld(), true);
                     behindPiston.getState().setData(tempData);
