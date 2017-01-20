@@ -1,11 +1,10 @@
 package com.ne0nx3r0.quantum.receiver;
 
 import org.bukkit.Location;
+import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.material.PistonBaseMaterial;
 
-/**
- * Created by ysl3000 on 14.01.17.
- */
+@SerializableAs("PistonReceiver")
 public class PistonReceiver extends AbstractReceiver {
     public PistonReceiver(Location location) {
         super(location);

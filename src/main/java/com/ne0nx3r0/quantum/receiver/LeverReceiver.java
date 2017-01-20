@@ -2,11 +2,13 @@ package com.ne0nx3r0.quantum.receiver;
 
 import org.bukkit.Location;
 import org.bukkit.block.BlockState;
+import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.material.Lever;
 
 /**
  * Created by ysl3000 on 14.01.17.
  */
+@SerializableAs("LeverReceiver")
 public class LeverReceiver extends AbstractReceiver {
     public LeverReceiver(Location location) {
         this(location, 0);

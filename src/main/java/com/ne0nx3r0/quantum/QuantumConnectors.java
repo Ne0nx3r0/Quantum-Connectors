@@ -1,5 +1,6 @@
 package com.ne0nx3r0.quantum;
 
+import com.ne0nx3r0.quantum.circuits.Circuit;
 import com.ne0nx3r0.quantum.circuits.CircuitManager;
 import com.ne0nx3r0.quantum.listeners.QuantumConnectorsBlockListener;
 import com.ne0nx3r0.quantum.listeners.QuantumConnectorsPlayerListener;
@@ -10,6 +11,7 @@ import com.ne0nx3r0.quantum.receiver.*;
 import com.ne0nx3r0.quantum.utils.MessageLogger;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -30,6 +32,7 @@ public class QuantumConnectors extends JavaPlugin {
     public static boolean VERBOSE_LOGGING = false;
     private static int AUTOSAVE_INTERVAL = 30;//specified here in minutes
     private static int AUTO_SAVE_ID = -1;
+    private static QSWorld qsWorld;
     // Version
     public String apiVersion;
     // Localized Messages
@@ -53,10 +56,11 @@ public class QuantumConnectors extends JavaPlugin {
             circuitManager.getCircuitLoader().saveAllWorlds();
         }
     };
-
-    private QSWorld qsWorld;
     private ClassRegistry classRegistry;
 
+    public static QSWorld getQsWorld() {
+        return qsWorld;
+    }
 
     @Override
     public void onDisable() {
@@ -68,6 +72,8 @@ public class QuantumConnectors extends JavaPlugin {
 
     @Override
     public void onEnable() {
+
+        ConfigurationSerialization.registerClass(Circuit.class);
 
         ReceiverRegistry.registerReceiver(this, LeverReceiver.class, OpenableReceiver.class, PistonReceiver.class, PoweredRailReceiver.class, RedstoneLampReceiver.class);
 
@@ -90,7 +96,7 @@ public class QuantumConnectors extends JavaPlugin {
             e.printStackTrace();
         }
 
-        this.qsWorld = new QSWorld(this.classRegistry);
+        qsWorld = new QSWorld(this.classRegistry);
 
         this.messageLogger = new MessageLogger(this.getLogger(), messages);
         //Create a circuit manager

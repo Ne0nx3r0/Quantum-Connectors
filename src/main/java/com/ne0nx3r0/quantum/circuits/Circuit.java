@@ -1,5 +1,6 @@
 package com.ne0nx3r0.quantum.circuits;
 
+import com.ne0nx3r0.quantum.QuantumConnectors;
 import com.ne0nx3r0.quantum.api.Receiver;
 import com.ne0nx3r0.quantum.receiver.AbstractReceiver;
 import com.ne0nx3r0.quantum.receiver.ReceiverRegistry;
@@ -16,29 +17,27 @@ import java.util.*;
 
 @SerializableAs("Circuit")
 public class Circuit implements ConfigurationSerializable {
+
     private List<Receiver> receivers = new ArrayList<>();
     private UUID playerUUID;
-    private CircuitManager circuitManager;
-    private CircuitTypes circuitTypes;
+    private CircuitType circuitTypes;
     private Location location;
     private long delay;
 
-    public Circuit(UUID playerUUID, CircuitManager cmanager, CircuitTypes circuitTypes, long delay) {
-        this(playerUUID, new ArrayList<>(), cmanager, circuitTypes, delay);
+    public Circuit(UUID playerUUID, CircuitType circuitTypes, long delay) {
+        this(playerUUID, new ArrayList<>(), circuitTypes, delay);
     }
 
-    public Circuit(UUID playerUUID, List<Receiver> receivers, CircuitManager cmanager, CircuitTypes circuitTypes, long delay) {
+    public Circuit(UUID playerUUID, List<Receiver> receivers, CircuitType circuitTypes, long delay) {
         this.playerUUID = playerUUID;
         this.circuitTypes = circuitTypes;
         this.delay = delay;
         this.receivers.addAll(receivers);
-        this.circuitManager = cmanager;
     }
 
-    public Circuit(CircuitManager circuitManager, Map<?, ?> map) {
-        this.circuitManager = circuitManager;
+    public Circuit(Map<?, ?> map) {
         this.playerUUID = UUID.fromString((String) map.get("owner"));
-        this.circuitTypes = CircuitTypes.getByName((String) map.get("type"));
+        this.circuitTypes = CircuitType.getByName((String) map.get("type"));
         this.location = new Location(Bukkit.getWorld((String) map.get("world")), (Integer) map.get("x"), (Integer) map.get("y"), (Integer) map.get("z"));
         this.delay = (Long) map.get("delay");
         List<?> reciverObjectList = (List<?>) map.get("receiver");
@@ -64,7 +63,7 @@ public class Circuit implements ConfigurationSerializable {
     }
 
     public void addReceiver(Location loc, long delay) {
-        receivers.add(circuitManager.fromType(loc, delay));
+        receivers.add(ReceiverRegistry.fromType(loc, delay, CircuitManager.keepAlives, QuantumConnectors.getQsWorld()));
     }
 
     public List<Receiver> getReceivers() {
@@ -92,11 +91,11 @@ public class Circuit implements ConfigurationSerializable {
         return true;
     }
 
-    public CircuitTypes getCircuitType() {
+    public CircuitType getCircuitType() {
         return circuitTypes;
     }
 
-    public void setCircuitType(CircuitTypes circuitType) {
+    public void setCircuitType(CircuitType circuitType) {
         this.circuitTypes = circuitType;
     }
 
@@ -106,7 +105,14 @@ public class Circuit implements ConfigurationSerializable {
 
         map.put("owner", playerUUID.toString());
         map.put("type", circuitTypes.name);
-        map.put("receiver", receivers);
+
+        List<Map<String, ?>> receiverMap = new ArrayList<>();
+
+        for (Receiver receiver : receivers) {
+            receiverMap.add(receiver.serialize());
+        }
+
+        map.put("receiver", receiverMap);
         map.put("world", location.getWorld().getName());
         map.put("x", location.getBlockX());
         map.put("y", location.getBlockY());

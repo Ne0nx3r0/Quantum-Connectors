@@ -4,10 +4,12 @@ import com.ne0nx3r0.quantum.nmswrapper.QSWorld;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.serialization.SerializableAs;
 
 import java.util.List;
 
 
+@SerializableAs("RedstoneLampReceiver")
 public class RedstoneLampReceiver extends AbstractReceiver {
 
 

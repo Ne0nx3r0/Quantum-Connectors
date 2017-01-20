@@ -5,7 +5,8 @@ import com.ne0nx3r0.quantum.QuantumConnectors;
 import com.ne0nx3r0.quantum.api.ICircuitManager;
 import com.ne0nx3r0.quantum.api.Receiver;
 import com.ne0nx3r0.quantum.nmswrapper.QSWorld;
-import com.ne0nx3r0.quantum.receiver.*;
+import com.ne0nx3r0.quantum.receiver.DelayedReceiver;
+import com.ne0nx3r0.quantum.receiver.ReceiverRegistry;
 import com.ne0nx3r0.quantum.utils.MessageLogger;
 import com.ne0nx3r0.quantum.utils.Normalizer;
 import com.ne0nx3r0.quantum.utils.ValidMaterials;
@@ -22,11 +23,13 @@ import java.io.File;
 import java.util.*;
 
 public final class CircuitManager implements ICircuitManager {
+
+    // keepAlives - lamps/torches/etc that should stay powered regardless of redstone events
+    public final static ArrayList<Block> keepAlives = new ArrayList<>();
+
     private MessageLogger messageLogger;
     // Temporary Holders for circuit creation
     private Map<String, Circuit> pendingCircuits;
-    // keepAlives - lamps/torches/etc that should stay powered regardless of redstone events
-    private ArrayList<Block> keepAlives;
     // Allow circuitTypes/circuits
     private QuantumConnectors plugin;
     private QSWorld qsWorld;
@@ -39,7 +42,6 @@ public final class CircuitManager implements ICircuitManager {
         this.messageLogger = messageLogger;
         this.plugin = qc;
         this.qsWorld = qsWorld;
-        this.keepAlives = new ArrayList<>();
         this.circuitLoader = new CircuitLoader(qc, worlds, this, messageLogger);
 
         //Create a holder for pending circuits
@@ -200,8 +202,8 @@ public final class CircuitManager implements ICircuitManager {
 
     // Temporary circuit stuff
 // I really don't know what order this deserves among the existing class methods
-    public Circuit addPendingCircuit(Player player, CircuitTypes type, long delay) {
-        Circuit pc = new Circuit(player.getUniqueId(), this, type, delay);
+    public Circuit addPendingCircuit(Player player, CircuitType type, long delay) {
+        Circuit pc = new Circuit(player.getUniqueId(), type, delay);
         pendingCircuits.put(player.getName(), pc);
         return pc;
     }
@@ -220,11 +222,11 @@ public final class CircuitManager implements ICircuitManager {
 
     //Circuit Types
     public boolean isValidCircuitType(String type) {
-        return CircuitTypes.getByName(type) != null;
+        return CircuitType.getByName(type) != null;
     }
 
-    public CircuitTypes getCircuitType(String sType) {
-        return CircuitTypes.getByName(sType);
+    public CircuitType getCircuitType(String sType) {
+        return CircuitType.getByName(sType);
     }
 
     public CircuitLoader getCircuitLoader() {
@@ -237,23 +239,8 @@ public final class CircuitManager implements ICircuitManager {
 
     //Receiver_old Types
     public Receiver fromType(Location location, long delay) {
-        return fromType(location, delay, qsWorld);
+        return ReceiverRegistry.fromType(location, delay, keepAlives, qsWorld);
     }
 
-    public Receiver fromType(Location location, long delay, QSWorld qsWorld) {
-        Material m = location.getBlock().getType();
 
-        if (ValidMaterials.LAMP.contains(m)) {
-            return new RedstoneLampReceiver(location, delay, keepAlives, qsWorld);
-        } else if (ValidMaterials.OPENABLE.contains(m)) {
-            return new OpenableReceiver(location, delay);
-        } else if (ValidMaterials.LEVER.contains(m)) {
-            return new LeverReceiver(location, delay);
-        } else if (ValidMaterials.RAIL.contains(m)) {
-            return new PoweredRailReceiver(location, delay);
-        } else if (ValidMaterials.PISTON.contains(m)) {
-            return new PistonReceiver(location, delay);
-        }
-        return null;
-    }
 }

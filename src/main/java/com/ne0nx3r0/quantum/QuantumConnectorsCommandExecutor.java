@@ -2,7 +2,7 @@ package com.ne0nx3r0.quantum;
 
 import com.ne0nx3r0.quantum.circuits.Circuit;
 import com.ne0nx3r0.quantum.circuits.CircuitManager;
-import com.ne0nx3r0.quantum.circuits.CircuitTypes;
+import com.ne0nx3r0.quantum.circuits.CircuitType;
 import com.ne0nx3r0.quantum.utils.MessageLogger;
 import com.ne0nx3r0.quantum.utils.Normalizer;
 import org.bukkit.ChatColor;
@@ -51,7 +51,7 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
 
             messageLogger.msg(player, ChatColor.YELLOW +
                     messageLogger.getMessage("available_circuits") + ChatColor.WHITE +
-                    Normalizer.normalizeEnumNames(Arrays.asList(CircuitTypes.values()), Normalizer.NORMALIZER));
+                    Normalizer.normalizeEnumNames(Arrays.asList(CircuitType.values()), Normalizer.NORMALIZER));
         }
 
 // Command was: "/qc cancel" or "/qc abort"
