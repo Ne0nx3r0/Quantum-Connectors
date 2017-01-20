@@ -63,7 +63,7 @@ public class Circuit implements ConfigurationSerializable {
     }
 
     public void addReceiver(Location loc, long delay) {
-        receivers.add(ReceiverRegistry.fromType(loc, delay, CircuitManager.keepAlives, QuantumConnectors.getQsWorld()));
+        receivers.add(ReceiverRegistry.fromType(loc, delay, QuantumConnectors.getQsWorld()));
     }
 
     public List<Receiver> getReceivers() {

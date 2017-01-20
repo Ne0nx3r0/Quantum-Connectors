@@ -22,7 +22,6 @@ public enum CircuitType {
             BY_NAME.put(c.name, c);
         });
 
-
     }
 
     public final int id;

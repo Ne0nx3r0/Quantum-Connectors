@@ -239,7 +239,7 @@ public final class CircuitManager implements ICircuitManager {
 
     //Receiver_old Types
     public Receiver fromType(Location location, long delay) {
-        return ReceiverRegistry.fromType(location, delay, keepAlives, qsWorld);
+        return ReceiverRegistry.fromType(location, delay, qsWorld);
     }
 
 

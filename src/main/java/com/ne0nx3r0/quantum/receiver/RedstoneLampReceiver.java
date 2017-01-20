@@ -3,23 +3,21 @@ package com.ne0nx3r0.quantum.receiver;
 import com.ne0nx3r0.quantum.nmswrapper.QSWorld;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.configuration.serialization.SerializableAs;
 
-import java.util.List;
 import java.util.Map;
+
+import static com.ne0nx3r0.quantum.circuits.CircuitManager.keepAlives;
 
 
 @SerializableAs("RedstoneLampReceiver")
 public class RedstoneLampReceiver extends AbstractReceiver {
 
 
-    private List<Block> keepAlives;
     private QSWorld qsWorld;
 
-    public RedstoneLampReceiver(Location location, long delay, List<Block> keepAlives, QSWorld qsWorld) {
+    public RedstoneLampReceiver(Location location, long delay, QSWorld qsWorld) {
         super(location, delay);
-        this.keepAlives = keepAlives;
         this.qsWorld = qsWorld;
     }
 

@@ -5,12 +5,10 @@ import com.ne0nx3r0.quantum.nmswrapper.QSWorld;
 import com.ne0nx3r0.quantum.utils.ValidMaterials;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -48,11 +46,11 @@ public class ReceiverRegistry {
         return constructor;
     }
 
-    public static Receiver fromType(Location location, long delay, List<Block> keepAlives, QSWorld qsWorld) {
+    public static Receiver fromType(Location location, long delay, QSWorld qsWorld) {
         Material m = location.getBlock().getType();
 
         if (ValidMaterials.LAMP.contains(m)) {
-            return new RedstoneLampReceiver(location, delay, keepAlives, qsWorld);
+            return new RedstoneLampReceiver(location, delay, qsWorld);
         } else if (ValidMaterials.OPENABLE.contains(m)) {
             return new OpenableReceiver(location, delay);
         } else if (ValidMaterials.LEVER.contains(m)) {
