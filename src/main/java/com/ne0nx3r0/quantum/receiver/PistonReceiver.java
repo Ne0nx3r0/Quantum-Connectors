@@ -1,6 +1,7 @@
 package com.ne0nx3r0.quantum.receiver;
 
 import com.ne0nx3r0.quantum.nmswrapper.QSWorld;
+import com.ne0nx3r0.quantum.utils.ValidMaterials;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -9,6 +10,7 @@ import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.PistonBaseMaterial;
 
+import java.util.List;
 import java.util.Map;
 
 import static com.ne0nx3r0.quantum.circuits.CircuitManager.keepAlives;
@@ -25,6 +27,11 @@ public class PistonReceiver extends AbstractReceiver {
 
     public PistonReceiver(Location location, long delay) {
         super(location, delay);
+    }
+
+    @Override
+    public List<Material> getValidMaterials() {
+        return ValidMaterials.PISTON;
     }
 
     @Override

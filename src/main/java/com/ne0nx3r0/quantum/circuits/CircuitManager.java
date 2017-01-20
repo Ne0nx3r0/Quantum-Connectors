@@ -56,7 +56,7 @@ public final class CircuitManager implements ICircuitManager {
     }
 
     public boolean isValidReceiver(Block block) {
-        return ValidMaterials.validReceivers.contains(block.getType());
+        return ReceiverRegistry.isValidReceiver(block);
     }
 
     // Sender/Receiver_old checks
@@ -232,11 +232,4 @@ public final class CircuitManager implements ICircuitManager {
     public Set<Location> circuitLocations(World w) {
         return worlds.get(w).keySet();
     }
-
-    //Receiver_old Types
-    public Receiver fromType(Location location, long delay) {
-        return ReceiverRegistry.fromType(location, delay);
-    }
-
-
 }

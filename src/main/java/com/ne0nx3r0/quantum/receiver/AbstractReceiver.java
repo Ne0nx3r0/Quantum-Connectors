@@ -3,8 +3,10 @@ package com.ne0nx3r0.quantum.receiver;
 import com.ne0nx3r0.quantum.api.Receiver;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class AbstractReceiver implements Receiver {
@@ -41,6 +43,8 @@ public abstract class AbstractReceiver implements Receiver {
     @Override
     public void calculateRealLocation() {
     }
+
+    public abstract List<Material> getValidMaterials();
 
     @Override
     public long getDelay() {

@@ -1,13 +1,16 @@
 package com.ne0nx3r0.quantum.receiver;
 
+import com.ne0nx3r0.quantum.utils.ValidMaterials;
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.material.Door;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.Openable;
 
+import java.util.List;
 import java.util.Map;
 
 @SerializableAs("OpenableReceiver")
@@ -60,5 +63,10 @@ public class OpenableReceiver extends AbstractReceiver {
                 this.location = location.add(0, -1, 0);
             }
         }
+    }
+
+    @Override
+    public List<Material> getValidMaterials() {
+        return ValidMaterials.OPENABLE;
     }
 }

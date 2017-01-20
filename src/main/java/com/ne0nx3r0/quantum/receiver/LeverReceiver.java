@@ -1,10 +1,13 @@
 package com.ne0nx3r0.quantum.receiver;
 
+import com.ne0nx3r0.quantum.utils.ValidMaterials;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.material.Lever;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,6 +25,11 @@ public class LeverReceiver extends AbstractReceiver {
 
     public LeverReceiver(Map<String, Object> map) {
         super(map);
+    }
+
+    @Override
+    public List<Material> getValidMaterials() {
+        return ValidMaterials.LEVER;
     }
 
     /**
@@ -52,4 +60,5 @@ public class LeverReceiver extends AbstractReceiver {
     public boolean isValid() {
         return location.getBlock().getState().getData() instanceof Lever;
     }
+
 }

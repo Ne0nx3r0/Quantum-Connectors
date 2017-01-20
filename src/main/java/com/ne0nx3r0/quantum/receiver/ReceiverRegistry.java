@@ -1,13 +1,16 @@
 package com.ne0nx3r0.quantum.receiver;
 
 import com.ne0nx3r0.quantum.api.Receiver;
-import com.ne0nx3r0.quantum.utils.ValidMaterials;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,13 +18,28 @@ import java.util.Map;
  */
 public class ReceiverRegistry {
 
-    private final static Map<String, Class<? extends AbstractReceiver>> receiverMap = new HashMap<>();
+    private final static ReceiverMap receiverMap = new ReceiverMap();
 
 
     public static void registerReceiver(JavaPlugin javaPlugin, Class<? extends AbstractReceiver> receiver) {
-        //ConfigurationSerialization.registerClass(receiver);
         receiverMap.put(javaPlugin.getName().replaceAll("[a-z]", "").toLowerCase() + ":" + receiver
                 .getSimpleName(), receiver);
+
+        try {
+            AbstractReceiver abstractReceiver = getReceiver(receiver);
+
+            if (abstractReceiver != null) {
+                for (Material material : abstractReceiver.getValidMaterials()) {
+                    receiverMap.put(material, receiver);
+                }
+            }
+
+
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
     public static void registerReceiver(JavaPlugin javaPlugin, Class<? extends AbstractReceiver>... receivers) {
@@ -40,26 +58,70 @@ public class ReceiverRegistry {
             System.out.println("Constructor is null");
             return null;
         }
-
-
         return constructor;
     }
 
-    public static Receiver fromType(Location location, long delay) {
-        Material m = location.getBlock().getType();
+    private static AbstractReceiver getReceiver(Class<? extends AbstractReceiver> receiver) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        Constructor<? extends AbstractReceiver> constructor = receiver.getConstructor(Location.class);
 
-        if (ValidMaterials.LAMP.contains(m)) {
-            return new RedstoneLampReceiver(location, delay);
-        } else if (ValidMaterials.OPENABLE.contains(m)) {
-            return new OpenableReceiver(location, delay);
-        } else if (ValidMaterials.LEVER.contains(m)) {
-            return new LeverReceiver(location, delay);
-        } else if (ValidMaterials.RAIL.contains(m)) {
-            return new PoweredRailReceiver(location, delay);
-        } else if (ValidMaterials.PISTON.contains(m)) {
-            return new PistonReceiver(location, delay);
+        if (constructor != null) {
+            return constructor.newInstance(null);
         }
         return null;
+    }
+
+
+    public static List<Class<? extends AbstractReceiver>> fromType(Location location) {
+        Material m = location.getBlock().getType();
+        if (receiverMap.contains(m)) {
+            return receiverMap.get(m);
+        }
+        return null;
+    }
+
+    public static Receiver instantiatFrom(Class<? extends AbstractReceiver> receiverClass, Location location, int delay) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        return receiverClass.getConstructor(Location.class, Integer.class).newInstance(location, delay);
+    }
+
+
+    public static boolean isValidReceiver(Block block) {
+        return receiverMap.contains(block.getType());
+    }
+
+
+    private final static class ReceiverMap {
+
+        private final Map<String, Class<? extends AbstractReceiver>> receiverMap = new HashMap<>();
+        private final Map<Material, List<Class<? extends AbstractReceiver>>> receiverMapMaterial = new HashMap<>();
+
+
+        public Class<? extends AbstractReceiver> put(String key, Class<? extends AbstractReceiver> receiver) {
+            return receiverMap.put(key, receiver);
+        }
+
+        public Class<? extends AbstractReceiver> put(Material material, Class<? extends AbstractReceiver> receiver) {
+            List<Class<? extends AbstractReceiver>> abstClassList = receiverMapMaterial.get(material);
+
+            if (abstClassList == null) {
+                abstClassList = new ArrayList<>();
+                receiverMapMaterial.put(material, abstClassList);
+            }
+
+            return abstClassList.add(receiver) ? receiver : null;
+        }
+
+        public List<Class<? extends AbstractReceiver>> get(Material type) {
+            return receiverMapMaterial.get(type);
+        }
+
+        public Class<? extends AbstractReceiver> get(String type) {
+            return receiverMap.get(type);
+        }
+
+        public boolean contains(Material material) {
+            return receiverMapMaterial.containsKey(material);
+        }
+
     }
 
 }

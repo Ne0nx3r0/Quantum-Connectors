@@ -1,20 +1,24 @@
 package com.ne0nx3r0.quantum.receiver;
 
 import com.ne0nx3r0.quantum.nmswrapper.QSWorld;
+import com.ne0nx3r0.quantum.utils.ValidMaterials;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.configuration.serialization.SerializableAs;
 
+import java.util.List;
 import java.util.Map;
 
 import static com.ne0nx3r0.quantum.circuits.CircuitManager.keepAlives;
 
 
-@SerializableAs("RedstoneLampReceiver")
 public class RedstoneLampReceiver extends AbstractReceiver {
 
 
     private QSWorld qsWorld = QSWorld.instance;
+
+    public RedstoneLampReceiver(Location location) {
+        super(location);
+    }
 
     public RedstoneLampReceiver(Location location, long delay) {
         super(location, delay);
@@ -22,6 +26,11 @@ public class RedstoneLampReceiver extends AbstractReceiver {
 
     public RedstoneLampReceiver(Map<String, Object> map) {
         super(map);
+    }
+
+    @Override
+    public List<Material> getValidMaterials() {
+        return ValidMaterials.LAMP;
     }
 
     @Override
