@@ -1,7 +1,9 @@
 package com.ne0nx3r0.quantum.receiver;
 
 import org.bukkit.Location;
+import org.bukkit.block.BlockState;
 import org.bukkit.configuration.serialization.SerializableAs;
+import org.bukkit.material.MaterialData;
 import org.bukkit.material.PistonBaseMaterial;
 
 import java.util.Map;
@@ -32,8 +34,11 @@ public class PistonReceiver extends AbstractReceiver {
 
     @Override
     public void setActive(boolean powerOn) {
-        ((PistonBaseMaterial) location.getBlock().getState().getData()).setPowered(powerOn);
-        location.getBlock().getState().update();
+        BlockState state = location.getBlock().getState();
+        MaterialData data = state.getData();
+        ((PistonBaseMaterial) data).setPowered(powerOn);
+        state.setData(data);
+        state.update();
     }
 
     @Override
