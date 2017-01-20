@@ -62,10 +62,10 @@ public class ReceiverRegistry {
     }
 
     private static AbstractReceiver getReceiver(Class<? extends AbstractReceiver> receiver) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        Constructor<? extends AbstractReceiver> constructor = receiver.getConstructor(Location.class);
+        Constructor<? extends AbstractReceiver> constructor = receiver.getConstructor();
 
         if (constructor != null) {
-            return constructor.newInstance(null);
+            return constructor.newInstance();
         }
         return null;
     }

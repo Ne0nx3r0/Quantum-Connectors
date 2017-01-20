@@ -15,6 +15,14 @@ import java.util.Map;
 
 @SerializableAs("OpenableReceiver")
 public class OpenableReceiver extends AbstractReceiver {
+
+    /**
+     * only use to getValidMaterials
+     */
+    public OpenableReceiver() {
+        super();
+    }
+
     public OpenableReceiver(Location location) {
         super(location);
     }
@@ -23,7 +31,7 @@ public class OpenableReceiver extends AbstractReceiver {
         super(map);
     }
 
-    public OpenableReceiver(Location location, long delay) {
+    public OpenableReceiver(Location location, Integer delay) {
         super(location, delay);
     }
 

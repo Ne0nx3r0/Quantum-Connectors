@@ -15,11 +15,18 @@ import java.util.Map;
  */
 @SerializableAs("LeverReceiver")
 public class LeverReceiver extends AbstractReceiver {
+    /**
+     * only use to getValidMaterials
+     */
+    public LeverReceiver() {
+        super();
+    }
+
     public LeverReceiver(Location location) {
         this(location, 0);
     }
 
-    public LeverReceiver(Location location, long delay) {
+    public LeverReceiver(Location location, Integer delay) {
         super(location, delay);
     }
 

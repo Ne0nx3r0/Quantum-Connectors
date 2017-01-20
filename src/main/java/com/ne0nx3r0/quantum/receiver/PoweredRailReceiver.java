@@ -10,11 +10,19 @@ import java.util.List;
 import java.util.Map;
 
 public class PoweredRailReceiver extends AbstractReceiver {
+
+    /**
+     * only use to getValidMaterials
+     */
+    public PoweredRailReceiver() {
+        super();
+    }
+
     public PoweredRailReceiver(Location location) {
         super(location);
     }
 
-    public PoweredRailReceiver(Location location, long delay) {
+    public PoweredRailReceiver(Location location, Integer delay) {
         super(location, delay);
     }
 

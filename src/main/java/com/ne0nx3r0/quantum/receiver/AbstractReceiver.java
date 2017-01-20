@@ -14,12 +14,18 @@ public abstract class AbstractReceiver implements Receiver {
     protected Location location;
     protected long delay;
 
+    /**
+     * only use to getValidMaterials
+     */
+    public AbstractReceiver() {
+    }
+
 
     public AbstractReceiver(Location location) {
         this(location, 0);
     }
 
-    public AbstractReceiver(Location location, long delay) {
+    public AbstractReceiver(Location location, Integer delay) {
         this.location = location;
         this.delay = delay;
         this.calculateRealLocation();

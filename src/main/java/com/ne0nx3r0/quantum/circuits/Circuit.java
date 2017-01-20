@@ -57,8 +57,8 @@ public class Circuit implements ConfigurationSerializable {
         }
     }
 
-    public void addReceiver(Location loc, long delay) {
-        receivers.put(loc, ReceiverRegistry.fromType(loc, delay));
+    public void addReceiver(Class<? extends AbstractReceiver> receiverClass, Location loc, int delay) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        receivers.put(loc, ReceiverRegistry.instantiatFrom(receiverClass, loc, delay));
     }
 
     public List<Receiver> getReceivers() {

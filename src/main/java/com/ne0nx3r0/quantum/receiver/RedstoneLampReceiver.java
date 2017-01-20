@@ -16,11 +16,18 @@ public class RedstoneLampReceiver extends AbstractReceiver {
 
     private QSWorld qsWorld = QSWorld.instance;
 
+    /**
+     * only use to getValidMaterials
+     */
+    public RedstoneLampReceiver() {
+        super();
+    }
+
     public RedstoneLampReceiver(Location location) {
         super(location);
     }
 
-    public RedstoneLampReceiver(Location location, long delay) {
+    public RedstoneLampReceiver(Location location, Integer delay) {
         super(location, delay);
     }
 

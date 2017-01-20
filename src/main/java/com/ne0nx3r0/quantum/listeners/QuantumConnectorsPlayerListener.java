@@ -3,6 +3,8 @@ package com.ne0nx3r0.quantum.listeners;
 import com.ne0nx3r0.quantum.QuantumConnectors;
 import com.ne0nx3r0.quantum.circuits.Circuit;
 import com.ne0nx3r0.quantum.circuits.CircuitManager;
+import com.ne0nx3r0.quantum.receiver.AbstractReceiver;
+import com.ne0nx3r0.quantum.receiver.ReceiverRegistry;
 import com.ne0nx3r0.quantum.utils.MessageLogger;
 import com.ne0nx3r0.quantum.utils.ValidMaterials;
 import org.bukkit.ChatColor;
@@ -23,6 +25,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.material.Bed;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 public class QuantumConnectorsPlayerListener implements Listener {
     private final QuantumConnectors plugin;
@@ -114,10 +119,32 @@ public class QuantumConnectorsPlayerListener implements Listener {
                         if (QuantumConnectors.MAX_RECEIVERS_PER_CIRCUIT == 0 // 0 == unlimited
                                 || pc.getReceiversCount() < QuantumConnectors.MAX_RECEIVERS_PER_CIRCUIT
                                 || player.hasPermission("QuantumConnectors.ignoreLimits")) {
-                            //Add the receiver to our new/found circuit
-                            pc.addReceiver(clickedLoc, pc.getDelay());
 
-                            messageLogger.msg(player, "Added a receiver! (#" + pc.getReceiversCount() + ")" + ChatColor.YELLOW + " ('/qc done', or add more)");
+                            if (ReceiverRegistry.isValidReceiver(clickedLoc.getBlock())) {
+
+                                List<Class<? extends AbstractReceiver>> possibleReceivers = ReceiverRegistry.fromType(clickedLoc);
+
+
+                                // TODO: 20.01.2017 create inventory with possible Receivers
+                                // TODO: 20.01.2017 move to inventory listener ->
+                                //Add the receiver to our new/found circuit
+                                // temp solution
+                                if (possibleReceivers.size() > 0) {
+                                    try {
+                                        pc.addReceiver(possibleReceivers.get(0), clickedLoc, pc.getDelay());
+                                    } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+                                        e.printStackTrace();
+                                    } finally {
+                                        messageLogger.msg(player, "Added a receiver! (#" + pc.getReceiversCount() + ")" + ChatColor.YELLOW + " ('/qc done', or add more)");
+                                    }
+                                }
+
+                                // TODO: 20.01.2017 until here
+
+                                // TODO: 20.01.2017 idea of pregenerating inventory for each MaterialType registered
+
+
+                            }
                         }
                         //Went over max circuits
                         else {

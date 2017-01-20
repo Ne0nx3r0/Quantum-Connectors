@@ -17,6 +17,14 @@ import static com.ne0nx3r0.quantum.circuits.CircuitManager.keepAlives;
 
 @SerializableAs("PistonReceiver")
 public class PistonReceiver extends AbstractReceiver {
+
+    /**
+     * only use to getValidMaterials
+     */
+    public PistonReceiver() {
+        super();
+    }
+
     public PistonReceiver(Location location) {
         super(location);
     }
@@ -25,7 +33,7 @@ public class PistonReceiver extends AbstractReceiver {
         super(map);
     }
 
-    public PistonReceiver(Location location, long delay) {
+    public PistonReceiver(Location location, Integer delay) {
         super(location, delay);
     }
 
