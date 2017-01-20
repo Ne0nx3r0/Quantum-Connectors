@@ -119,6 +119,10 @@ public class Circuit implements ConfigurationSerializable {
         return location;
     }
 
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
     public long getDelay() {
         return delay;
     }

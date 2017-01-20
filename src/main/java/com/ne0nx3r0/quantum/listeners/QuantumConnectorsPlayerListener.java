@@ -1,8 +1,8 @@
 package com.ne0nx3r0.quantum.listeners;
 
 import com.ne0nx3r0.quantum.QuantumConnectors;
+import com.ne0nx3r0.quantum.circuits.Circuit;
 import com.ne0nx3r0.quantum.circuits.CircuitManager;
-import com.ne0nx3r0.quantum.circuits.PendingCircuit;
 import com.ne0nx3r0.quantum.utils.MessageLogger;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -56,12 +56,12 @@ public class QuantumConnectorsPlayerListener implements Listener {
                 && event.getClickedBlock() != null
                 && circuitManager.hasPendingCircuit(event.getPlayer())) {
             Player player = event.getPlayer();
-            PendingCircuit pc = circuitManager.getPendingCircuit(player);
+            Circuit pc = circuitManager.getPendingCircuit(player);
             Block block = event.getClickedBlock();
             Location clickedLoc = block.getLocation();
 
             //No sender yet
-            if (!pc.hasSenderLocation()) {
+            if (pc.getLocation() == null) {
                 //Is this a valid block to act as a sender?
                 if (circuitManager.isValidSender(block)) {
                     //There is already a circuit there
@@ -72,7 +72,7 @@ public class QuantumConnectorsPlayerListener implements Listener {
                     }
                     //Set the sender location
                     else {
-                        pc.setSenderLocation(clickedLoc);
+                        pc.setLocation(clickedLoc);
 
                         messageLogger.msg(player, "Sender saved!");
 
@@ -88,7 +88,7 @@ public class QuantumConnectorsPlayerListener implements Listener {
             //Adding a receiver
             else {
                 //Player clicked the sender block again
-                if (pc.getSenderLocation().toString().equals(clickedLoc.toString())) {
+                if (pc.getLocation().toString().equals(clickedLoc.toString())) {
                     messageLogger.msg(player, ChatColor.YELLOW + "A block cannot be the sender AND the receiver!");
 
                 }
@@ -96,19 +96,19 @@ public class QuantumConnectorsPlayerListener implements Listener {
                 else if (circuitManager.isValidReceiver(block)) {
 
                     //Only allow circuits in the same world, sorry multiworld QCircuits :(
-                    if (pc.getSenderLocation().getWorld().equals(clickedLoc.getWorld())) {
+                    if (pc.getLocation().getWorld().equals(clickedLoc.getWorld())) {
                         //Isn't going over max receivers
                         if (QuantumConnectors.MAX_RECEIVERS_PER_CIRCUIT == 0 // 0 == unlimited
-                                || pc.getCircuit().getReceiversCount() < QuantumConnectors.MAX_RECEIVERS_PER_CIRCUIT
+                                || pc.getReceiversCount() < QuantumConnectors.MAX_RECEIVERS_PER_CIRCUIT
                                 || player.hasPermission("QuantumConnectors.ignoreLimits")) {
                             //Add the receiver to our new/found circuit
-                            pc.addReceiver(clickedLoc);
+                            pc.addReceiver(clickedLoc, pc.getDelay());
 
-                            messageLogger.msg(player, "Added a receiver! (#" + pc.getCircuit().getReceiversCount() + ")" + ChatColor.YELLOW + " ('/qc done', or add more)");
+                            messageLogger.msg(player, "Added a receiver! (#" + pc.getReceiversCount() + ")" + ChatColor.YELLOW + " ('/qc done', or add more)");
                         }
                         //Went over max circuits
                         else {
-                            messageLogger.msg(player, "You cannot add anymore receivers! (" + pc.getCircuit().getReceiversCount() + ")");
+                            messageLogger.msg(player, "You cannot add anymore receivers! (" + pc.getReceiversCount() + ")");
                             messageLogger.msg(player, "'/qc done' to finish circuit, or '/qc cancel' to void it");
 
                         }
