@@ -11,6 +11,7 @@ public class ValidMaterials {
 
     public final static List<Material> OPENABLE = Arrays.asList(
             Material.IRON_DOOR,
+            Material.IRON_DOOR_BLOCK,
             Material.WOODEN_DOOR,
             Material.SPRUCE_DOOR,
             Material.BIRCH_DOOR,
@@ -19,7 +20,6 @@ public class ValidMaterials {
             Material.DARK_OAK_DOOR,
             Material.TRAP_DOOR,
             Material.IRON_TRAPDOOR,
-            Material.POWERED_RAIL,
             Material.FENCE_GATE,
             Material.SPRUCE_FENCE_GATE,
             Material.BIRCH_FENCE_GATE,

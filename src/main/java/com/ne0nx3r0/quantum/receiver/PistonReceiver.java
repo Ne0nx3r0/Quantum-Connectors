@@ -1,5 +1,6 @@
 package com.ne0nx3r0.quantum.receiver;
 
+import com.ne0nx3r0.quantum.nmswrapper.QSWorld;
 import org.bukkit.Location;
 import org.bukkit.block.BlockState;
 import org.bukkit.configuration.serialization.SerializableAs;
@@ -7,6 +8,8 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.material.PistonBaseMaterial;
 
 import java.util.Map;
+
+import static com.ne0nx3r0.quantum.circuits.CircuitManager.keepAlives;
 
 @SerializableAs("PistonReceiver")
 public class PistonReceiver extends AbstractReceiver {
@@ -34,11 +37,32 @@ public class PistonReceiver extends AbstractReceiver {
 
     @Override
     public void setActive(boolean powerOn) {
+
         BlockState state = location.getBlock().getState();
         MaterialData data = state.getData();
-        ((PistonBaseMaterial) data).setPowered(powerOn);
-        state.setData(data);
-        state.update();
+
+        if (isValid()) {
+            if (isActive()) {
+                if (!powerOn) {
+                    keepAlives.remove(location.getBlock());
+
+                    ((PistonBaseMaterial) data).setPowered(!powerOn);
+                    state.setData(data);
+                    state.update();
+                }
+
+            } else {
+                if (powerOn) {
+                    keepAlives.add(location.getBlock());
+                    QSWorld.instance.setStatic(location.getWorld(), true);
+                    ((PistonBaseMaterial) data).setPowered(powerOn);
+                    state.setData(data);
+                    state.update();
+                    QSWorld.instance.setStatic(location.getWorld(), false);
+
+                }
+            }
+        }
     }
 
     @Override
