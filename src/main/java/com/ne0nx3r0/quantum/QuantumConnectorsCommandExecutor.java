@@ -1,8 +1,8 @@
 package com.ne0nx3r0.quantum;
 
+import com.ne0nx3r0.quantum.circuits.Circuit;
 import com.ne0nx3r0.quantum.circuits.CircuitManager;
 import com.ne0nx3r0.quantum.circuits.CircuitTypes;
-import com.ne0nx3r0.quantum.circuits.PendingCircuit;
 import com.ne0nx3r0.quantum.utils.MessageLogger;
 import com.ne0nx3r0.quantum.utils.Normalizer;
 import org.bukkit.ChatColor;
@@ -76,30 +76,30 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
 
             //They typed "/qc <circuit>"
             if (circuitManager.hasPendingCircuit(player)) {
-                PendingCircuit pc = circuitManager.getPendingCircuit(player);
+                Circuit pc = circuitManager.getPendingCircuit(player);
                 //They also setup a sender
-                if (pc.hasSenderLocation()) {
+                if (pc.getLocation() != null) {
                     //Finally, they also setup at least one receiver
-                    if (pc.hasReceiver()) {
+                    if (!pc.getReceivers().isEmpty()) {
                         circuitManager.addCircuit(pc);
 
                         // I hate doors, I hate all the wooden doors.
                         // I just want to break them all, but I can't
                         // Can't break all wood doors.
-                        if (pc.getSenderLocation().getBlock().getType() == Material.WOODEN_DOOR
-                                || pc.getSenderLocation().getBlock().getType() == Material.SPRUCE_DOOR
-                                || pc.getSenderLocation().getBlock().getType() == Material.BIRCH_DOOR
-                                || pc.getSenderLocation().getBlock().getType() == Material.JUNGLE_DOOR
-                                || pc.getSenderLocation().getBlock().getType() == Material.ACACIA_DOOR
-                                || pc.getSenderLocation().getBlock().getType() == Material.DARK_OAK_DOOR) {
+                        if (pc.getLocation().getBlock().getType() == Material.WOODEN_DOOR
+                                || pc.getLocation().getBlock().getType() == Material.SPRUCE_DOOR
+                                || pc.getLocation().getBlock().getType() == Material.BIRCH_DOOR
+                                || pc.getLocation().getBlock().getType() == Material.JUNGLE_DOOR
+                                || pc.getLocation().getBlock().getType() == Material.ACACIA_DOOR
+                                || pc.getLocation().getBlock().getType() == Material.DARK_OAK_DOOR) {
 
-                            Block bDoor = pc.getSenderLocation().getBlock();
+                            Block bDoor = pc.getLocation().getBlock();
                             int iData = (int) bDoor.getData();
                             Block bOtherPiece = bDoor.getRelative((iData & 0x08) == 0x08 ? BlockFace.DOWN : BlockFace.UP);
 
                             //TODO: Clone instead of reference the circuit?
                             //TODO: On break check if the circuit has a twin
-                            circuitManager.addCircuit(bOtherPiece.getLocation(), pc.getCircuit());
+                            circuitManager.addCircuit(bOtherPiece.getLocation(), pc);
                         }
 
 
@@ -107,7 +107,7 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
 
 
                         messageLogger.msg(player, messageLogger.getMessage("circuit_created")
-                                .replace("%circuit%", pc.getCurrentType().name));
+                                .replace("%circuit%", pc.getCircuitType().name));
                     }
                     //They have not setup at least one receiver
                     else {
@@ -131,18 +131,17 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
 
 
                 //Figure out if there's a delay, or use 0 for no delay
-                double dDelay = 0;
+                long delay = 0;
 
                 if (args.length > 1) {
                     try {
-                        dDelay = Double.parseDouble(args[1]);
+                        delay = Long.parseLong(args[1]);
                     } catch (NumberFormatException e) {
-                        dDelay = -1;
                     }
 
-                    if (dDelay < 0
-                            || (dDelay > QuantumConnectors.MAX_DELAY_TIME && !player.hasPermission("QuantumConnectors.ignoreLimits"))) {
-                        dDelay = 0;
+                    if (delay < 0
+                            || (delay > QuantumConnectors.MAX_DELAY_TIME && !player.hasPermission("QuantumConnectors.ignoreLimits"))) {
+                        delay = 0;
 
                         messageLogger.msg(player, ChatColor.RED +
                                 messageLogger.getMessage("invalid_delay").
@@ -150,30 +149,27 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
                     }
                 }
 
-                String sDelayMsg = " (" + args[0] + " " + dDelay + "s delay)";
+                String sDelayMsg = " (" + args[0] + " " + delay + "s delay)";
 
-
-                int iDelayTicks = (int) Math.round(dDelay * 20);
 
 
                 if (!circuitManager.hasPendingCircuit(player)) {
                     circuitManager.addPendingCircuit(
                             player,
-                            circuitManager.getCircuitType(args[0]),
-                            iDelayTicks);
+                            circuitManager.getCircuitType(args[0]), delay);
 
                     messageLogger.msg(player, messageLogger.getMessage("circuit_ready")
                             .replace("%circuit%", args[0].toUpperCase())
-                            .replace("%delay%", Double.toString(dDelay)));
+                            .replace("%delay%", Double.toString(delay)));
                 } else {
 
-                    circuitManager.getPendingCircuit(player).setCircuitType(
-                            circuitManager.getCircuitType(args[0]),
-                            iDelayTicks);
+                    Circuit pendingCircuit = circuitManager.getPendingCircuit(player);
+                    pendingCircuit.setCircuitType(circuitManager.getCircuitType(args[0]));
+                    pendingCircuit.setDelay(delay);
 
                     messageLogger.msg(player, messageLogger.getMessage("circuit_changed")
                             .replace("%circuit%", args[0].toUpperCase())
-                            .replace("%delay%", Double.toString(dDelay)));
+                            .replace("%delay%", Long.toString(delay)));
                 }
             }
 

@@ -28,9 +28,9 @@ public abstract class AbstractReceiver implements Receiver {
     public AbstractReceiver(Map<String, Object> map) {
         this.location = new Location(
                 Bukkit.getWorld((String) map.get("location_world")),
-                (double) map.get("location_x"),
-                (double) map.get("location_y"),
-                (double) map.get("location_z"));
+                (Integer) map.get("location_x"),
+                (Integer) map.get("location_y"),
+                (Integer) map.get("location_z"));
         this.delay = (long) map.get("delay");
     }
 
@@ -44,17 +44,6 @@ public abstract class AbstractReceiver implements Receiver {
     public long getDelay() {
         return delay;
     }
-
-    @Deprecated
-    public int getBlockMaterial() {
-        return location.getBlock().getTypeId();
-    }
-
-    @Deprecated
-    public byte getBlockData() {
-        return location.getBlock().getData();
-    }
-
 
     @Override
     public Map<String, Object> serialize() {

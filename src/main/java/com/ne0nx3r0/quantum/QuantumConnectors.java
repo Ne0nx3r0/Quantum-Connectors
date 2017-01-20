@@ -6,6 +6,7 @@ import com.ne0nx3r0.quantum.listeners.QuantumConnectorsPlayerListener;
 import com.ne0nx3r0.quantum.listeners.QuantumConnectorsWorldListener;
 import com.ne0nx3r0.quantum.nmswrapper.ClassRegistry;
 import com.ne0nx3r0.quantum.nmswrapper.QSWorld;
+import com.ne0nx3r0.quantum.receiver.*;
 import com.ne0nx3r0.quantum.utils.MessageLogger;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -67,6 +68,10 @@ public class QuantumConnectors extends JavaPlugin {
 
     @Override
     public void onEnable() {
+
+        ReceiverRegistry.registerReceiver(this, LeverReceiver.class, OpenableReceiver.class, PistonReceiver.class, PoweredRailReceiver.class, RedstoneLampReceiver.class);
+
+
         // TODO: 14.01.17 move to Configloader
         //This might be outdated...
         getDataFolder().mkdirs();

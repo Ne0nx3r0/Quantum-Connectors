@@ -24,7 +24,7 @@ import java.util.*;
 public final class CircuitManager implements ICircuitManager {
     private MessageLogger messageLogger;
     // Temporary Holders for circuit creation
-    private Map<String, PendingCircuit> pendingCircuits;
+    private Map<String, Circuit> pendingCircuits;
     // keepAlives - lamps/torches/etc that should stay powered regardless of redstone events
     private ArrayList<Block> keepAlives;
     // Allow circuitTypes/circuits
@@ -87,9 +87,9 @@ public final class CircuitManager implements ICircuitManager {
         worlds.get(circuitLocation.getWorld()).put(circuitLocation, newCircuit);
     }
 
-    public void addCircuit(PendingCircuit pc) {
-        worlds.get(pc.getSenderLocation().getWorld())
-                .put(pc.getSenderLocation(), pc.getCircuit());
+    public void addCircuit(Circuit pc) {
+        worlds.get(pc.getLocation().getWorld())
+                .put(pc.getLocation(), pc);
     }
 
     public Circuit getCircuit(Location circuitLocation) {
@@ -174,6 +174,7 @@ public final class CircuitManager implements ICircuitManager {
         }
     }
 
+    // TODO: 19.01.2017 remove
     public int getBlockCurrent(Block b) {
         Material mBlock = b.getType();
         MaterialData md = b.getState().getData();
@@ -199,14 +200,13 @@ public final class CircuitManager implements ICircuitManager {
 
     // Temporary circuit stuff
 // I really don't know what order this deserves among the existing class methods
-    public PendingCircuit addPendingCircuit(Player player, CircuitTypes type, int delay) {
-        PendingCircuit pc = new PendingCircuit(player.getUniqueId(), type, delay, this);
+    public Circuit addPendingCircuit(Player player, CircuitTypes type, long delay) {
+        Circuit pc = new Circuit(player.getUniqueId(), this, type, delay);
         pendingCircuits.put(player.getName(), pc);
-
         return pc;
     }
 
-    public PendingCircuit getPendingCircuit(Player player) {
+    public Circuit getPendingCircuit(Player player) {
         return pendingCircuits.get(player.getName());
     }
 
@@ -237,10 +237,10 @@ public final class CircuitManager implements ICircuitManager {
 
     //Receiver_old Types
     public Receiver fromType(Location location, long delay) {
-        return fromType(location, delay, keepAlives, qsWorld);
+        return fromType(location, delay, qsWorld);
     }
 
-    public static Receiver fromType(Location location, long delay, List<Block> keepAlives, QSWorld qsWorld) {
+    public Receiver fromType(Location location, long delay, QSWorld qsWorld) {
         Material m = location.getBlock().getType();
 
         if (ValidMaterials.LAMP.contains(m)) {
@@ -255,6 +255,5 @@ public final class CircuitManager implements ICircuitManager {
             return new PistonReceiver(location, delay);
         }
         return null;
-
     }
 }
