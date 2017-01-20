@@ -17,21 +17,17 @@ import java.util.*;
 @SerializableAs("Circuit")
 public class Circuit implements ConfigurationSerializable {
 
-    private List<Receiver> receivers = new ArrayList<>();
+    private Map<Location, Receiver> receivers = new HashMap<>();
     private UUID playerUUID;
     private CircuitType circuitTypes;
     private Location location;
     private long delay;
 
-    public Circuit(UUID playerUUID, CircuitType circuitTypes, long delay) {
-        this(playerUUID, new ArrayList<>(), circuitTypes, delay);
-    }
 
-    public Circuit(UUID playerUUID, List<Receiver> receivers, CircuitType circuitTypes, long delay) {
+    public Circuit(UUID playerUUID, CircuitType circuitTypes, long delay) {
         this.playerUUID = playerUUID;
         this.circuitTypes = circuitTypes;
         this.delay = delay;
-        this.receivers.addAll(receivers);
     }
 
     public Circuit(Map<?, ?> map) {
@@ -51,7 +47,7 @@ public class Circuit implements ConfigurationSerializable {
                 Receiver receiver = receiverConstructor.newInstance(receiverMap);
 
                 if (receiver.isValid()) {
-                    receivers.add(receiver);
+                    receivers.put(receiver.getLocation(), receiver);
                 }
 
             } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
@@ -62,11 +58,11 @@ public class Circuit implements ConfigurationSerializable {
     }
 
     public void addReceiver(Location loc, long delay) {
-        receivers.add(ReceiverRegistry.fromType(loc, delay));
+        receivers.put(loc, ReceiverRegistry.fromType(loc, delay));
     }
 
     public List<Receiver> getReceivers() {
-        return receivers;
+        return new ArrayList<>(receivers.values());
     }
 
     public int getReceiversCount() {
@@ -74,7 +70,16 @@ public class Circuit implements ConfigurationSerializable {
     }
 
     public void delReceiver(Receiver r) {
-        receivers.remove(r);
+        delReceiver(r.getLocation());
+    }
+
+    public void delReceiver(Location location) {
+        receivers.remove(location);
+    }
+
+
+    public boolean isReceiver(Location location) {
+        return receivers.containsKey(location);
     }
 
     public UUID getOwner() {
@@ -107,7 +112,7 @@ public class Circuit implements ConfigurationSerializable {
 
         List<Map<String, ?>> receiverMap = new ArrayList<>();
 
-        for (Receiver receiver : receivers) {
+        for (Receiver receiver : receivers.values()) {
             receiverMap.add(receiver.serialize());
         }
 

@@ -2,6 +2,7 @@ package com.ne0nx3r0.quantum.listeners;
 
 import com.ne0nx3r0.quantum.QuantumConnectors;
 import com.ne0nx3r0.quantum.circuits.CircuitManager;
+import com.ne0nx3r0.quantum.utils.MessageLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -17,10 +18,12 @@ public class QuantumConnectorsBlockListener implements Listener {
     public static String string;
     private QuantumConnectors plugin;
     private CircuitManager circuitManager;
+    private MessageLogger messageLogger;
 
-    public QuantumConnectorsBlockListener(final QuantumConnectors plugin, CircuitManager circuitManager) {
+    public QuantumConnectorsBlockListener(final QuantumConnectors plugin, CircuitManager circuitManager, MessageLogger messageLogger) {
         this.plugin = plugin;
         this.circuitManager = circuitManager;
+        this.messageLogger = messageLogger;
     }
 
     @EventHandler(priority = EventPriority.LOW)
@@ -39,6 +42,7 @@ public class QuantumConnectorsBlockListener implements Listener {
         Location l = event.getBlock().getLocation();
         if (circuitManager.circuitExists(l)) { // Breaking Sender
             circuitManager.removeCircuit(l);
+            messageLogger.msg(event.getPlayer(), messageLogger.getMessage("circuit_deleted"));
         }
     }
 

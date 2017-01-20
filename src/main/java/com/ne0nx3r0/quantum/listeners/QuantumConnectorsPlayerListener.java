@@ -96,6 +96,18 @@ public class QuantumConnectorsPlayerListener implements Listener {
                 //Player clicked a valid receiver block
                 else if (circuitManager.isValidReceiver(block)) {
 
+
+                    if (pc.isReceiver(clickedLoc)) {
+                        // Player is sneaking, receiver will be removed.
+                        if (player.isSneaking()) {
+                            messageLogger.msg(player, messageLogger.getMessage("receiver_deleted"));
+                            pc.delReceiver(clickedLoc);
+                        } else
+                            messageLogger.msg(player, messageLogger.getMessage("receiver_already_added"));
+                        return;
+                    }
+
+
                     //Only allow circuits in the same world, sorry multiworld QCircuits :(
                     if (pc.getLocation().getWorld().equals(clickedLoc.getWorld())) {
                         //Isn't going over max receivers
@@ -114,7 +126,7 @@ public class QuantumConnectorsPlayerListener implements Listener {
 
                         }
                     }
-                    //Receiver_old was in a different world
+                    //Receiver was in a different world
                     else {
                         messageLogger.msg(player, ChatColor.RED + "Receivers must be in the same world as their sender! Sorry :|");
                     }
@@ -123,7 +135,7 @@ public class QuantumConnectorsPlayerListener implements Listener {
                 else {
                     messageLogger.msg(player, ChatColor.RED + "Invalid receiver!");
                     messageLogger.msg(player, ChatColor.YELLOW + "Receivers: " + ChatColor.WHITE + circuitManager.getValidReceiversString());
-                    messageLogger.msg(player, "('/qc done' if you are finished)");
+                    messageLogger.msg(player, "('/qc done' to finish circuit, or '/qc cancel' to void it)");
 
                 }
             }
@@ -138,7 +150,7 @@ public class QuantumConnectorsPlayerListener implements Listener {
                 circuitManager.activateCircuit(event.getClickedBlock().getLocation(), current, current > 0 ? 0 : 15);
             } else if (block.getType() == Material.BOOKSHELF) {
                 // send on
-                circuitManager.activateCircuit(event.getClickedBlock().getLocation(), 5, 0);
+                circuitManager.activateCircuit(event.getClickedBlock().getLocation(), 0, 15);
             }
         }
     }
