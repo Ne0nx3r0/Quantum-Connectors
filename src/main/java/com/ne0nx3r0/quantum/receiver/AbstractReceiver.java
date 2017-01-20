@@ -20,6 +20,7 @@ public abstract class AbstractReceiver implements Receiver {
     public AbstractReceiver(Location location, long delay) {
         this.location = location;
         this.delay = delay;
+        this.calculateRealLocation();
     }
 
     public AbstractReceiver(Map<String, Object> map) {
@@ -35,6 +36,10 @@ public abstract class AbstractReceiver implements Receiver {
     @Override
     public Location getLocation() {
         return location;
+    }
+
+    @Override
+    public void calculateRealLocation() {
     }
 
     @Override

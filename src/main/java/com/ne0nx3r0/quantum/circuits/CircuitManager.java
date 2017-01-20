@@ -190,9 +190,9 @@ public final class CircuitManager implements ICircuitManager {
 
     private void setReceiver(Receiver receiver, boolean on) {
         if (receiver.getDelay() > 0) {
-            receiver.setActive(on);
-        } else {
             new DelayedReceiver(this.plugin, receiver).setActive(on);
+        } else {
+            receiver.setActive(on);
         }
     }
 

@@ -4,6 +4,7 @@ import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.block.BlockState;
 import org.bukkit.configuration.serialization.SerializableAs;
+import org.bukkit.material.Door;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.Openable;
 
@@ -35,6 +36,7 @@ public class OpenableReceiver extends AbstractReceiver {
 
     @Override
     public void setActive(boolean powerOn) {
+
         BlockState state = location.getBlock().getState();
         MaterialData data = state.getData();
         ((Openable) data).setOpen(powerOn);
@@ -46,5 +48,17 @@ public class OpenableReceiver extends AbstractReceiver {
     @Override
     public boolean isValid() {
         return location.getBlock().getState().getData() instanceof Openable;
+    }
+
+    @Override
+    public void calculateRealLocation() {
+        MaterialData materialData = location.getBlock().getState().getData();
+        if (materialData instanceof Door) {
+            Door door = (Door) materialData;
+
+            if (door.isTopHalf()) {
+                this.location = location.add(0, -1, 0);
+            }
+        }
     }
 }

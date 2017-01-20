@@ -10,6 +10,11 @@ public interface Receiver extends ConfigurationSerializable {
     Location getLocation();
 
     /**
+     * Will calculate real location for doubleBlocks
+     */
+    void calculateRealLocation();
+
+    /**
      * default receivers return "qc:SimpleClassName"
      * please define your own prefix to differentiate between plugins registering own Receiver
      *
@@ -24,6 +29,8 @@ public interface Receiver extends ConfigurationSerializable {
     void setActive(boolean powerOn);
 
     boolean isValid();
+
+
 
 
 }

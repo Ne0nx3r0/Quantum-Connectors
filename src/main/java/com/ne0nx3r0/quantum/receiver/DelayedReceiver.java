@@ -26,6 +26,11 @@ public class DelayedReceiver implements Receiver {
     }
 
     @Override
+    public void calculateRealLocation() {
+        receiver.calculateRealLocation();
+    }
+
+    @Override
     public String getType() {
         return receiver.getType();
     }
@@ -42,6 +47,7 @@ public class DelayedReceiver implements Receiver {
 
     @Override
     public void setActive(boolean powerOn) {
+
         Bukkit.getScheduler().runTaskLater(this.javaPlugin, new Runnable() {
             @Override
             public void run() {
