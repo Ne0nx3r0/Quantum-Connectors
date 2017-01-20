@@ -47,7 +47,7 @@ public class DelayedReceiver implements Receiver {
             public void run() {
                 receiver.setActive(powerOn);
             }
-        }, receiver.getDelay());
+        }, receiver.getDelay() * 20);
     }
 
     @Override
