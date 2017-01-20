@@ -2,6 +2,8 @@ package com.ne0nx3r0.quantum.receiver;
 
 import com.ne0nx3r0.quantum.nmswrapper.QSWorld;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.material.MaterialData;
@@ -41,23 +43,27 @@ public class PistonReceiver extends AbstractReceiver {
         BlockState state = location.getBlock().getState();
         MaterialData data = state.getData();
 
+
+        PistonBaseMaterial pistonBaseMaterial = (PistonBaseMaterial) data;
+
+        Block behindPiston = location.getBlock().getRelative(pistonBaseMaterial.getFacing().getOppositeFace());
+
+        MaterialData tempData = behindPiston.getState().getData();
+
+
         if (isValid()) {
             if (isActive()) {
                 if (!powerOn) {
                     keepAlives.remove(location.getBlock());
-
-                    ((PistonBaseMaterial) data).setPowered(!powerOn);
-                    state.setData(data);
-                    state.update();
+                    location.getBlock().getState().update(true);
                 }
 
             } else {
                 if (powerOn) {
+                    behindPiston.setType(Material.REDSTONE_BLOCK);
                     keepAlives.add(location.getBlock());
                     QSWorld.instance.setStatic(location.getWorld(), true);
-                    ((PistonBaseMaterial) data).setPowered(powerOn);
-                    state.setData(data);
-                    state.update();
+                    behindPiston.getState().setData(tempData);
                     QSWorld.instance.setStatic(location.getWorld(), false);
 
                 }

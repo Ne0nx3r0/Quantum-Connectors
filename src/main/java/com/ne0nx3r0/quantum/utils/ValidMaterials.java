@@ -29,7 +29,7 @@ public class ValidMaterials {
     public final static List<Material> LAMP = Arrays.asList(Material.REDSTONE_LAMP_OFF, Material.REDSTONE_LAMP_ON);
     public final static List<Material> LEVER = Arrays.asList(Material.LEVER);
     public final static List<Material> RAIL = Arrays.asList(Material.POWERED_RAIL);
-    public final static List<Material> PISTON = Arrays.asList(Material.PISTON_BASE);
+    public final static List<Material> PISTON = Arrays.asList(Material.PISTON_BASE, Material.PISTON_STICKY_BASE);
     public final static List<Material> validReceivers = ValidMaterials.join(
             ValidMaterials.OPENABLE,
             ValidMaterials.LAMP,

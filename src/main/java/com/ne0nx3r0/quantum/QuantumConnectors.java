@@ -67,12 +67,8 @@ public class QuantumConnectors extends JavaPlugin {
 
         ReceiverRegistry.registerReceiver(this, LeverReceiver.class, OpenableReceiver.class, PistonReceiver.class, PoweredRailReceiver.class, RedstoneLampReceiver.class);
 
-
-        // TODO: 14.01.17 move to Configloader
         //This might be outdated...
         getDataFolder().mkdirs();
-
-        // TODO: 14.01.17 move to Configloader
 
         //Load config options, localized messages
         setupConfig();
@@ -82,7 +78,7 @@ public class QuantumConnectors extends JavaPlugin {
         this.circuitManager = new CircuitManager(messageLogger, this);
 
         this.worldListener = new QuantumConnectorsWorldListener(this.circuitManager.getCircuitLoader());
-        this.blockListener = new QuantumConnectorsBlockListener(this, circuitManager);
+        this.blockListener = new QuantumConnectorsBlockListener(this, circuitManager, messageLogger);
         this.playerListener = new QuantumConnectorsPlayerListener(this, circuitManager, messageLogger);
 
         getCommand("qc").setExecutor(new QuantumConnectorsCommandExecutor(this, circuitManager, messageLogger));
