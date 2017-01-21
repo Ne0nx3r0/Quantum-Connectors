@@ -33,6 +33,9 @@ public class RedstoneLampReceiver extends AbstractReceiver {
 
     public RedstoneLampReceiver(Map<String, Object> map) {
         super(map);
+
+        if (isActive())
+            keepAlives.add(location.getBlock());
     }
 
     @Override
@@ -52,8 +55,9 @@ public class RedstoneLampReceiver extends AbstractReceiver {
 
     @Override
     public void setActive(boolean powerOn) {
+        if (!isValid()) return;
+        if (isActive() == powerOn) return;
 
-        if (isValid()) {
 
             if (isActive()) {
                 if (!powerOn) {
@@ -68,7 +72,6 @@ public class RedstoneLampReceiver extends AbstractReceiver {
                     this.qsWorld.setStatic(location.getWorld(), false);
                 }
             }
-        }
     }
 
     @Override

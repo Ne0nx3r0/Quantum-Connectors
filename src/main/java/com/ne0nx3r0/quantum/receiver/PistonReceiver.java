@@ -31,6 +31,8 @@ public class PistonReceiver extends AbstractReceiver {
 
     public PistonReceiver(Map<String, Object> map) {
         super(map);
+        if (isActive())
+            keepAlives.add(location.getBlock());
     }
 
     public PistonReceiver(Location location, Integer delay) {
@@ -55,6 +57,11 @@ public class PistonReceiver extends AbstractReceiver {
     @Override
     public void setActive(boolean powerOn) {
 
+
+        if (!isValid()) return;
+        if (isActive() == powerOn) return;
+
+
         BlockState state = location.getBlock().getState();
         MaterialData data = state.getData();
 
@@ -66,23 +73,15 @@ public class PistonReceiver extends AbstractReceiver {
         MaterialData tempData = behindPiston.getState().getData();
 
 
-        if (isValid()) {
-            if (isActive()) {
-                if (!powerOn) {
-                    keepAlives.remove(location.getBlock());
-                    location.getBlock().getState().update(true);
-                }
-
-            } else {
-                if (powerOn) {
-                    behindPiston.getState().setData(new MaterialData(Material.REDSTONE_BLOCK));
-                    keepAlives.add(location.getBlock());
-                    QSWorld.instance.setStatic(location.getWorld(), true);
-                    behindPiston.getState().setData(tempData);
-                    QSWorld.instance.setStatic(location.getWorld(), false);
-
-                }
-            }
+        if (isActive() && !powerOn) {
+            keepAlives.remove(location.getBlock());
+            location.getBlock().getState().update(true);
+        } else {
+            behindPiston.getState().setData(new MaterialData(Material.REDSTONE_BLOCK));
+            keepAlives.add(location.getBlock());
+            QSWorld.instance.setStatic(location.getWorld(), true);
+            behindPiston.getState().setData(tempData);
+            QSWorld.instance.setStatic(location.getWorld(), false);
         }
     }
 

@@ -214,7 +214,7 @@ public class QuantumConnectorsPlayerListener implements Listener {
         Location location = SourceBlockUtil.getSourceBlock(e.getBed().getLocation());
         if (circuitManager.circuitExists(location)) {
             // send on
-            circuitManager.activateCircuit(location, 5, 0);
+            circuitManager.activateCircuit(location, 0, 5);
         }
     }
 
@@ -224,7 +224,7 @@ public class QuantumConnectorsPlayerListener implements Listener {
         Location location = SourceBlockUtil.getSourceBlock(e.getBed().getLocation());
         if (circuitManager.circuitExists(location)) {
             // send on
-            circuitManager.activateCircuit(location, 0, 5);
+            circuitManager.activateCircuit(location, 5, 0);
         }
     }
 }
