@@ -2,7 +2,6 @@ package com.ne0nx3r0.quantum.receiver;
 
 import com.ne0nx3r0.quantum.receiver.base.AbstractStateReceiver;
 import com.ne0nx3r0.quantum.receiver.base.ReceiverState;
-import com.ne0nx3r0.quantum.utils.BlockVariant;
 import com.ne0nx3r0.quantum.utils.VariantWrapper;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -21,7 +20,6 @@ public class TrafficLightStateReceiver extends AbstractStateReceiver {
     public static final ReceiverState OF = ReceiverState.getByColor(DyeColor.RED);
 
 
-    private BlockVariant blockVariant;
 
     /**
      * only use to getValidMaterials
@@ -36,7 +34,6 @@ public class TrafficLightStateReceiver extends AbstractStateReceiver {
 
     public TrafficLightStateReceiver(Location location, Integer delay) {
         super(location, delay);
-        this.blockVariant = VariantWrapper.getWrapperFromBlock(location.getBlock());
     }
 
     public TrafficLightStateReceiver(Map<String, Object> map) {
@@ -71,12 +68,12 @@ public class TrafficLightStateReceiver extends AbstractStateReceiver {
 
     @Override
     public ReceiverState getState() {
-        return blockVariant.getState();
+        return VariantWrapper.getState(location.getBlock());
     }
 
     @Override
     public void setState(ReceiverState state) {
-        blockVariant.setState(state);
+        VariantWrapper.setState(location.getBlock(), state);
     }
 
     @Override
