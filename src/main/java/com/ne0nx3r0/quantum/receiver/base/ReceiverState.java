@@ -37,4 +37,9 @@ public enum ReceiverState {
     public DyeColor getDyColor() {
         return DYECOLOR.get(this);
     }
+
+    public ReceiverState getOpposite() {
+        return values()[(values().length - 1) - ordinal()];
+    }
+
 }

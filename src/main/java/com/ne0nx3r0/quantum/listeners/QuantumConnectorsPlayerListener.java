@@ -177,7 +177,7 @@ public class QuantumConnectorsPlayerListener implements Listener {
 
                 ReceiverState receiverState = VariantWrapper.getState(block);
 
-                circuitManager.activateCircuit(location, receiverState.ordinal(), receiverState.compareTo(ReceiverState.S0) == 1 ? 0 : 15);
+                circuitManager.activateCircuit(location, receiverState.ordinal(), receiverState.getOpposite().ordinal());
 
             } else if (block.getType() == Material.BOOKSHELF) {
 
@@ -237,7 +237,7 @@ public class QuantumConnectorsPlayerListener implements Listener {
         Location location = SourceBlockUtil.getSourceBlock(e.getBed().getLocation());
         if (circuitManager.circuitExists(location)) {
             // send on
-            circuitManager.activateCircuit(location, ReceiverState.S0.ordinal(), ReceiverState.S5.ordinal());
+            circuitManager.activateCircuit(location, ReceiverState.S5.ordinal(), ReceiverState.S0.ordinal());
         }
     }
 }
