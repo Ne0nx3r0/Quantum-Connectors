@@ -5,9 +5,11 @@ import com.ne0nx3r0.quantum.circuits.Circuit;
 import com.ne0nx3r0.quantum.circuits.CircuitManager;
 import com.ne0nx3r0.quantum.receiver.ReceiverRegistry;
 import com.ne0nx3r0.quantum.receiver.base.AbstractReceiver;
+import com.ne0nx3r0.quantum.receiver.base.ReceiverState;
 import com.ne0nx3r0.quantum.utils.MessageLogger;
 import com.ne0nx3r0.quantum.utils.SourceBlockUtil;
 import com.ne0nx3r0.quantum.utils.ValidMaterials;
+import com.ne0nx3r0.quantum.utils.VariantWrapper;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -172,12 +174,13 @@ public class QuantumConnectorsPlayerListener implements Listener {
         else if (circuitManager.circuitExists(location)) {
 
             if (ValidMaterials.OPENABLE.contains(block.getType())) {
-                int current = circuitManager.getBlockCurrent(block);
 
-                circuitManager.activateCircuit(location, current, current > 0 ? 0 : 15);
+                ReceiverState receiverState = VariantWrapper.getState(block);
+
+                circuitManager.activateCircuit(location, receiverState, receiverState);
             } else if (block.getType() == Material.BOOKSHELF) {
                 // send on
-                circuitManager.activateCircuit(location, 0, 15);
+                circuitManager.activateCircuit(location, ReceiverState.S0, ReceiverState.S15);
             }
         }
     }
@@ -191,7 +194,7 @@ public class QuantumConnectorsPlayerListener implements Listener {
         Location location = SourceBlockUtil.getSourceBlock(ih.getInventory().getLocation());
 
         if (circuitManager.circuitExists(location))
-            circuitManager.activateCircuit(location, 0, 5);
+            circuitManager.activateCircuit(location, ReceiverState.S0, ReceiverState.S5);
     }
 
 
@@ -205,7 +208,7 @@ public class QuantumConnectorsPlayerListener implements Listener {
         Location location = SourceBlockUtil.getSourceBlock(ih.getInventory().getLocation());
 
         if (circuitManager.circuitExists(location))
-            circuitManager.activateCircuit(location, 0, 5);
+            circuitManager.activateCircuit(location, ReceiverState.S0, ReceiverState.S5);
 
     }
 
@@ -214,7 +217,7 @@ public class QuantumConnectorsPlayerListener implements Listener {
         Location location = SourceBlockUtil.getSourceBlock(e.getBed().getLocation());
         if (circuitManager.circuitExists(location)) {
             // send on
-            circuitManager.activateCircuit(location, 0, 5);
+            circuitManager.activateCircuit(location, ReceiverState.S0, ReceiverState.S5);
         }
     }
 
@@ -224,7 +227,7 @@ public class QuantumConnectorsPlayerListener implements Listener {
         Location location = SourceBlockUtil.getSourceBlock(e.getBed().getLocation());
         if (circuitManager.circuitExists(location)) {
             // send on
-            circuitManager.activateCircuit(location, 5, 0);
+            circuitManager.activateCircuit(location, ReceiverState.S0, ReceiverState.S5);
         }
     }
 }

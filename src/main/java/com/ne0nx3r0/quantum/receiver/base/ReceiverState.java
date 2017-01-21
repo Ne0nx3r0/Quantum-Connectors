@@ -37,6 +37,4 @@ public enum ReceiverState {
     public DyeColor getDyColor() {
         return DYECOLOR.get(this);
     }
-
-
 }

@@ -1,5 +1,6 @@
 package com.ne0nx3r0.quantum.api;
 
+import com.ne0nx3r0.quantum.receiver.base.ReceiverState;
 import org.bukkit.block.Block;
 
 /**
@@ -8,5 +9,5 @@ import org.bukkit.block.Block;
 public interface RecieverSetter {
     void setReceiver(Receiver receiver, boolean power);
 
-    int getBlockCurrent(Block block);
+    ReceiverState getState(Block block);
 }
