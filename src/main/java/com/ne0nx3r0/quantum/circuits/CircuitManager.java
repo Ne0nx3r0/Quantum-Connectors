@@ -7,16 +7,17 @@ import com.ne0nx3r0.quantum.api.Receiver;
 import com.ne0nx3r0.quantum.api.RecieverSetter;
 import com.ne0nx3r0.quantum.receiver.ReceiverRegistry;
 import com.ne0nx3r0.quantum.receiver.base.DelayedReceiver;
-import com.ne0nx3r0.quantum.receiver.base.ReceiverState;
 import com.ne0nx3r0.quantum.utils.MessageLogger;
 import com.ne0nx3r0.quantum.utils.Normalizer;
 import com.ne0nx3r0.quantum.utils.ValidMaterials;
-import com.ne0nx3r0.quantum.utils.VariantWrapper;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.material.MaterialData;
+import org.bukkit.material.Openable;
+import org.bukkit.material.Redstone;
 
 import java.io.File;
 import java.util.*;
@@ -106,11 +107,11 @@ public final class CircuitManager implements ICircuitManager {
     }
 
     // Circuit activation
-    public void activateCircuit(Location lSender, ReceiverState oldState, ReceiverState newState) {
-        activateCircuit(lSender, oldState, newState, 0);
+    public void activateCircuit(Location lSender, int oldCurrent, int newCurrent) {
+        activateCircuit(lSender, oldCurrent, newCurrent, 0);
     }
 
-    public void activateCircuit(Location lSender, ReceiverState oldState, ReceiverState newState, int chain) {
+    public void activateCircuit(Location lSender, int oldCurrent, int newCurrent, int chain) {
         Circuit circuit = getCircuit(lSender);
         List<Receiver> receivers = new ArrayList<>(circuit.getReceivers());
 
@@ -119,8 +120,8 @@ public final class CircuitManager implements ICircuitManager {
 
             if (isValidReceiver(receiver.getLocation().getBlock())) {
 
-                ReceiverState receiverOldCurrent = VariantWrapper.getState(receiver.getLocation().getBlock());
-                circuit.getCircuitType().calculateAndSet(recieverSetter, receiver, oldState, newState);
+                int receiverOldCurrent = getBlockCurrent(receiver.getLocation().getBlock());
+                circuit.getCircuitType().calculate(recieverSetter, receiver, oldCurrent, newCurrent);
 
                 if (receiver.getLocation().getBlock().getType() == Material.TNT) { // TnT is one time use!
                     circuit.delReceiver(receiver);
@@ -130,7 +131,7 @@ public final class CircuitManager implements ICircuitManager {
                     if (QuantumConnectors.MAX_CHAIN_LINKS > 0) { //allow zero to be infinite
                         chain++;
                     }
-                    activateCircuit(receiver.getLocation(), receiverOldCurrent, VariantWrapper.getState(receiver.getLocation().getBlock()), chain);
+                    activateCircuit(receiver.getLocation(), receiverOldCurrent, getBlockCurrent(receiver.getLocation().getBlock()), chain);
                 }
             } else {
                 circuit.delReceiver(receiver);
@@ -138,6 +139,21 @@ public final class CircuitManager implements ICircuitManager {
 
 
         }
+    }
+
+    // TODO: 19.01.2017 remove and write method in receiver if necessary
+    public int getBlockCurrent(Block b) {
+        Material material = b.getType();
+        MaterialData md = b.getState().getData();
+        if (md instanceof Redstone) {
+            return ((Redstone) md).isPowered() ? 15 : 0;
+        } else if (md instanceof Openable) {
+            return ((Openable) md).isOpen() ? 15 : 0;
+        } else if (ValidMaterials.LAMP.contains(material)) {
+            return keepAlives.contains(b) ? 15 : 0;
+        }
+
+        return b.getBlockPower();
     }
 
     private void setReceiver(Receiver receiver, boolean on) {
@@ -193,8 +209,8 @@ public final class CircuitManager implements ICircuitManager {
         }
 
         @Override
-        public ReceiverState getState(Block block) {
-            return VariantWrapper.getState(block);
+        public int getBlockCurrent(Block block) {
+            return CircuitManager.this.getBlockCurrent(block);
         }
     }
 

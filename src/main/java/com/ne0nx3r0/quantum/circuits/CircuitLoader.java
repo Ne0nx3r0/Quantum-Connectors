@@ -3,6 +3,7 @@ package com.ne0nx3r0.quantum.circuits;
 import com.ne0nx3r0.quantum.QuantumConnectors;
 import com.ne0nx3r0.quantum.api.ICircuitLoader;
 import com.ne0nx3r0.quantum.utils.MessageLogger;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -78,7 +79,7 @@ public class CircuitLoader implements ICircuitLoader {
 
     @Override
     public void loadWorlds() {
-        for (World world : worlds.keySet()) {
+        for (World world : Bukkit.getWorlds()) {
             loadWorld(world);
         }
     }

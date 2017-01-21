@@ -2,7 +2,6 @@ package com.ne0nx3r0.quantum.circuits;
 
 import com.ne0nx3r0.quantum.api.Receiver;
 import com.ne0nx3r0.quantum.api.RecieverSetter;
-import com.ne0nx3r0.quantum.receiver.base.ReceiverState;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -50,37 +49,37 @@ public enum CircuitType {
         return BY_NAME.get(name);
     }
 
-    public void calculateAndSet(RecieverSetter recieverSetter, Receiver receiver, ReceiverState oldState, ReceiverState newState) {
+    public void calculate(RecieverSetter recieverSetter, Receiver receiver, int oldCurrent, int newCurrent) {
         switch (this) {
 
             case OFF:
-                if (newState.compareTo(ReceiverState.S0) == 0 && oldState.compareTo(ReceiverState.S0) == 1) {
+                if (newCurrent == 0 && oldCurrent > 0) {
                     recieverSetter.setReceiver(receiver, false);
                 }
                 break;
             case ON:
-                if (newState.compareTo(ReceiverState.S0) == 1 && oldState.compareTo(ReceiverState.S0) == 0) {
+                if (newCurrent > 0 && oldCurrent == 0) {
                     recieverSetter.setReceiver(receiver, true);
                 }
                 break;
             case QUANTUM:
-                recieverSetter.setReceiver(receiver, newState.compareTo(ReceiverState.S0) == 1);
+                recieverSetter.setReceiver(receiver, newCurrent > 0);
                 break;
             case RANDOM:
-                if (newState.compareTo(ReceiverState.S0) == 1 && oldState.compareTo(ReceiverState.S0) == 0) {
+                if (newCurrent > 0 && oldCurrent == 0) {
                     recieverSetter.setReceiver(receiver, new Random().nextBoolean());
                 }
                 break;
 
             case REVERSE:
-                if (oldState.compareTo(ReceiverState.S0) == 0 || newState.compareTo(ReceiverState.S0) == 0) {
-                    recieverSetter.setReceiver(receiver, newState.compareTo(ReceiverState.S1) == -1);
+                if (oldCurrent == 0 || newCurrent == 0) {
+                    recieverSetter.setReceiver(receiver, newCurrent <= 0);
                 }
                 break;
 
             case TOGGLE:
-                if (newState.compareTo(ReceiverState.S0) == 1 && oldState.compareTo(ReceiverState.S0) == 0) {
-                    recieverSetter.setReceiver(receiver, recieverSetter.getState(receiver.getLocation().getBlock()).compareTo(ReceiverState.S1) == -1);
+                if (newCurrent > 0 && oldCurrent == 0) {
+                    recieverSetter.setReceiver(receiver, recieverSetter.getBlockCurrent(receiver.getLocation().getBlock()) <= 0);
                 }
                 break;
         }

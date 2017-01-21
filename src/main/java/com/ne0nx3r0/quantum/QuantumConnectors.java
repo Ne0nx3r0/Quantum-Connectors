@@ -64,7 +64,13 @@ public class QuantumConnectors extends JavaPlugin {
     @Override
     public void onEnable() {
 
-        ReceiverRegistry.registerReceiver(this, LeverReceiver.class, OpenableReceiver.class, PistonReceiver.class, PoweredRailReceiver.class, RedstoneLampReceiver.class, TrafficLightStateReceiver.class);
+        ReceiverRegistry.registerReceiver(this,
+                LeverReceiver.class,
+                OpenableReceiver.class,
+                PistonReceiver.class,
+                PoweredRailReceiver.class,
+                RedstoneLampReceiver.class,
+                TrafficLightStateReceiver.class);
 
         //This might be outdated...
         getDataFolder().mkdirs();

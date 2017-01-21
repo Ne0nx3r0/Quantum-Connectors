@@ -31,7 +31,7 @@ public class QuantumConnectorsBlockListener implements Listener {
     @EventHandler(priority = EventPriority.LOW)
     public void onBlockRedstoneChange(BlockRedstoneEvent e) {
         if (circuitManager.circuitExists(e.getBlock().getLocation())) {
-            circuitManager.activateCircuit(e.getBlock().getLocation(), ReceiverState.values()[e.getOldCurrent()], ReceiverState.values()[e.getOldCurrent()], e.getNewCurrent());
+            circuitManager.activateCircuit(e.getBlock().getLocation(), e.getOldCurrent(), e.getOldCurrent(), e.getNewCurrent());
         }
 
         if (circuitManager.shouldLeaveReceiverOn(e.getBlock())) {
@@ -55,7 +55,7 @@ public class QuantumConnectorsBlockListener implements Listener {
                 Location lFurnace = e.getBlock().getLocation();
 
                 //SEND ON
-                circuitManager.activateCircuit(lFurnace, ReceiverState.S0, ReceiverState.S1);
+                circuitManager.activateCircuit(lFurnace, ReceiverState.S0.ordinal(), ReceiverState.S1.ordinal());
 
                 //Schedule a check to send the corresponding OFF
                 Bukkit.getScheduler().scheduleSyncDelayedTask(
@@ -83,7 +83,7 @@ public class QuantumConnectorsBlockListener implements Listener {
             if (bFurnace.getType() == Material.FURNACE) {
                 //Send OFF
                 if (circuitManager.circuitExists(lFurnace)) {
-                    circuitManager.activateCircuit(lFurnace, ReceiverState.S1, ReceiverState.S0);
+                    circuitManager.activateCircuit(lFurnace, ReceiverState.S1.ordinal(), ReceiverState.S0.ordinal());
                 }
             }
         }
