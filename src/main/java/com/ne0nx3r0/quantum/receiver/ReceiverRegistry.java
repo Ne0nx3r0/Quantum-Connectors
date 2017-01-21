@@ -1,6 +1,7 @@
 package com.ne0nx3r0.quantum.receiver;
 
 import com.ne0nx3r0.quantum.api.Receiver;
+import com.ne0nx3r0.quantum.receiver.base.AbstractReceiver;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -52,10 +53,10 @@ public class ReceiverRegistry {
 
         Class<? extends AbstractReceiver> clazz = receiverMap.get(receiverType);
 
-        Constructor<? extends AbstractReceiver> constructor = clazz.getConstructor(Map.class);
+        if (clazz == null) return null;
 
+        Constructor<? extends AbstractReceiver> constructor = clazz.getConstructor(Map.class);
         if (constructor == null) {
-            System.out.println("Constructor is null");
             return null;
         }
         return constructor;

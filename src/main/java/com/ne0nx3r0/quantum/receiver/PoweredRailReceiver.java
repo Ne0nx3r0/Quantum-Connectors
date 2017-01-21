@@ -1,5 +1,6 @@
 package com.ne0nx3r0.quantum.receiver;
 
+import com.ne0nx3r0.quantum.receiver.base.AbstractReceiver;
 import com.ne0nx3r0.quantum.utils.ValidMaterials;
 import org.bukkit.Location;
 import org.bukkit.Material;

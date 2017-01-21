@@ -52,7 +52,6 @@ public class QuantumConnectors extends JavaPlugin {
             circuitManager.getCircuitLoader().saveAllWorlds();
         }
     };
-    private ClassRegistry classRegistry;
 
     @Override
     public void onDisable() {
@@ -65,7 +64,7 @@ public class QuantumConnectors extends JavaPlugin {
     @Override
     public void onEnable() {
 
-        ReceiverRegistry.registerReceiver(this, LeverReceiver.class, OpenableReceiver.class, PistonReceiver.class, PoweredRailReceiver.class, RedstoneLampReceiver.class);
+        ReceiverRegistry.registerReceiver(this, LeverReceiver.class, OpenableReceiver.class, PistonReceiver.class, PoweredRailReceiver.class, RedstoneLampReceiver.class, TrafficLightStateReceiver.class);
 
         //This might be outdated...
         getDataFolder().mkdirs();

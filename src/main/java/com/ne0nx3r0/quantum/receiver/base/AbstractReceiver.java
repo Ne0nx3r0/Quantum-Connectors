@@ -1,4 +1,4 @@
-package com.ne0nx3r0.quantum.receiver;
+package com.ne0nx3r0.quantum.receiver.base;
 
 import com.ne0nx3r0.quantum.api.Receiver;
 import org.bukkit.Bukkit;

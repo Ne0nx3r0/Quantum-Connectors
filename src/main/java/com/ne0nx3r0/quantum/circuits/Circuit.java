@@ -1,8 +1,8 @@
 package com.ne0nx3r0.quantum.circuits;
 
 import com.ne0nx3r0.quantum.api.Receiver;
-import com.ne0nx3r0.quantum.receiver.AbstractReceiver;
 import com.ne0nx3r0.quantum.receiver.ReceiverRegistry;
+import com.ne0nx3r0.quantum.receiver.base.AbstractReceiver;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -43,7 +43,13 @@ public class Circuit implements ConfigurationSerializable {
 
             String type = (String) receiverMap.get("type");
             try {
+
                 Constructor<? extends AbstractReceiver> receiverConstructor = ReceiverRegistry.getReceiverInstance(type);
+                if (receiverConstructor == null) {
+                    System.out.println("There is no receiver registered with this type: " + type);
+                    continue;
+                }
+
                 Receiver receiver = receiverConstructor.newInstance(receiverMap);
 
                 if (receiver.isValid()) {
@@ -115,7 +121,6 @@ public class Circuit implements ConfigurationSerializable {
         for (Receiver receiver : receivers.values()) {
             receiverMap.add(receiver.serialize());
         }
-
         map.put("receiver", receiverMap);
         map.put("world", location.getWorld().getName());
         map.put("x", location.getBlockX());
