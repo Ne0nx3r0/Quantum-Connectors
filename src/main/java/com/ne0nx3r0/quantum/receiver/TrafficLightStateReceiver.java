@@ -11,9 +11,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by Yannick on 21.01.2017.
- */
 public class TrafficLightStateReceiver extends AbstractStateReceiver {
 
     public static final ReceiverState ON = ReceiverState.getByColor(DyeColor.GREEN);

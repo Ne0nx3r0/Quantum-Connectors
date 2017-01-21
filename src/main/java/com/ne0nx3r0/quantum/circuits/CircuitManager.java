@@ -53,9 +53,7 @@ public final class CircuitManager implements ICircuitManager {
         }
 
         //Init any loaded worlds
-        for (World world : plugin.getServer().getWorlds()) {
-            circuitLoader.loadWorld(world);
-        }
+        circuitLoader.loadWorlds();
     }
 
     public boolean isValidReceiver(Block block) {

@@ -2,20 +2,24 @@ package com.ne0nx3r0.quantum.utils;
 
 import com.ne0nx3r0.quantum.receiver.base.ReceiverState;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.material.MaterialData;
 import org.bukkit.material.Wool;
 
-/**
- * Created by Yannick on 21.01.2017.
- */
 public class VariantWrapper {
 
     public static void setState(Block block, ReceiverState receiverState) {
 
+        BlockState blockState = block.getState();
+        MaterialData materialData = blockState.getData();
+
         switch (block.getType()) {
             case WOOL:
-                ((Wool) block.getState().getData()).setColor(receiverState.getDyColor());
+                ((Wool) materialData).setColor(receiverState.getDyColor());
                 break;
         }
+        blockState.setData(materialData);
+        blockState.update();
     }
 
 
