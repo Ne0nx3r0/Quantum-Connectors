@@ -6,6 +6,7 @@ import com.ne0nx3r0.quantum.circuits.CircuitManager;
 import com.ne0nx3r0.quantum.receiver.AbstractReceiver;
 import com.ne0nx3r0.quantum.receiver.ReceiverRegistry;
 import com.ne0nx3r0.quantum.utils.MessageLogger;
+import com.ne0nx3r0.quantum.utils.SourceBlockUtil;
 import com.ne0nx3r0.quantum.utils.ValidMaterials;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -24,7 +25,6 @@ import org.bukkit.event.player.PlayerBedLeaveEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.material.Bed;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -56,32 +56,35 @@ public class QuantumConnectorsPlayerListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerInteract(PlayerInteractEvent event) {
 
+        if (!event.hasBlock()) {
+            return;
+        }
+
+        Location location = SourceBlockUtil.getSourceBlock(event.getClickedBlock().getLocation());
+
+        Block block = location.getBlock();
+
         //Holding redstone, clicked a block, and has a pending circuit from /qc
         if (event.getItem() != null
                 && event.getItem().getType() == Material.REDSTONE
-                && event.getClickedBlock() != null
                 && circuitManager.hasPendingCircuit(event.getPlayer())) {
             Player player = event.getPlayer();
             Circuit pc = circuitManager.getPendingCircuit(player);
-            Block block = event.getClickedBlock();
-            Location clickedLoc = block.getLocation();
 
             //No sender yet
             if (pc.getLocation() == null) {
                 //Is this a valid block to act as a sender?
                 if (circuitManager.isValidSender(block)) {
                     //There is already a circuit there
-                    if (circuitManager.circuitExists(clickedLoc)) {
+                    if (circuitManager.circuitExists(location)) {
                         messageLogger.msg(player, ChatColor.YELLOW + "A circuit already sends from this location!");
                         messageLogger.msg(player, "Break the block to remove it.");
 
                     }
                     //Set the sender location
                     else {
-                        pc.setLocation(clickedLoc);
-
+                        pc.setLocation(location);
                         messageLogger.msg(player, "Sender saved!");
-
                     }
                 }
                 //Invalid sender
@@ -94,7 +97,7 @@ public class QuantumConnectorsPlayerListener implements Listener {
             //Adding a receiver
             else {
                 //Player clicked the sender block again
-                if (pc.getLocation().toString().equals(clickedLoc.toString())) {
+                if (pc.getLocation().toString().equals(location.toString())) {
                     messageLogger.msg(player, ChatColor.YELLOW + "A block cannot be the sender AND the receiver!");
 
                 }
@@ -102,11 +105,11 @@ public class QuantumConnectorsPlayerListener implements Listener {
                 else if (circuitManager.isValidReceiver(block)) {
 
 
-                    if (pc.isReceiver(clickedLoc)) {
+                    if (pc.isReceiver(location)) {
                         // Player is sneaking, receiver will be removed.
                         if (player.isSneaking()) {
                             messageLogger.msg(player, messageLogger.getMessage("receiver_deleted"));
-                            pc.delReceiver(clickedLoc);
+                            pc.delReceiver(location);
                         } else
                             messageLogger.msg(player, messageLogger.getMessage("receiver_already_added"));
                         return;
@@ -114,15 +117,15 @@ public class QuantumConnectorsPlayerListener implements Listener {
 
 
                     //Only allow circuits in the same world, sorry multiworld QCircuits :(
-                    if (pc.getLocation().getWorld().equals(clickedLoc.getWorld())) {
+                    if (pc.getLocation().getWorld().equals(location.getWorld())) {
                         //Isn't going over max receivers
                         if (QuantumConnectors.MAX_RECEIVERS_PER_CIRCUIT == 0 // 0 == unlimited
                                 || pc.getReceiversCount() < QuantumConnectors.MAX_RECEIVERS_PER_CIRCUIT
                                 || player.hasPermission("QuantumConnectors.ignoreLimits")) {
 
-                            if (ReceiverRegistry.isValidReceiver(clickedLoc.getBlock())) {
+                            if (ReceiverRegistry.isValidReceiver(block)) {
 
-                                List<Class<? extends AbstractReceiver>> possibleReceivers = ReceiverRegistry.fromType(clickedLoc);
+                                List<Class<? extends AbstractReceiver>> possibleReceivers = ReceiverRegistry.fromType(location);
 
 
                                 // TODO: 20.01.2017 create inventory with possible Receivers
@@ -131,7 +134,7 @@ public class QuantumConnectorsPlayerListener implements Listener {
                                 // temp solution
                                 if (possibleReceivers.size() > 0) {
                                     try {
-                                        pc.addReceiver(possibleReceivers.get(0), clickedLoc, pc.getDelay());
+                                        pc.addReceiver(possibleReceivers.get(0), location, pc.getDelay());
                                     } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
                                         e.printStackTrace();
                                     } finally {
@@ -168,16 +171,15 @@ public class QuantumConnectorsPlayerListener implements Listener {
             }
         }
         //Clicked on a block that has a quantum circuit (sender) attached
-        else if (event.getClickedBlock() != null && circuitManager.circuitExists(event.getClickedBlock().getLocation())) {
-            Block block = event.getClickedBlock();
+        else if (circuitManager.circuitExists(location)) {
 
             if (ValidMaterials.OPENABLE.contains(block.getType())) {
                 int current = circuitManager.getBlockCurrent(block);
 
-                circuitManager.activateCircuit(event.getClickedBlock().getLocation(), current, current > 0 ? 0 : 15);
+                circuitManager.activateCircuit(location, current, current > 0 ? 0 : 15);
             } else if (block.getType() == Material.BOOKSHELF) {
                 // send on
-                circuitManager.activateCircuit(event.getClickedBlock().getLocation(), 0, 15);
+                circuitManager.activateCircuit(location, 0, 15);
             }
         }
     }
@@ -205,26 +207,26 @@ public class QuantumConnectorsPlayerListener implements Listener {
 
     private void activeDoubleChest(DoubleChest dc) {
 
-        Location lLeft = null;
-        try {
-            lLeft = ((Chest) dc.getLeftSide()).getLocation();
-        } catch (NullPointerException npe) {
+        InventoryHolder leftSide = dc.getLeftSide();
+
+        if (leftSide != null) {
+            Location lLeft = leftSide.getInventory().getLocation();
+
+            if (lLeft != null && circuitManager.circuitExists(lLeft)) {
+                // send off
+                circuitManager.activateCircuit(lLeft, 0, 5);
+            }
         }
 
-        if (lLeft != null && circuitManager.circuitExists(lLeft)) {
-            // send off
-            circuitManager.activateCircuit(lLeft, 0, 5);
-        }
+        if (leftSide != null) {
+            InventoryHolder rightSide = dc.getRightSide();
 
-        Location lRight = null;
-        try {
-            lRight = ((Chest) dc.getRightSide()).getLocation();
-        } catch (NullPointerException npe) {
-        }
+            Location lRight = ((Chest) dc.getRightSide()).getLocation();
 
-        if (lRight != null && circuitManager.circuitExists(lRight)) {
-            // send off
-            circuitManager.activateCircuit(lRight, 0, 5);
+            if (lRight != null && circuitManager.circuitExists(lRight)) {
+                // send off
+                circuitManager.activateCircuit(lRight, 0, 5);
+            }
         }
     }
 
@@ -252,36 +254,20 @@ public class QuantumConnectorsPlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onEnterBed(PlayerBedEnterEvent e) {
-        if (circuitManager.circuitExists(e.getBed().getLocation())) {
+        Location location = SourceBlockUtil.getSourceBlock(e.getBed().getLocation());
+        if (circuitManager.circuitExists(location)) {
             // send on
-            circuitManager.activateCircuit(e.getBed().getLocation(), 5, 0);
-        }
-        if (circuitManager.circuitExists(this.getTwinLocation(e.getBed()))) {
-            // send on
-            circuitManager.activateCircuit(this.getTwinLocation(e.getBed()), 5, 0);
+            circuitManager.activateCircuit(location, 5, 0);
         }
     }
-
-
-    private Location getTwinLocation(Block b) {
-        Bed bed = (Bed) b.getState().getData();
-        if (bed.isHeadOfBed()) {
-            return b.getRelative(bed.getFacing().getOppositeFace()).getLocation();
-        } else {
-            return b.getRelative(bed.getFacing()).getLocation();
-        }
-    }
-
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onLeaveBed(PlayerBedLeaveEvent e) {
-        if (circuitManager.circuitExists(e.getBed().getLocation())) {
-            // send off
-            circuitManager.activateCircuit(e.getBed().getLocation(), 0, 5);
-        }
-        if (circuitManager.circuitExists(this.getTwinLocation(e.getBed()))) {
-            // send off
-            circuitManager.activateCircuit(this.getTwinLocation(e.getBed()), 0, 5);
+
+        Location location = SourceBlockUtil.getSourceBlock(e.getBed().getLocation());
+        if (circuitManager.circuitExists(location)) {
+            // send on
+            circuitManager.activateCircuit(location, 0, 5);
         }
     }
 }

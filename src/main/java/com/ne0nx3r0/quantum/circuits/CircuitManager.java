@@ -4,6 +4,7 @@ import com.ne0nx3r0.quantum.ConfigConverter;
 import com.ne0nx3r0.quantum.QuantumConnectors;
 import com.ne0nx3r0.quantum.api.ICircuitManager;
 import com.ne0nx3r0.quantum.api.Receiver;
+import com.ne0nx3r0.quantum.api.RecieverSetter;
 import com.ne0nx3r0.quantum.receiver.DelayedReceiver;
 import com.ne0nx3r0.quantum.receiver.ReceiverRegistry;
 import com.ne0nx3r0.quantum.utils.MessageLogger;
@@ -25,6 +26,8 @@ public final class CircuitManager implements ICircuitManager {
 
     // keepAlives - lamps/torches/etc that should stay powered regardless of redstone events
     public final static ArrayList<Block> keepAlives = new ArrayList<>();
+
+    private final RecieverSetter recieverSetter = new Adapter();
 
     private MessageLogger messageLogger;
     // Temporary Holders for circuit creation
@@ -120,40 +123,7 @@ public final class CircuitManager implements ICircuitManager {
             if (isValidReceiver(receiver.getLocation().getBlock())) {
 
                 int receiverOldCurrent = getBlockCurrent(receiver.getLocation().getBlock());
-
-                switch (circuit.getCircuitType()) {
-
-                    case OFF:
-                        if (newCurrent == 0 && oldCurrent > 0) {
-                            setReceiver(receiver, false);
-                        }
-                        break;
-                    case ON:
-                        if (newCurrent > 0 && oldCurrent == 0) {
-                            setReceiver(receiver, true);
-                        }
-                        break;
-                    case QUANTUM:
-                        setReceiver(receiver, newCurrent > 0);
-                        break;
-                    case RANDOM:
-                        if (newCurrent > 0 && oldCurrent == 0) {
-                            setReceiver(receiver, new Random().nextBoolean());
-                        }
-                        break;
-
-                    case REVERSE:
-                        if (oldCurrent == 0 || newCurrent == 0) {
-                            setReceiver(receiver, newCurrent <= 0);
-                        }
-                        break;
-
-                    case TOGGLE:
-                        if (newCurrent > 0 && oldCurrent == 0) {
-                            setReceiver(receiver, getBlockCurrent(receiver.getLocation().getBlock()) <= 0);
-                        }
-                        break;
-                }
+                circuit.getCircuitType().calculate(recieverSetter, receiver, oldCurrent, newCurrent);
 
                 if (receiver.getLocation().getBlock().getType() == Material.TNT) { // TnT is one time use!
                     circuit.delReceiver(receiver);
@@ -173,7 +143,7 @@ public final class CircuitManager implements ICircuitManager {
         }
     }
 
-    // TODO: 19.01.2017 remove
+    // TODO: 19.01.2017 remove and write method in receiver if necessary
     public int getBlockCurrent(Block b) {
         Material material = b.getType();
         MaterialData md = b.getState().getData();
@@ -232,4 +202,19 @@ public final class CircuitManager implements ICircuitManager {
     public Set<Location> circuitLocations(World w) {
         return worlds.get(w).keySet();
     }
+
+
+    private class Adapter implements RecieverSetter {
+        @Override
+        public void setReceiver(Receiver receiver, boolean power) {
+            CircuitManager.this.setReceiver(receiver, power);
+        }
+
+        @Override
+        public int getBlockCurrent(Block block) {
+            return CircuitManager.this.getBlockCurrent(block);
+        }
+    }
+
+
 }

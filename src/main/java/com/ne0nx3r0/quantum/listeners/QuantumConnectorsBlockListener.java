@@ -3,6 +3,7 @@ package com.ne0nx3r0.quantum.listeners;
 import com.ne0nx3r0.quantum.QuantumConnectors;
 import com.ne0nx3r0.quantum.circuits.CircuitManager;
 import com.ne0nx3r0.quantum.utils.MessageLogger;
+import com.ne0nx3r0.quantum.utils.SourceBlockUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -39,9 +40,9 @@ public class QuantumConnectorsBlockListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
-        Location l = event.getBlock().getLocation();
-        if (circuitManager.circuitExists(l)) { // Breaking Sender
-            circuitManager.removeCircuit(l);
+        Location sourceLocation = SourceBlockUtil.getSourceBlock(event.getBlock().getLocation());
+        if (circuitManager.circuitExists(sourceLocation)) { // Breaking Sender
+            circuitManager.removeCircuit(sourceLocation);
             messageLogger.msg(event.getPlayer(), messageLogger.getMessage("circuit_deleted"));
         }
     }

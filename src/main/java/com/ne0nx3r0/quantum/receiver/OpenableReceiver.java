@@ -1,12 +1,12 @@
 package com.ne0nx3r0.quantum.receiver;
 
+import com.ne0nx3r0.quantum.utils.SourceBlockUtil;
 import com.ne0nx3r0.quantum.utils.ValidMaterials;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 import org.bukkit.configuration.serialization.SerializableAs;
-import org.bukkit.material.Door;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.Openable;
 
@@ -63,14 +63,7 @@ public class OpenableReceiver extends AbstractReceiver {
 
     @Override
     public void calculateRealLocation() {
-        MaterialData materialData = location.getBlock().getState().getData();
-        if (materialData instanceof Door) {
-            Door door = (Door) materialData;
-
-            if (door.isTopHalf()) {
-                this.location = location.add(0, -1, 0);
-            }
-        }
+        this.location = SourceBlockUtil.getSourceBlock(location);
     }
 
     @Override
