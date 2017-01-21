@@ -12,8 +12,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.Chest;
-import org.bukkit.block.DoubleChest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -186,70 +184,29 @@ public class QuantumConnectorsPlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onInventoryOpen(InventoryOpenEvent e) {
-        InventoryHolder ih;
-        try {
-            ih = e.getInventory().getHolder();
-        } catch (NullPointerException ex) {
-            return;
-        }
+        InventoryHolder ih = e.getInventory().getHolder();
 
-        if (ih instanceof Chest) {
-            Location lChest = ((Chest) e.getInventory().getHolder()).getLocation();
+        if (ih == null) return;
 
-            if (circuitManager.circuitExists(lChest)) {
-                // send on
-                circuitManager.activateCircuit(lChest, 5, 0);
-            }
-        } else if (ih instanceof DoubleChest) {
-            activeDoubleChest((DoubleChest) ih);
-        }
-    }
+        Location location = SourceBlockUtil.getSourceBlock(ih.getInventory().getLocation());
 
-    private void activeDoubleChest(DoubleChest dc) {
-
-        InventoryHolder leftSide = dc.getLeftSide();
-
-        if (leftSide != null) {
-            Location lLeft = leftSide.getInventory().getLocation();
-
-            if (lLeft != null && circuitManager.circuitExists(lLeft)) {
-                // send off
-                circuitManager.activateCircuit(lLeft, 0, 5);
-            }
-        }
-
-        if (leftSide != null) {
-            InventoryHolder rightSide = dc.getRightSide();
-
-            Location lRight = ((Chest) dc.getRightSide()).getLocation();
-
-            if (lRight != null && circuitManager.circuitExists(lRight)) {
-                // send off
-                circuitManager.activateCircuit(lRight, 0, 5);
-            }
-        }
+        if (circuitManager.circuitExists(location))
+            circuitManager.activateCircuit(location, 0, 5);
     }
 
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onInventoryClose(InventoryCloseEvent e) {
-        InventoryHolder ih;
-        try {
-            ih = e.getInventory().getHolder();
-        } catch (NullPointerException ex) {
-            return;
-        }
 
-        if (ih instanceof Chest) {
-            Location lChest = ((Chest) ih).getLocation();
+        InventoryHolder ih = e.getInventory().getHolder();
 
-            if (circuitManager.circuitExists(lChest)) {
-                // send off
-                circuitManager.activateCircuit(lChest, 0, 5);
-            }
-        } else if (ih instanceof DoubleChest) {
-            activeDoubleChest((DoubleChest) ih);
-        }
+        if (ih == null) return;
+
+        Location location = SourceBlockUtil.getSourceBlock(ih.getInventory().getLocation());
+
+        if (circuitManager.circuitExists(location))
+            circuitManager.activateCircuit(location, 0, 5);
+
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)

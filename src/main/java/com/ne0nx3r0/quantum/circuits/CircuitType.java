@@ -41,48 +41,14 @@ public enum CircuitType {
         this.name = this.name().toLowerCase();
     }
 
-
-    public void calculate(RecieverSetter recieverSetter, Receiver receiver, int oldCurrent, int newCurrent) {
-        switch (this) {
-
-            case OFF:
-                if (newCurrent == 0 && oldCurrent > 0) {
-                    recieverSetter.setReceiver(receiver, false);
-                }
-                break;
-            case ON:
-                if (newCurrent > 0 && oldCurrent == 0) {
-                    recieverSetter.setReceiver(receiver, true);
-                }
-                break;
-            case QUANTUM:
-                recieverSetter.setReceiver(receiver, newCurrent > 0);
-                break;
-            case RANDOM:
-                if (newCurrent > 0 && oldCurrent == 0) {
-                    recieverSetter.setReceiver(receiver, new Random().nextBoolean());
-                }
-                break;
-
-            case REVERSE:
-                if (oldCurrent == 0 || newCurrent == 0) {
-                    recieverSetter.setReceiver(receiver, newCurrent <= 0);
-                }
-                break;
-
-            case TOGGLE:
-                if (newCurrent > 0 && oldCurrent == 0) {
-                    recieverSetter.setReceiver(receiver, recieverSetter.getBlockCurrent(receiver.getLocation().getBlock()) <= 0);
-                }
-                break;
-        }
-    }
-
-
     public static CircuitType getByID(int id) {
         return BY_ID.get(id);
     }
 
+    public static CircuitType getByName(String name) {
+        return BY_NAME.get(name);
+    }
+
     public void calculate(RecieverSetter recieverSetter, Receiver receiver, int oldCurrent, int newCurrent) {
         switch (this) {
 
@@ -117,10 +83,6 @@ public enum CircuitType {
                 }
                 break;
         }
-    }
-
-    public static CircuitType getByName(String name) {
-        return BY_NAME.get(name);
     }
 
 
