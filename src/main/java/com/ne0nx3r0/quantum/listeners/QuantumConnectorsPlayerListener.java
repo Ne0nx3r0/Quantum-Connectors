@@ -236,7 +236,7 @@ public class QuantumConnectorsPlayerListener implements Listener {
 
         Location location = SourceBlockUtil.getSourceBlock(e.getBed().getLocation());
         if (circuitManager.circuitExists(location)) {
-            // send on
+            // send off
             circuitManager.activateCircuit(location, ReceiverState.S5.ordinal(), ReceiverState.S0.ordinal());
         }
     }
