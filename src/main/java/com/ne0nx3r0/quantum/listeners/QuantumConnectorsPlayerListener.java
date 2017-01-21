@@ -177,7 +177,8 @@ public class QuantumConnectorsPlayerListener implements Listener {
 
                 ReceiverState receiverState = VariantWrapper.getState(block);
 
-                circuitManager.activateCircuit(location, receiverState.ordinal(), receiverState.ordinal());
+                circuitManager.activateCircuit(location, receiverState.ordinal(), receiverState.compareTo(ReceiverState.S0) == 1 ? 0 : 15);
+
             } else if (block.getType() == Material.BOOKSHELF) {
 
                 if (CircuitManager.keepAlives.contains(block)) {
