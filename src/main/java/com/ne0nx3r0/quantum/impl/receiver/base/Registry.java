@@ -2,10 +2,10 @@ package com.ne0nx3r0.quantum.impl.receiver.base;
 
 import com.ne0nx3r0.quantum.api.IRegistry;
 import com.ne0nx3r0.quantum.api.IValidMaterials;
+import com.ne0nx3r0.quantum.api.QuantumExtension;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -17,15 +17,15 @@ public class Registry<T extends IValidMaterials> implements IRegistry<T> {
     private final QuantumMap<T> typeMap = new QuantumMap<>();
 
     @Override
-    public final void register(JavaPlugin javaPlugin, Class<? extends T>... classes) {
+    public final void register(QuantumExtension quantumExtension, Class<? extends T>... classes) {
         for (Class<? extends T> clazz : classes)
-            register(javaPlugin, clazz);
+            register(quantumExtension, clazz);
     }
 
     @Override
-    public final void register(JavaPlugin javaPlugin, Class<? extends T> clazz) {
+    public final void register(QuantumExtension quantumExtension, Class<? extends T> clazz) {
 
-        String uniqueKey = javaPlugin.getName() + ":" + clazz
+        String uniqueKey = quantumExtension.getExtensionName() + ":" + clazz
                 .getSimpleName();
         typeMap.put(uniqueKey, clazz);
 
@@ -40,12 +40,14 @@ public class Registry<T extends IValidMaterials> implements IRegistry<T> {
                 }
             }
 
-
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             e.printStackTrace();
         }
+    }
 
 
+    public void unregisterAll() {
+        typeMap.clear();
     }
 
     @Override
@@ -90,6 +92,4 @@ public class Registry<T extends IValidMaterials> implements IRegistry<T> {
     public final T instantiateFrom(Class<? extends T> clazz, Location location, int delay) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         return clazz.getConstructor(Location.class, Integer.class).newInstance(location, delay);
     }
-
-
 }

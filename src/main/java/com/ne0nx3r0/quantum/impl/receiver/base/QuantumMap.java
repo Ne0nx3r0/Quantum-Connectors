@@ -14,8 +14,8 @@ public class QuantumMap<T> {
     private final Map<Class<? extends T>, String> classMap = new HashMap<>();
 
 
-    public Class<? extends T> put(String key, Class<? extends T> receiver) {
-        return stringMap.put(key, receiver);
+    public Class<? extends T> put(String key, Class<? extends T> clazz) {
+        return stringMap.put(key, clazz);
     }
 
     public Class<? extends T> put(Material material, Class<? extends T> receiver) {
@@ -28,6 +28,25 @@ public class QuantumMap<T> {
 
         return abstClassList.add(receiver) ? receiver : null;
     }
+
+    public Class<? extends T> remove(String key) {
+        return stringMap.remove(key);
+    }
+
+    public String remove(Class<? extends T> clazz) {
+        return this.classMap.remove(clazz);
+    }
+
+    public boolean remove(List<Material> materialList, Class<? extends T> clazz) {
+        boolean success = true;
+        for (Material material : materialList) {
+            if (!materialMap.get(material).remove(clazz)) {
+                success = false;
+            }
+        }
+        return success;
+    }
+
 
     public String put(Class<? extends T> clazz, String type) {
         return classMap.put(clazz, type);
@@ -57,5 +76,9 @@ public class QuantumMap<T> {
         return stringMap.containsKey(type);
     }
 
-
+    public void clear() {
+        stringMap.clear();
+        materialMap.clear();
+        classMap.clear();
+    }
 }

@@ -1,16 +1,16 @@
 package com.ne0nx3r0.quantum;
 
-import com.ne0nx3r0.quantum.api.IQuantumConnectorsAPI;
 import com.ne0nx3r0.quantum.api.QuantumConnectorsAPI;
+import com.ne0nx3r0.quantum.api.circuit.AbstractCircuit;
 import com.ne0nx3r0.quantum.api.receiver.AbstractReceiver;
 import com.ne0nx3r0.quantum.impl.QuantumConnectorsAPIImplementation;
 import com.ne0nx3r0.quantum.impl.QuantumConnectorsCommandExecutor;
 import com.ne0nx3r0.quantum.impl.circuits.CircuitManager;
+import com.ne0nx3r0.quantum.impl.extension.QuantumExtensionLoader;
 import com.ne0nx3r0.quantum.impl.listeners.QuantumConnectorsBlockListener;
 import com.ne0nx3r0.quantum.impl.listeners.QuantumConnectorsPlayerListener;
 import com.ne0nx3r0.quantum.impl.listeners.QuantumConnectorsWorldListener;
 import com.ne0nx3r0.quantum.impl.nmswrapper.ClassRegistry;
-import com.ne0nx3r0.quantum.impl.receiver.*;
 import com.ne0nx3r0.quantum.impl.receiver.base.Registry;
 import com.ne0nx3r0.quantum.impl.utils.MessageLogger;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -39,7 +39,8 @@ public class QuantumConnectors extends JavaPlugin {
 
     public String apiVersion = ClassRegistry.instance.getApiVersion();
     private Registry<AbstractReceiver> receiverRegistry;
-    private IQuantumConnectorsAPI api;
+    private Registry<AbstractCircuit> circuitRegistry;
+    private QuantumConnectorsAPIImplementation api;
     private Map<String, String> messages;
     private QuantumConnectorsWorldListener worldListener;
     private CircuitManager circuitManager;
@@ -56,31 +57,22 @@ public class QuantumConnectors extends JavaPlugin {
         }
     };
 
+    private File extensionDir;
+    private QuantumExtensionLoader loader;
+
     @Override
     public void onDisable() {
         if (circuitManager != null) {
             circuitManager.getCircuitLoader().saveAllWorlds();
-
         }
+
+        this.loader.disable();
+        this.api.unregisterAll();
     }
 
     @Override
     public void onEnable() {
 
-        this.receiverRegistry = new Registry<>();
-        this.api = new QuantumConnectorsAPIImplementation(this.receiverRegistry);
-
-        QuantumConnectorsAPI.setApi(this.api);
-
-
-        receiverRegistry.register(this,
-                LeverReceiver.class,
-                OpenableReceiver.class,
-                PistonReceiver.class,
-                PoweredRailReceiver.class,
-                RedstoneLampReceiver.class,
-                TrafficLightStateReceiver.class,
-                ComperatorReceiver.class);
 
         //This might be outdated...
         getDataFolder().mkdirs();
@@ -89,6 +81,25 @@ public class QuantumConnectors extends JavaPlugin {
         setupConfig();
 
         this.messageLogger = new MessageLogger(this.getLogger(), messages);
+
+        this.receiverRegistry = new Registry<>();
+        this.circuitRegistry = new Registry<>();
+        this.api = new QuantumConnectorsAPIImplementation(this.receiverRegistry, circuitRegistry);
+
+        QuantumConnectorsAPI.setApi(this.api);
+
+        this.extensionDir = new File(getDataFolder().getPath(), "extensions");
+
+        this.extensionDir.mkdirs();
+
+        this.loader = new QuantumExtensionLoader(api, messageLogger, this.extensionDir);
+
+        this.loader.load();
+        this.loader.enable();
+
+
+        // TODO: 23.01.2017 should be loaded by extensionloader
+
         //Create a circuit manager
         this.circuitManager = new CircuitManager(messageLogger, this);
 
