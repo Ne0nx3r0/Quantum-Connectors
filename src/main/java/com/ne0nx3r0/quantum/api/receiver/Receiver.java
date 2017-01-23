@@ -1,7 +1,5 @@
-package com.ne0nx3r0.quantum.impl.interfaces;
+package com.ne0nx3r0.quantum.api.receiver;
 
-import com.ne0nx3r0.quantum.api.receiver.ReceiverNotValidException;
-import com.ne0nx3r0.quantum.api.receiver.ValueNotChangedException;
 import org.bukkit.Location;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 

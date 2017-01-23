@@ -1,7 +1,7 @@
 package com.ne0nx3r0.quantum.impl.circuits;
 
-import com.ne0nx3r0.quantum.impl.interfaces.Receiver;
-import com.ne0nx3r0.quantum.impl.interfaces.RecieverSetter;
+import com.ne0nx3r0.quantum.api.receiver.Receiver;
+import com.ne0nx3r0.quantum.impl.interfaces.ReceiverSetter;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -49,7 +49,7 @@ public enum CircuitType {
         return BY_NAME.get(name);
     }
 
-    public void calculate(RecieverSetter recieverSetter, Receiver receiver, int oldCurrent, int newCurrent) {
+    public void calculate(ReceiverSetter recieverSetter, Receiver receiver, int oldCurrent, int newCurrent) {
         switch (this) {
 
             case OFF:

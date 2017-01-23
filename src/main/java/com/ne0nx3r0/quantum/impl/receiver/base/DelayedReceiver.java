@@ -1,8 +1,8 @@
 package com.ne0nx3r0.quantum.impl.receiver.base;
 
+import com.ne0nx3r0.quantum.api.receiver.Receiver;
 import com.ne0nx3r0.quantum.api.receiver.ReceiverNotValidException;
 import com.ne0nx3r0.quantum.api.receiver.ValueNotChangedException;
-import com.ne0nx3r0.quantum.impl.interfaces.Receiver;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;

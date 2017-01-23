@@ -3,12 +3,12 @@ package com.ne0nx3r0.quantum.impl.circuits;
 import com.ne0nx3r0.quantum.QuantumConnectors;
 import com.ne0nx3r0.quantum.api.QuantumConnectorsAPI;
 import com.ne0nx3r0.quantum.api.receiver.AbstractKeepAliveReceiver;
+import com.ne0nx3r0.quantum.api.receiver.Receiver;
 import com.ne0nx3r0.quantum.api.receiver.ReceiverNotValidException;
 import com.ne0nx3r0.quantum.api.receiver.ValueNotChangedException;
 import com.ne0nx3r0.quantum.impl.ConfigConverter;
 import com.ne0nx3r0.quantum.impl.interfaces.ICircuitManager;
-import com.ne0nx3r0.quantum.impl.interfaces.Receiver;
-import com.ne0nx3r0.quantum.impl.interfaces.RecieverSetter;
+import com.ne0nx3r0.quantum.impl.interfaces.ReceiverSetter;
 import com.ne0nx3r0.quantum.impl.receiver.base.DelayedReceiver;
 import com.ne0nx3r0.quantum.impl.utils.MessageLogger;
 import com.ne0nx3r0.quantum.impl.utils.Normalizer;
@@ -27,7 +27,7 @@ import java.util.*;
 
 public final class CircuitManager implements ICircuitManager {
 
-    private final RecieverSetter recieverSetter = new Adapter();
+    private final ReceiverSetter recieverSetter = new Adapter();
 
     private MessageLogger messageLogger;
     // Temporary Holders for circuit creation
@@ -205,7 +205,7 @@ public final class CircuitManager implements ICircuitManager {
     }
 
 
-    private class Adapter implements RecieverSetter {
+    private class Adapter implements ReceiverSetter {
         @Override
         public void setReceiver(Receiver receiver, boolean power) {
             CircuitManager.this.setReceiver(receiver, power);

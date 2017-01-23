@@ -8,3 +8,8 @@ This project will be continued & improved from his state.
 
 # Sampleconfig
 https://gist.github.com/ysl3000/366143b06a6c508a02cf3cd52ed65bae
+
+
+# Extensions
+The first sample extension can be found here
+* https://github.com/ysl3000/QuantumDefaultExtension

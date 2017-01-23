@@ -3,7 +3,7 @@ package com.ne0nx3r0.quantum.impl.circuits;
 import com.ne0nx3r0.quantum.api.IRegistry;
 import com.ne0nx3r0.quantum.api.QuantumConnectorsAPI;
 import com.ne0nx3r0.quantum.api.receiver.AbstractReceiver;
-import com.ne0nx3r0.quantum.impl.interfaces.Receiver;
+import com.ne0nx3r0.quantum.api.receiver.Receiver;
 import com.ne0nx3r0.quantum.impl.receiver.base.Registry;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
