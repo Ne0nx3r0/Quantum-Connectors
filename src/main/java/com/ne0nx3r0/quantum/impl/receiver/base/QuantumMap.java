@@ -7,11 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by ysl3000 on 23.01.17.
- */
 public class QuantumMap<T> {
-
 
     private final Map<String, Class<? extends T>> stringMap = new HashMap<>();
     private final Map<Material, List<Class<? extends T>>> materialMap = new HashMap<>();
