@@ -1,7 +1,7 @@
 package com.ne0nx3r0.quantum.api;
 
 import com.ne0nx3r0.quantum.api.receiver.AbstractReceiver;
-import com.ne0nx3r0.quantum.interfaces.Receiver;
+import com.ne0nx3r0.quantum.impl.interfaces.Receiver;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.plugin.java.JavaPlugin;
