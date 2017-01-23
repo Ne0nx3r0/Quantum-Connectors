@@ -21,7 +21,7 @@ public class TrafficLightStateReceiver extends AbstractStateReceiver {
     /**
      * only use to getValidMaterials
      */
-    protected TrafficLightStateReceiver() {
+    public TrafficLightStateReceiver() {
         super();
     }
 

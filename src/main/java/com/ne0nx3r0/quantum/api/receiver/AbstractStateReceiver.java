@@ -12,19 +12,19 @@ public abstract class AbstractStateReceiver extends AbstractReceiver {
     /**
      * only use to getValidMaterials
      */
-    protected AbstractStateReceiver() {
+    public AbstractStateReceiver() {
         super();
     }
 
-    protected AbstractStateReceiver(Location location) {
+    public AbstractStateReceiver(Location location) {
         super(location);
     }
 
-    protected AbstractStateReceiver(Location location, Integer delay) {
+    public AbstractStateReceiver(Location location, Integer delay) {
         super(location, delay);
     }
 
-    protected AbstractStateReceiver(Map<String, Object> map) {
+    public AbstractStateReceiver(Map<String, Object> map) {
         super(map);
         ReceiverState state = ReceiverState.getByName((String) map.get("receiverstate"));
         if (state != null) {
