@@ -1,7 +1,9 @@
 package com.ne0nx3r0.quantum;
 
 import com.ne0nx3r0.quantum.api.IQuantumConnectorsAPI;
+import com.ne0nx3r0.quantum.api.IRegistry;
 import com.ne0nx3r0.quantum.api.QuantumConnectorsAPI;
+import com.ne0nx3r0.quantum.api.receiver.AbstractReceiver;
 import com.ne0nx3r0.quantum.impl.QuantumConnectorsAPIImplementation;
 import com.ne0nx3r0.quantum.impl.QuantumConnectorsCommandExecutor;
 import com.ne0nx3r0.quantum.impl.circuits.CircuitManager;
@@ -10,7 +12,7 @@ import com.ne0nx3r0.quantum.impl.listeners.QuantumConnectorsPlayerListener;
 import com.ne0nx3r0.quantum.impl.listeners.QuantumConnectorsWorldListener;
 import com.ne0nx3r0.quantum.impl.nmswrapper.ClassRegistry;
 import com.ne0nx3r0.quantum.impl.receiver.*;
-import com.ne0nx3r0.quantum.impl.receiver.base.ReceiverRegistry;
+import com.ne0nx3r0.quantum.impl.receiver.base.Registry;
 import com.ne0nx3r0.quantum.impl.utils.MessageLogger;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -37,7 +39,7 @@ public class QuantumConnectors extends JavaPlugin {
 
 
     public String apiVersion = ClassRegistry.instance.getApiVersion();
-    private ReceiverRegistry receiverRegistry;
+    private IRegistry<AbstractReceiver> receiverRegistry;
     private IQuantumConnectorsAPI api;
     private Map<String, String> messages;
     private QuantumConnectorsWorldListener worldListener;
@@ -66,13 +68,13 @@ public class QuantumConnectors extends JavaPlugin {
     @Override
     public void onEnable() {
 
-        this.receiverRegistry = new ReceiverRegistry();
+        this.receiverRegistry = new Registry<>();
         this.api = new QuantumConnectorsAPIImplementation(this.receiverRegistry);
 
         QuantumConnectorsAPI.setApi(this.api);
 
 
-        receiverRegistry.registerReceiver(this,
+        receiverRegistry.register(this,
                 LeverReceiver.class,
                 OpenableReceiver.class,
                 PistonReceiver.class,

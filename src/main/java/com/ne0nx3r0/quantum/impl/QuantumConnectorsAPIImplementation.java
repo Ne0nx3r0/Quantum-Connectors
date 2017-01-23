@@ -1,22 +1,19 @@
 package com.ne0nx3r0.quantum.impl;
 
 import com.ne0nx3r0.quantum.api.IQuantumConnectorsAPI;
-import com.ne0nx3r0.quantum.api.IReceiverRegistry;
-import com.ne0nx3r0.quantum.impl.receiver.base.ReceiverRegistry;
+import com.ne0nx3r0.quantum.api.IRegistry;
+import com.ne0nx3r0.quantum.api.receiver.AbstractReceiver;
 
-/**
- * Created by Yannick on 23.01.2017.
- */
 public class QuantumConnectorsAPIImplementation implements IQuantumConnectorsAPI {
 
-    private ReceiverRegistry receiverRegistry;
+    private IRegistry<AbstractReceiver> receiverRegistry;
 
-    public QuantumConnectorsAPIImplementation(ReceiverRegistry receiverRegistry) {
+    public QuantumConnectorsAPIImplementation(IRegistry<AbstractReceiver> receiverRegistry) {
         this.receiverRegistry = receiverRegistry;
     }
 
     @Override
-    public IReceiverRegistry getRegistry() {
+    public IRegistry<AbstractReceiver> getReceiverRegistry() {
         return receiverRegistry;
     }
 }

@@ -42,7 +42,7 @@ public class Circuit implements ConfigurationSerializable {
             String type = (String) receiverMap.get("type");
             try {
 
-                Constructor<? extends AbstractReceiver> receiverConstructor = QuantumConnectorsAPI.getRegistry().getReceiverInstance(type);
+                Constructor<? extends AbstractReceiver> receiverConstructor = QuantumConnectorsAPI.getReceiverRegistry().getInstance(type);
                 if (receiverConstructor == null) {
                     System.out.println("There is no receiver registered with this type: " + type);
                     continue;
@@ -62,7 +62,7 @@ public class Circuit implements ConfigurationSerializable {
     }
 
     public void addReceiver(Class<? extends AbstractReceiver> receiverClass, Location loc, int delay) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        receivers.put(loc, QuantumConnectorsAPI.getRegistry().instantiateFrom(receiverClass, loc, delay));
+        receivers.put(loc, QuantumConnectorsAPI.getReceiverRegistry().instantiateFrom(receiverClass, loc, delay));
     }
 
     public List<Receiver> getReceivers() {

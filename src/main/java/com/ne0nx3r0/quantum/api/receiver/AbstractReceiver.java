@@ -1,16 +1,15 @@
 package com.ne0nx3r0.quantum.api.receiver;
 
+import com.ne0nx3r0.quantum.api.IValidMaterials;
 import com.ne0nx3r0.quantum.api.QuantumConnectorsAPI;
 import com.ne0nx3r0.quantum.impl.interfaces.Receiver;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractReceiver implements Receiver {
+public abstract class AbstractReceiver implements Receiver, IValidMaterials {
 
     protected Location location;
     protected long delay;
@@ -52,7 +51,12 @@ public abstract class AbstractReceiver implements Receiver {
 
     @Override
     public final String getType() {
-        return QuantumConnectorsAPI.getRegistry().getUniqueKey(this.getClass());
+        return QuantumConnectorsAPI.getReceiverRegistry().getUniqueKey(this.getClass());
+    }
+
+    @Override
+    public long getDelay() {
+        return delay;
     }
 
     @Override
@@ -61,16 +65,9 @@ public abstract class AbstractReceiver implements Receiver {
         if (isActive() == powerOn) throw new ValueNotChangedException();
     }
 
-    public abstract List<Material> getValidMaterials();
-
     @Override
     public boolean isValid() {
         return getValidMaterials().contains(location.getBlock().getType());
-    }
-
-    @Override
-    public long getDelay() {
-        return delay;
     }
 
     @Override

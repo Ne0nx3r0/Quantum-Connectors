@@ -13,7 +13,7 @@ public class QSWorld {
 
     private ClassRegistry classRegistry;
 
-    public QSWorld(ClassRegistry classRegistry) {
+    private QSWorld(ClassRegistry classRegistry) {
         this.classRegistry = classRegistry;
     }
 

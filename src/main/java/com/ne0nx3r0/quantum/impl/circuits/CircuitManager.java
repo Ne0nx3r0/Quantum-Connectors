@@ -57,7 +57,7 @@ public final class CircuitManager implements ICircuitManager {
     }
 
     public boolean isValidReceiver(Block block) {
-        return QuantumConnectorsAPI.getRegistry().isValidReceiver(block);
+        return QuantumConnectorsAPI.getReceiverRegistry().isValid(block);
     }
 
     // Sender/Receiver_old checks

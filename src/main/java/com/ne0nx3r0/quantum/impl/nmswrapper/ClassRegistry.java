@@ -21,7 +21,7 @@ public class ClassRegistry {
     private Field isClientSide;
 
 
-    public ClassRegistry() {
+    private ClassRegistry() {
 
         String packageName = Bukkit.getServer().getClass().getPackage().getName();
         this.apiVersion = packageName.substring(packageName.lastIndexOf('.') + 1);
