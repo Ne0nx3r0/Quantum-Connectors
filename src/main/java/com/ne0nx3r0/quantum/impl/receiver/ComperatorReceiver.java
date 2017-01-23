@@ -17,22 +17,16 @@ import java.util.Map;
  */
 public class ComperatorReceiver extends AbstractKeepAliveReceiver {
 
-    /**
-     * only use to getValidMaterials
-     */
-    protected ComperatorReceiver() {
-        super();
-    }
 
-    protected ComperatorReceiver(Location location) {
+    public ComperatorReceiver(Location location) {
         super(location);
     }
 
-    protected ComperatorReceiver(Location location, Integer delay) {
+    public ComperatorReceiver(Location location, Integer delay) {
         super(location, delay);
     }
 
-    protected ComperatorReceiver(Map<String, Object> map) {
+    public ComperatorReceiver(Map<String, Object> map) {
         super(map);
     }
 

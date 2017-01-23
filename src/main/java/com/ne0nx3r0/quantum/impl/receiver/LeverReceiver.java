@@ -13,12 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 public class LeverReceiver extends AbstractReceiver {
-    /**
-     * only use to getValidMaterials
-     */
-    public LeverReceiver() {
-        super();
-    }
 
     public LeverReceiver(Location location) {
         this(location, 0);

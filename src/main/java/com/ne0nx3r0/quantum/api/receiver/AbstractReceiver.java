@@ -18,21 +18,20 @@ public abstract class AbstractReceiver implements Receiver {
     /**
      * only use to getValidMaterials
      */
-    protected AbstractReceiver() {
+    public AbstractReceiver() {
     }
 
-
-    protected AbstractReceiver(Location location) {
+    public AbstractReceiver(Location location) {
         this(location, 0);
     }
 
-    protected AbstractReceiver(Location location, Integer delay) {
+    public AbstractReceiver(Location location, Integer delay) {
         this.location = location;
         this.delay = delay;
         this.calculateRealLocation();
     }
 
-    protected AbstractReceiver(Map<String, Object> map) {
+    public AbstractReceiver(Map<String, Object> map) {
         this.location = new Location(
                 Bukkit.getWorld((String) map.get("location_world")),
                 (Integer) map.get("location_x"),

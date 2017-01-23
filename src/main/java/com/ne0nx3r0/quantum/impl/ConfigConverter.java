@@ -35,7 +35,7 @@ public class ConfigConverter {
             FileConfiguration oldYml = YamlConfiguration.loadConfiguration(oldYmlFile);
 
             for (String worldName : oldYml.getValues(false).keySet()) {
-                ArrayList<Map<String, Object>> tempCircuitObjs = new ArrayList<Map<String, Object>>();
+                ArrayList<Map<String, Object>> tempCircuitObjs = new ArrayList<>();
 
                 for (int x = 0; ; x++) {
                     String path = worldName + ".circuit_" + x;

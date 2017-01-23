@@ -14,22 +14,23 @@ public abstract class AbstractKeepAliveReceiver extends AbstractReceiver {
     // keepAlives - lamps/torches/etc that should stay powered regardless of redstone events
     public final static ArrayList<Block> keepAlives = new ArrayList<>();
 
+
     /**
      * only use to getValidMaterials
      */
-    protected AbstractKeepAliveReceiver() {
+    public AbstractKeepAliveReceiver() {
         super();
     }
 
-    protected AbstractKeepAliveReceiver(Location location) {
+    public AbstractKeepAliveReceiver(Location location) {
         super(location);
     }
 
-    protected AbstractKeepAliveReceiver(Location location, Integer delay) {
+    public AbstractKeepAliveReceiver(Location location, Integer delay) {
         super(location, delay);
     }
 
-    protected AbstractKeepAliveReceiver(Map<String, Object> map) {
+    public AbstractKeepAliveReceiver(Map<String, Object> map) {
         super(map);
         if (isActive()) keepAlives.add(location.getBlock());
     }
