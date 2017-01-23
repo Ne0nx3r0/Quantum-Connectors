@@ -13,6 +13,12 @@ import java.util.List;
 import java.util.Map;
 
 public class PoweredRailReceiver extends AbstractKeepAliveReceiver {
+    /**
+     * only use to getValidMaterials
+     */
+    public PoweredRailReceiver() {
+        super();
+    }
 
     public PoweredRailReceiver(Location location) {
         super(location);

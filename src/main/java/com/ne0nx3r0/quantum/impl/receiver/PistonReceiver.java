@@ -15,6 +15,12 @@ import java.util.Map;
 
 
 public class PistonReceiver extends AbstractKeepAliveReceiver {
+    /**
+     * only use to getValidMaterials
+     */
+    public PistonReceiver() {
+        super();
+    }
 
     public PistonReceiver(Location location) {
         super(location);

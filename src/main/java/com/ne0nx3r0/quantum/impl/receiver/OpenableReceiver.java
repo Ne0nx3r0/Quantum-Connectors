@@ -16,6 +16,12 @@ import java.util.List;
 import java.util.Map;
 
 public class OpenableReceiver extends AbstractReceiver {
+    /**
+     * only use to getValidMaterials
+     */
+    public OpenableReceiver() {
+        super();
+    }
 
     public OpenableReceiver(Location location) {
         super(location);

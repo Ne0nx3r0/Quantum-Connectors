@@ -17,6 +17,13 @@ public class RedstoneLampReceiver extends AbstractKeepAliveReceiver {
 
     private QSWorld qsWorld = QSWorld.instance;
 
+    /**
+     * only use to getValidMaterials
+     */
+    public RedstoneLampReceiver() {
+        super();
+    }
+
     public RedstoneLampReceiver(Location location) {
         super(location);
     }

@@ -18,6 +18,12 @@ public class TrafficLightStateReceiver extends AbstractStateReceiver {
     public static final ReceiverState ON = ReceiverState.getByDyeColor(DyeColor.GREEN);
     public static final ReceiverState OF = ReceiverState.getByDyeColor(DyeColor.RED);
 
+    /**
+     * only use to getValidMaterials
+     */
+    protected TrafficLightStateReceiver() {
+        super();
+    }
 
     public TrafficLightStateReceiver(Location location) {
         this(location, 0);
