@@ -81,33 +81,7 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
                     if (!pc.getReceivers().isEmpty()) {
                         circuitManager.addCircuit(pc);
 
-
-                        /*
-                        // I hate doors, I hate all the wooden doors.
-                        // I just want to break them all, but I can't
-                        // Can't break all wood doors.
-                        if (pc.getLocation().getBlock().getType() == Material.WOODEN_DOOR
-                                || pc.getLocation().getBlock().getType() == Material.SPRUCE_DOOR
-                                || pc.getLocation().getBlock().getType() == Material.BIRCH_DOOR
-                                || pc.getLocation().getBlock().getType() == Material.JUNGLE_DOOR
-                                || pc.getLocation().getBlock().getType() == Material.ACACIA_DOOR
-                                || pc.getLocation().getBlock().getType() == Material.DARK_OAK_DOOR) {
-
-                            Block bDoor = pc.getLocation().getBlock();
-                            int iData = (int) bDoor.getData();
-                            Block bOtherPiece = bDoor.getRelative((iData & 0x08) == 0x08 ? BlockFace.DOWN : BlockFace.UP);
-
-                            //TODO: Clone instead of reference the circuit?
-                            //TODO: On break check if the circuit has a twin
-                            circuitManager.addCircuit(bOtherPiece.getLocation(), pc);
-
-
-                    }
-                     */
-
-
                         circuitManager.removePendingCircuit(player);
-
 
                         messageLogger.msg(player, messageLogger.getMessage("circuit_created")
                                 .replace("%circuit%", pc.getCircuitType().name));
