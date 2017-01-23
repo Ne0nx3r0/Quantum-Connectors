@@ -6,7 +6,6 @@ import com.ne0nx3r0.quantum.impl.interfaces.Receiver;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
-import org.bukkit.configuration.serialization.SerializableAs;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -14,7 +13,6 @@ import java.util.*;
 
 //TODO: Allow naming of circuits
 
-@SerializableAs("Circuit")
 public class Circuit implements ConfigurationSerializable {
 
     private Map<Location, Receiver> receivers = new HashMap<>();
