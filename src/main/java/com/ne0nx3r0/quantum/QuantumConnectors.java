@@ -1,7 +1,6 @@
 package com.ne0nx3r0.quantum;
 
 import com.ne0nx3r0.quantum.api.IQuantumConnectorsAPI;
-import com.ne0nx3r0.quantum.api.IRegistry;
 import com.ne0nx3r0.quantum.api.QuantumConnectorsAPI;
 import com.ne0nx3r0.quantum.api.receiver.AbstractReceiver;
 import com.ne0nx3r0.quantum.impl.QuantumConnectorsAPIImplementation;
@@ -39,7 +38,7 @@ public class QuantumConnectors extends JavaPlugin {
 
 
     public String apiVersion = ClassRegistry.instance.getApiVersion();
-    private IRegistry<AbstractReceiver> receiverRegistry;
+    private Registry<AbstractReceiver> receiverRegistry;
     private IQuantumConnectorsAPI api;
     private Map<String, String> messages;
     private QuantumConnectorsWorldListener worldListener;

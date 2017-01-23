@@ -1,12 +1,12 @@
 package com.ne0nx3r0.quantum.impl.listeners;
 
 import com.ne0nx3r0.quantum.QuantumConnectors;
-import com.ne0nx3r0.quantum.api.IRegistry;
 import com.ne0nx3r0.quantum.api.receiver.AbstractKeepAliveReceiver;
 import com.ne0nx3r0.quantum.api.receiver.AbstractReceiver;
 import com.ne0nx3r0.quantum.api.receiver.ReceiverState;
 import com.ne0nx3r0.quantum.impl.circuits.Circuit;
 import com.ne0nx3r0.quantum.impl.circuits.CircuitManager;
+import com.ne0nx3r0.quantum.impl.receiver.base.Registry;
 import com.ne0nx3r0.quantum.impl.utils.MessageLogger;
 import com.ne0nx3r0.quantum.impl.utils.SourceBlockUtil;
 import com.ne0nx3r0.quantum.impl.utils.ValidMaterials;
@@ -35,9 +35,9 @@ public class QuantumConnectorsPlayerListener implements Listener {
 
     private CircuitManager circuitManager;
     private MessageLogger messageLogger;
-    private IRegistry<AbstractReceiver> receiverRegistry;
+    private Registry<AbstractReceiver> receiverRegistry;
 
-    public QuantumConnectorsPlayerListener(QuantumConnectors instance, CircuitManager circuitManager, MessageLogger messageLogger, IRegistry<AbstractReceiver> receiverRegistry) {
+    public QuantumConnectorsPlayerListener(QuantumConnectors instance, CircuitManager circuitManager, MessageLogger messageLogger, Registry<AbstractReceiver> receiverRegistry) {
         this.plugin = instance;
         this.circuitManager = circuitManager;
         this.messageLogger = messageLogger;

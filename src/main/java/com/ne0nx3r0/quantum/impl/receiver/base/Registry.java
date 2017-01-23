@@ -49,6 +49,15 @@ public class Registry<T extends IValidMaterials> implements IRegistry<T> {
     }
 
     @Override
+    public final String getUniqueKey(Class<? extends T> clazz) {
+        return typeMap.get(clazz);
+    }
+
+    @Override
+    public final boolean isValid(Block block) {
+        return typeMap.contains(block.getType());
+    }
+
     public final T getObject(Class<? extends T> receiver) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         Constructor<? extends T> constructor = receiver.getConstructor();
 
@@ -58,12 +67,6 @@ public class Registry<T extends IValidMaterials> implements IRegistry<T> {
         return null;
     }
 
-    @Override
-    public final String getUniqueKey(Class<? extends T> clazz) {
-        return typeMap.get(clazz);
-    }
-
-    @Override
     public final Constructor<? extends T> getInstance(String type) throws NoSuchMethodException {
         Class<? extends T> clazz = typeMap.get(type);
 
@@ -76,7 +79,6 @@ public class Registry<T extends IValidMaterials> implements IRegistry<T> {
         return constructor;
     }
 
-    @Override
     public final List<Class<? extends T>> fromType(Location location) {
         Material m = location.getBlock().getType();
         if (typeMap.contains(m)) {
@@ -85,14 +87,8 @@ public class Registry<T extends IValidMaterials> implements IRegistry<T> {
         return null;
     }
 
-    @Override
     public final T instantiateFrom(Class<? extends T> clazz, Location location, int delay) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         return clazz.getConstructor(Location.class, Integer.class).newInstance(location, delay);
-    }
-
-    @Override
-    public final boolean isValid(Block block) {
-        return typeMap.contains(block.getType());
     }
 
 
