@@ -4,10 +4,7 @@ import org.bukkit.Location;
 
 import java.util.Map;
 
-/**
- * Created by Yannick on 21.01.2017.
- */
-public abstract class AbstractStateReceiver extends AbstractReceiver {
+public abstract class AbstractStateReceiver extends AbstractReceiver implements StateReceiver {
 
     /**
      * only use to getValidMaterials
@@ -31,10 +28,6 @@ public abstract class AbstractStateReceiver extends AbstractReceiver {
             setState(state);
         }
     }
-
-    public abstract ReceiverState getState();
-
-    public abstract void setState(ReceiverState state);
 
     @Override
     public Map<String, Object> serialize() {

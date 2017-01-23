@@ -6,9 +6,6 @@ import org.bukkit.block.Block;
 import java.util.ArrayList;
 import java.util.Map;
 
-/**
- * Created by Yannick on 22.01.2017.
- */
 public abstract class AbstractKeepAliveReceiver extends AbstractReceiver {
 
     // keepAlives - lamps/torches/etc that should stay powered regardless of redstone events
