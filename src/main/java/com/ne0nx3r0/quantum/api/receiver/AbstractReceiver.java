@@ -51,7 +51,7 @@ public abstract class AbstractReceiver implements Receiver {
     }
 
     @Override
-    public String getType() {
+    public final String getType() {
         return QuantumConnectorsAPI.getRegistry().getUniqueKey(this.getClass());
     }
 

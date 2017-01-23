@@ -37,17 +37,6 @@ public class TrafficLightStateReceiver extends AbstractStateReceiver {
         super(map);
     }
 
-    /**
-     * default receivers return "qc:SimpleClassName"
-     * please define your own prefix to differentiate between plugins registering own Receiver
-     *
-     * @return the namedType of the receiver
-     */
-    @Override
-    public String getType() {
-        return "qc:TrafficLightStateReceiver";
-    }
-
     @Override
     public boolean isActive() {
         return getState() == ON;

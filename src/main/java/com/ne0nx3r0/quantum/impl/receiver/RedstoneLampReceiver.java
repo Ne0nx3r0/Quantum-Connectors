@@ -42,11 +42,6 @@ public class RedstoneLampReceiver extends AbstractKeepAliveReceiver {
     }
 
     @Override
-    public String getType() {
-        return "qc:" + getClass().getSimpleName();
-    }
-
-    @Override
     public boolean isActive() {
         return this.location.getBlock().getType() == Material.REDSTONE_LAMP_ON;
     }

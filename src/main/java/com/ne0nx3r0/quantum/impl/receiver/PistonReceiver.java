@@ -40,11 +40,6 @@ public class PistonReceiver extends AbstractKeepAliveReceiver {
     }
 
     @Override
-    public String getType() {
-        return "qc:" + getClass().getSimpleName();
-    }
-
-    @Override
     public boolean isActive() {
         return ((PistonBaseMaterial) location.getBlock().getState().getData()).isPowered();
     }

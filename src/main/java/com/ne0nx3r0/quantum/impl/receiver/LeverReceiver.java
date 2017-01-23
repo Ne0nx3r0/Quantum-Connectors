@@ -37,16 +37,6 @@ public class LeverReceiver extends AbstractReceiver {
         return ValidMaterials.LEVER;
     }
 
-    /**
-     * default receivers return "qc:LeverReceiver"
-     *
-     * @return the namedType of the receiver
-     */
-    @Override
-    public String getType() {
-        return "qc:" + getClass().getSimpleName();
-    }
-
     @Override
     public boolean isActive() {
         return ((Lever) location.getBlock().getState().getData()).isPowered();
