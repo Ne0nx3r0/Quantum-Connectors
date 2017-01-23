@@ -1,6 +1,8 @@
 package com.ne0nx3r0.quantum.receiver;
 
-import com.ne0nx3r0.quantum.receiver.base.AbstractReceiver;
+import com.ne0nx3r0.quantum.api.receiver.AbstractKeepAliveReceiver;
+import com.ne0nx3r0.quantum.api.receiver.ReceiverNotValidException;
+import com.ne0nx3r0.quantum.api.receiver.ValueNotChangedException;
 import com.ne0nx3r0.quantum.utils.ValidMaterials;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -10,9 +12,7 @@ import org.bukkit.material.PoweredRail;
 import java.util.List;
 import java.util.Map;
 
-import static com.ne0nx3r0.quantum.circuits.CircuitManager.keepAlives;
-
-public class PoweredRailReceiver extends AbstractReceiver {
+public class PoweredRailReceiver extends AbstractKeepAliveReceiver {
 
     /**
      * only use to getValidMaterials
@@ -31,8 +31,6 @@ public class PoweredRailReceiver extends AbstractReceiver {
 
     public PoweredRailReceiver(Map<String, Object> map) {
         super(map);
-        if (isActive()) keepAlives.add(location.getBlock());
-
     }
 
     @Override
@@ -52,14 +50,10 @@ public class PoweredRailReceiver extends AbstractReceiver {
 
     @Override
     public void setActive(boolean powerOn) {
-        if (!isValid()) return;
-        if (isActive() == powerOn) return;
-
-
-        if (isActive() && !powerOn) {
-            keepAlives.remove(location.getBlock());
-        } else if (!isActive() && powerOn) {
-            keepAlives.add(location.getBlock());
+        try {
+            super.setActive(powerOn);
+        } catch (ReceiverNotValidException | ValueNotChangedException e) {
+            return;
         }
 
         BlockState state = location.getBlock().getState();
@@ -67,7 +61,6 @@ public class PoweredRailReceiver extends AbstractReceiver {
         poweredRail.setPowered(powerOn);
         state.setData(poweredRail);
         state.update();
-
 
     }
 

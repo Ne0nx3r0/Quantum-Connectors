@@ -1,6 +1,6 @@
-package com.ne0nx3r0.quantum.receiver.base;
+package com.ne0nx3r0.quantum.api.receiver;
 
-import com.ne0nx3r0.quantum.api.Receiver;
+import com.ne0nx3r0.quantum.interfaces.Receiver;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -48,11 +48,12 @@ public class DelayedReceiver implements Receiver {
     @Override
     public void setActive(boolean powerOn) {
 
-        Bukkit.getScheduler().runTaskLater(this.javaPlugin, new Runnable() {
-            @Override
-            public void run() {
+        Bukkit.getScheduler().runTaskLater(this.javaPlugin, () -> {
+            try {
                 receiver.setActive(powerOn);
+            } catch (ValueNotChangedException | ReceiverNotValidException ignored) {
             }
+
         }, receiver.getDelay() * 20);
     }
 

@@ -1,23 +1,20 @@
 package com.ne0nx3r0.quantum.receiver;
 
+import com.ne0nx3r0.quantum.api.receiver.AbstractKeepAliveReceiver;
 import com.ne0nx3r0.quantum.nmswrapper.QSWorld;
-import com.ne0nx3r0.quantum.receiver.base.AbstractReceiver;
 import com.ne0nx3r0.quantum.utils.ValidMaterials;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
-import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.PistonBaseMaterial;
 
 import java.util.List;
 import java.util.Map;
 
-import static com.ne0nx3r0.quantum.circuits.CircuitManager.keepAlives;
 
-@SerializableAs("PistonReceiver")
-public class PistonReceiver extends AbstractReceiver {
+public class PistonReceiver extends AbstractKeepAliveReceiver {
 
     /**
      * only use to getValidMaterials
@@ -32,8 +29,6 @@ public class PistonReceiver extends AbstractReceiver {
 
     public PistonReceiver(Map<String, Object> map) {
         super(map);
-        if (isActive())
-            keepAlives.add(location.getBlock());
     }
 
     public PistonReceiver(Location location, Integer delay) {

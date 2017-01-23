@@ -1,20 +1,20 @@
 package com.ne0nx3r0.quantum.receiver;
 
-import com.ne0nx3r0.quantum.receiver.base.AbstractReceiver;
+import com.ne0nx3r0.quantum.api.receiver.AbstractReceiver;
+import com.ne0nx3r0.quantum.api.receiver.ReceiverNotValidException;
+import com.ne0nx3r0.quantum.api.receiver.ValueNotChangedException;
 import com.ne0nx3r0.quantum.utils.SourceBlockUtil;
 import com.ne0nx3r0.quantum.utils.ValidMaterials;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
-import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.Openable;
 
 import java.util.List;
 import java.util.Map;
 
-@SerializableAs("OpenableReceiver")
 public class OpenableReceiver extends AbstractReceiver {
 
     /**
@@ -49,17 +49,18 @@ public class OpenableReceiver extends AbstractReceiver {
     @Override
     public void setActive(boolean powerOn) {
 
+        try {
+            super.setActive(powerOn);
+        } catch (ReceiverNotValidException | ValueNotChangedException e) {
+            return;
+        }
+
         BlockState state = location.getBlock().getState();
         MaterialData data = state.getData();
         ((Openable) data).setOpen(powerOn);
         state.setData(data);
         state.update();
         location.getWorld().playEffect(location, Effect.DOOR_TOGGLE, 0, 10);
-    }
-
-    @Override
-    public boolean isValid() {
-        return location.getBlock().getState().getData() instanceof Openable;
     }
 
     @Override

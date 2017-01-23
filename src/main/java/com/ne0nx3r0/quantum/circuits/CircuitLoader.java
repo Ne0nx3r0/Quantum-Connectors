@@ -1,7 +1,7 @@
 package com.ne0nx3r0.quantum.circuits;
 
 import com.ne0nx3r0.quantum.QuantumConnectors;
-import com.ne0nx3r0.quantum.api.ICircuitLoader;
+import com.ne0nx3r0.quantum.interfaces.ICircuitLoader;
 import com.ne0nx3r0.quantum.utils.MessageLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

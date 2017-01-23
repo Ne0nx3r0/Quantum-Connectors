@@ -1,4 +1,4 @@
-package com.ne0nx3r0.quantum.api;
+package com.ne0nx3r0.quantum.interfaces;
 
 import org.bukkit.World;
 

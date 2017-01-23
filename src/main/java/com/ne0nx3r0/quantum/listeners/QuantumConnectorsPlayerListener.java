@@ -1,11 +1,12 @@
 package com.ne0nx3r0.quantum.listeners;
 
 import com.ne0nx3r0.quantum.QuantumConnectors;
+import com.ne0nx3r0.quantum.api.receiver.AbstractKeepAliveReceiver;
+import com.ne0nx3r0.quantum.api.receiver.AbstractReceiver;
+import com.ne0nx3r0.quantum.api.receiver.ReceiverState;
 import com.ne0nx3r0.quantum.circuits.Circuit;
 import com.ne0nx3r0.quantum.circuits.CircuitManager;
-import com.ne0nx3r0.quantum.receiver.ReceiverRegistry;
-import com.ne0nx3r0.quantum.receiver.base.AbstractReceiver;
-import com.ne0nx3r0.quantum.receiver.base.ReceiverState;
+import com.ne0nx3r0.quantum.receiver.base.ReceiverRegistry;
 import com.ne0nx3r0.quantum.utils.MessageLogger;
 import com.ne0nx3r0.quantum.utils.SourceBlockUtil;
 import com.ne0nx3r0.quantum.utils.ValidMaterials;
@@ -34,12 +35,13 @@ public class QuantumConnectorsPlayerListener implements Listener {
 
     private CircuitManager circuitManager;
     private MessageLogger messageLogger;
+    private ReceiverRegistry receiverRegistry;
 
-    public QuantumConnectorsPlayerListener(QuantumConnectors instance, CircuitManager circuitManager, MessageLogger messageLogger) {
+    public QuantumConnectorsPlayerListener(QuantumConnectors instance, CircuitManager circuitManager, MessageLogger messageLogger, ReceiverRegistry receiverRegistry) {
         this.plugin = instance;
         this.circuitManager = circuitManager;
         this.messageLogger = messageLogger;
-
+        this.receiverRegistry = receiverRegistry;
     }
 
     @EventHandler
@@ -123,9 +125,9 @@ public class QuantumConnectorsPlayerListener implements Listener {
                                 || pc.getReceiversCount() < QuantumConnectors.MAX_RECEIVERS_PER_CIRCUIT
                                 || player.hasPermission("QuantumConnectors.ignoreLimits")) {
 
-                            if (ReceiverRegistry.isValidReceiver(block)) {
+                            if (this.receiverRegistry.isValidReceiver(block)) {
 
-                                List<Class<? extends AbstractReceiver>> possibleReceivers = ReceiverRegistry.fromType(location);
+                                List<Class<? extends AbstractReceiver>> possibleReceivers = this.receiverRegistry.fromType(location);
 
 
                                 // TODO: 20.01.2017 create inventory with possible Receivers
@@ -181,16 +183,19 @@ public class QuantumConnectorsPlayerListener implements Listener {
 
             } else if (block.getType() == Material.BOOKSHELF) {
 
-                if (CircuitManager.keepAlives.contains(block)) {
+                ReceiverState state;
+                if (AbstractKeepAliveReceiver.keepAlives.contains(block)) {
                     // send off
-                    circuitManager.activateCircuit(location, ReceiverState.S15.ordinal(), ReceiverState.S0.ordinal());
-                    CircuitManager.keepAlives.remove(block);
+                    state = ReceiverState.S0;
+
+                    AbstractKeepAliveReceiver.keepAlives.remove(block);
                 } else {
                     // send on
-                    circuitManager.activateCircuit(location, ReceiverState.S0.ordinal(), ReceiverState.S15.ordinal());
-                    CircuitManager.keepAlives.add(block);
+                    state = ReceiverState.S15;
+                    AbstractKeepAliveReceiver.keepAlives.add(block);
                 }
 
+                circuitManager.activateCircuit(location, state.getOpposite().ordinal(), state.ordinal());
             }
         }
     }

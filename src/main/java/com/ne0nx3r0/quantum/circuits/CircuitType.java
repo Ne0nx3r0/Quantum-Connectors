@@ -1,7 +1,7 @@
 package com.ne0nx3r0.quantum.circuits;
 
-import com.ne0nx3r0.quantum.api.Receiver;
-import com.ne0nx3r0.quantum.api.RecieverSetter;
+import com.ne0nx3r0.quantum.interfaces.Receiver;
+import com.ne0nx3r0.quantum.interfaces.RecieverSetter;
 
 import java.util.Arrays;
 import java.util.HashMap;

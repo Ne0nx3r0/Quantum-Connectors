@@ -2,11 +2,14 @@ package com.ne0nx3r0.quantum.circuits;
 
 import com.ne0nx3r0.quantum.ConfigConverter;
 import com.ne0nx3r0.quantum.QuantumConnectors;
-import com.ne0nx3r0.quantum.api.ICircuitManager;
-import com.ne0nx3r0.quantum.api.Receiver;
-import com.ne0nx3r0.quantum.api.RecieverSetter;
-import com.ne0nx3r0.quantum.receiver.ReceiverRegistry;
-import com.ne0nx3r0.quantum.receiver.base.DelayedReceiver;
+import com.ne0nx3r0.quantum.api.QuantumConnectorsAPI;
+import com.ne0nx3r0.quantum.api.receiver.AbstractKeepAliveReceiver;
+import com.ne0nx3r0.quantum.api.receiver.DelayedReceiver;
+import com.ne0nx3r0.quantum.api.receiver.ReceiverNotValidException;
+import com.ne0nx3r0.quantum.api.receiver.ValueNotChangedException;
+import com.ne0nx3r0.quantum.interfaces.ICircuitManager;
+import com.ne0nx3r0.quantum.interfaces.Receiver;
+import com.ne0nx3r0.quantum.interfaces.RecieverSetter;
 import com.ne0nx3r0.quantum.utils.MessageLogger;
 import com.ne0nx3r0.quantum.utils.Normalizer;
 import com.ne0nx3r0.quantum.utils.ValidMaterials;
@@ -23,9 +26,6 @@ import java.io.File;
 import java.util.*;
 
 public final class CircuitManager implements ICircuitManager {
-
-    // keepAlives - lamps/torches/etc that should stay powered regardless of redstone events
-    public final static ArrayList<Block> keepAlives = new ArrayList<>();
 
     private final RecieverSetter recieverSetter = new Adapter();
 
@@ -57,7 +57,7 @@ public final class CircuitManager implements ICircuitManager {
     }
 
     public boolean isValidReceiver(Block block) {
-        return ReceiverRegistry.isValidReceiver(block);
+        return QuantumConnectorsAPI.getRegistry().isValidReceiver(block);
     }
 
     // Sender/Receiver_old checks
@@ -66,7 +66,7 @@ public final class CircuitManager implements ICircuitManager {
     }
 
     public boolean shouldLeaveReceiverOn(Block block) {
-        return keepAlives.contains(block);
+        return AbstractKeepAliveReceiver.keepAlives.contains(block);
     }
 
     public String getValidSendersString() {
@@ -106,11 +106,13 @@ public final class CircuitManager implements ICircuitManager {
         return worlds.get(circuitLocation.getWorld()).containsKey(circuitLocation);
     }
 
+    // TODO: 23.01.2017 try to remove magic numbers
     // Circuit activation
     public void activateCircuit(Location lSender, int oldCurrent, int newCurrent) {
         activateCircuit(lSender, oldCurrent, newCurrent, 0);
     }
 
+    // TODO: 23.01.2017 try to remove magic numbers
     public void activateCircuit(Location lSender, int oldCurrent, int newCurrent, int chain) {
         Circuit circuit = getCircuit(lSender);
         List<Receiver> receivers = new ArrayList<>(circuit.getReceivers());
@@ -136,8 +138,6 @@ public final class CircuitManager implements ICircuitManager {
             } else {
                 circuit.delReceiver(receiver);
             }
-
-
         }
     }
 
@@ -150,7 +150,7 @@ public final class CircuitManager implements ICircuitManager {
         } else if (md instanceof Openable) {
             return ((Openable) md).isOpen() ? 15 : 0;
         } else if (ValidMaterials.LAMP.contains(material)) {
-            return keepAlives.contains(b) ? 15 : 0;
+            return AbstractKeepAliveReceiver.keepAlives.contains(b) ? 15 : 0;
         }
 
         return b.getBlockPower();
@@ -160,7 +160,10 @@ public final class CircuitManager implements ICircuitManager {
         if (receiver.getDelay() > 0) {
             new DelayedReceiver(this.plugin, receiver).setActive(on);
         } else {
-            receiver.setActive(on);
+            try {
+                receiver.setActive(on);
+            } catch (ValueNotChangedException | ReceiverNotValidException ignored) {
+            }
         }
     }
 

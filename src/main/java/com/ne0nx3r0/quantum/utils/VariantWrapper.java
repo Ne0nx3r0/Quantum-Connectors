@@ -1,15 +1,13 @@
 package com.ne0nx3r0.quantum.utils;
 
-import com.ne0nx3r0.quantum.receiver.base.ReceiverState;
+import com.ne0nx3r0.quantum.api.receiver.AbstractKeepAliveReceiver;
+import com.ne0nx3r0.quantum.api.receiver.ReceiverState;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.TreeSpecies;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
-import org.bukkit.material.Colorable;
-import org.bukkit.material.MaterialData;
-import org.bukkit.material.Openable;
-import org.bukkit.material.Redstone;
-
-import static com.ne0nx3r0.quantum.circuits.CircuitManager.keepAlives;
+import org.bukkit.material.*;
 
 public class VariantWrapper {
 
@@ -17,11 +15,17 @@ public class VariantWrapper {
         BlockState blockState = block.getState();
         MaterialData md = blockState.getData();
         if (md instanceof Colorable) {
-            ((Colorable) md).setColor(receiverState.getDyColor());
+            ((Colorable) md).setColor(DyeColor.values()[receiverState.ordinal()]);
+        } else if (md instanceof Wood) {
+            int biggestIndex = DyeColor.values().length - 1;
+            ((Wood) md).setSpecies(receiverState.ordinal() > biggestIndex ?
+                    TreeSpecies.values()[biggestIndex] :
+                    TreeSpecies.values()[receiverState.ordinal()]);
         }
         blockState.setData(md);
         blockState.update();
     }
+
     public static ReceiverState getState(Block block) {
         Material material = block.getType();
         MaterialData md = block.getState().getData();
@@ -30,9 +34,9 @@ public class VariantWrapper {
         } else if (md instanceof Openable) {
             return ((Openable) md).isOpen() ? ReceiverState.S15 : ReceiverState.S0;
         } else if (ValidMaterials.LAMP.contains(material)) {
-            return keepAlives.contains(block) ? ReceiverState.S15 : ReceiverState.S0;
+            return AbstractKeepAliveReceiver.keepAlives.contains(block) ? ReceiverState.S15 : ReceiverState.S0;
         } else if (md instanceof Colorable) {
-            return ReceiverState.getByColor(((Colorable) md).getColor());
+            return ReceiverState.getByDyeColor(((Colorable) md).getColor());
         }
 
         return ReceiverState.values()[block.getBlockPower()];

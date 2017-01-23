@@ -1,8 +1,8 @@
 package com.ne0nx3r0.quantum.listeners;
 
 import com.ne0nx3r0.quantum.QuantumConnectors;
+import com.ne0nx3r0.quantum.api.receiver.ReceiverState;
 import com.ne0nx3r0.quantum.circuits.CircuitManager;
-import com.ne0nx3r0.quantum.receiver.base.ReceiverState;
 import com.ne0nx3r0.quantum.utils.MessageLogger;
 import com.ne0nx3r0.quantum.utils.SourceBlockUtil;
 import org.bukkit.Bukkit;

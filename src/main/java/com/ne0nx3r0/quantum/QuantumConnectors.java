@@ -1,11 +1,14 @@
 package com.ne0nx3r0.quantum;
 
+import com.ne0nx3r0.quantum.api.IQuantumConnectorsAPI;
+import com.ne0nx3r0.quantum.api.QuantumConnectorsAPI;
 import com.ne0nx3r0.quantum.circuits.CircuitManager;
 import com.ne0nx3r0.quantum.listeners.QuantumConnectorsBlockListener;
 import com.ne0nx3r0.quantum.listeners.QuantumConnectorsPlayerListener;
 import com.ne0nx3r0.quantum.listeners.QuantumConnectorsWorldListener;
 import com.ne0nx3r0.quantum.nmswrapper.ClassRegistry;
 import com.ne0nx3r0.quantum.receiver.*;
+import com.ne0nx3r0.quantum.receiver.base.ReceiverRegistry;
 import com.ne0nx3r0.quantum.utils.MessageLogger;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -29,23 +32,20 @@ public class QuantumConnectors extends JavaPlugin {
     public static boolean VERBOSE_LOGGING = false;
     private static int AUTOSAVE_INTERVAL = 30;//specified here in minutes
     private static int AUTO_SAVE_ID = -1;
-    // Version
+
+
     public String apiVersion = ClassRegistry.instance.getApiVersion();
-    // Localized Messages
+    private ReceiverRegistry receiverRegistry;
+    private IQuantumConnectorsAPI api;
     private Map<String, String> messages;
     private QuantumConnectorsWorldListener worldListener;
-    // Circuit Manager
     private CircuitManager circuitManager;
-    // Register events
     private QuantumConnectorsPlayerListener playerListener;
     private QuantumConnectorsBlockListener blockListener;
     private MessageLogger messageLogger;
     private boolean UPDATE_NOTIFICATIONS = false;
-    // Updater
     private boolean updateAvailable = false;
     private String updateName;
-    //private boolean outdated = false;
-    //Scheduled save mechanism
     private Runnable autosaveCircuits = new Runnable() {
         @Override
         public void run() {
@@ -64,13 +64,20 @@ public class QuantumConnectors extends JavaPlugin {
     @Override
     public void onEnable() {
 
-        ReceiverRegistry.registerReceiver(this,
+        this.receiverRegistry = new ReceiverRegistry();
+        this.api = new QuantumConnectorsAPIImplementation(this.receiverRegistry);
+
+        QuantumConnectorsAPI.setApi(this.api);
+
+
+        receiverRegistry.registerReceiver(this,
                 LeverReceiver.class,
                 OpenableReceiver.class,
                 PistonReceiver.class,
                 PoweredRailReceiver.class,
                 RedstoneLampReceiver.class,
-                TrafficLightStateReceiver.class);
+                TrafficLightStateReceiver.class,
+                ComperatorReceiver.class);
 
         //This might be outdated...
         getDataFolder().mkdirs();
@@ -84,7 +91,7 @@ public class QuantumConnectors extends JavaPlugin {
 
         this.worldListener = new QuantumConnectorsWorldListener(this.circuitManager.getCircuitLoader());
         this.blockListener = new QuantumConnectorsBlockListener(this, circuitManager, messageLogger);
-        this.playerListener = new QuantumConnectorsPlayerListener(this, circuitManager, messageLogger);
+        this.playerListener = new QuantumConnectorsPlayerListener(this, circuitManager, messageLogger, receiverRegistry);
 
         getCommand("qc").setExecutor(new QuantumConnectorsCommandExecutor(this, circuitManager, messageLogger));
 

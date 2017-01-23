@@ -1,5 +1,7 @@
-package com.ne0nx3r0.quantum.api;
+package com.ne0nx3r0.quantum.interfaces;
 
+import com.ne0nx3r0.quantum.api.receiver.ReceiverNotValidException;
+import com.ne0nx3r0.quantum.api.receiver.ValueNotChangedException;
 import org.bukkit.Location;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
@@ -14,23 +16,15 @@ public interface Receiver extends ConfigurationSerializable {
      */
     void calculateRealLocation();
 
-    /**
-     * default receivers return "qc:SimpleClassName"
-     * please define your own prefix to differentiate between plugins registering own Receiver
-     *
-     * @return the namedType of the receiver
-     */
     String getType();
 
     long getDelay();
 
     boolean isActive();
 
-    void setActive(boolean powerOn);
+    void setActive(boolean powerOn) throws ValueNotChangedException, ReceiverNotValidException;
 
     boolean isValid();
-
-
 
 
 }

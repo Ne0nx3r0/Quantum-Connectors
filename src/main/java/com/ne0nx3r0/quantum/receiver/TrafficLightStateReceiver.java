@@ -1,7 +1,9 @@
 package com.ne0nx3r0.quantum.receiver;
 
-import com.ne0nx3r0.quantum.receiver.base.AbstractStateReceiver;
-import com.ne0nx3r0.quantum.receiver.base.ReceiverState;
+import com.ne0nx3r0.quantum.api.receiver.AbstractStateReceiver;
+import com.ne0nx3r0.quantum.api.receiver.ReceiverNotValidException;
+import com.ne0nx3r0.quantum.api.receiver.ReceiverState;
+import com.ne0nx3r0.quantum.api.receiver.ValueNotChangedException;
 import com.ne0nx3r0.quantum.utils.VariantWrapper;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
@@ -13,9 +15,8 @@ import java.util.Map;
 
 public class TrafficLightStateReceiver extends AbstractStateReceiver {
 
-    public static final ReceiverState ON = ReceiverState.getByColor(DyeColor.GREEN);
-    public static final ReceiverState OF = ReceiverState.getByColor(DyeColor.RED);
-
+    public static final ReceiverState ON = ReceiverState.getByDyeColor(DyeColor.GREEN);
+    public static final ReceiverState OF = ReceiverState.getByDyeColor(DyeColor.RED);
 
 
     /**
@@ -55,12 +56,12 @@ public class TrafficLightStateReceiver extends AbstractStateReceiver {
 
     @Override
     public void setActive(boolean powerOn) {
+        try {
+            super.setActive(powerOn);
+        } catch (ReceiverNotValidException | ValueNotChangedException e) {
+            return;
+        }
         setState(powerOn ? ON : OF);
-    }
-
-    @Override
-    public boolean isValid() {
-        return location.getBlock().getType() == Material.WOOL;
     }
 
     @Override
@@ -75,7 +76,7 @@ public class TrafficLightStateReceiver extends AbstractStateReceiver {
 
     @Override
     public List<Material> getValidMaterials() {
-        return Arrays.asList(Material.WOOL);
+        return Arrays.asList(Material.WOOL, Material.WOOD);
     }
 
     @Override

@@ -1,6 +1,7 @@
-package com.ne0nx3r0.quantum.receiver.base;
+package com.ne0nx3r0.quantum.api.receiver;
 
-import com.ne0nx3r0.quantum.api.Receiver;
+import com.ne0nx3r0.quantum.api.QuantumConnectorsAPI;
+import com.ne0nx3r0.quantum.interfaces.Receiver;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -50,7 +51,23 @@ public abstract class AbstractReceiver implements Receiver {
     public void calculateRealLocation() {
     }
 
+    @Override
+    public String getType() {
+        return QuantumConnectorsAPI.getRegistry().getUniqueKey(this.getClass());
+    }
+
+    @Override
+    public void setActive(boolean powerOn) throws ReceiverNotValidException, ValueNotChangedException {
+        if (!isValid()) throw new ReceiverNotValidException();
+        if (isActive() == powerOn) throw new ValueNotChangedException();
+    }
+
     public abstract List<Material> getValidMaterials();
+
+    @Override
+    public boolean isValid() {
+        return getValidMaterials().contains(location.getBlock().getType());
+    }
 
     @Override
     public long getDelay() {

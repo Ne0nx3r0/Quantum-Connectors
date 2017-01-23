@@ -1,7 +1,9 @@
 package com.ne0nx3r0.quantum.receiver;
 
+import com.ne0nx3r0.quantum.api.receiver.AbstractKeepAliveReceiver;
+import com.ne0nx3r0.quantum.api.receiver.ReceiverNotValidException;
+import com.ne0nx3r0.quantum.api.receiver.ValueNotChangedException;
 import com.ne0nx3r0.quantum.nmswrapper.QSWorld;
-import com.ne0nx3r0.quantum.receiver.base.AbstractReceiver;
 import com.ne0nx3r0.quantum.utils.ValidMaterials;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -9,10 +11,8 @@ import org.bukkit.Material;
 import java.util.List;
 import java.util.Map;
 
-import static com.ne0nx3r0.quantum.circuits.CircuitManager.keepAlives;
 
-
-public class RedstoneLampReceiver extends AbstractReceiver {
+public class RedstoneLampReceiver extends AbstractKeepAliveReceiver {
 
 
     private QSWorld qsWorld = QSWorld.instance;
@@ -34,9 +34,6 @@ public class RedstoneLampReceiver extends AbstractReceiver {
 
     public RedstoneLampReceiver(Map<String, Object> map) {
         super(map);
-
-        if (isActive())
-            keepAlives.add(location.getBlock());
     }
 
     @Override
@@ -56,24 +53,21 @@ public class RedstoneLampReceiver extends AbstractReceiver {
 
     @Override
     public void setActive(boolean powerOn) {
-        if (!isValid()) return;
-        if (isActive() == powerOn) return;
+        try {
+            super.setActive(powerOn);
+        } catch (ValueNotChangedException | ReceiverNotValidException e) {
+            return;
+        }
 
-
-            if (isActive()) {
-                if (!powerOn) {
-                    keepAlives.remove(location.getBlock());
-                    this.getLocation().getBlock().setType(Material.REDSTONE_LAMP_OFF);
-                }
-            } else if (!isActive()) {
-                if (powerOn) {
-                    keepAlives.add(location.getBlock());
-                    this.qsWorld.setStatic(location.getWorld(), true);
-                    location.getBlock().setType(Material.REDSTONE_LAMP_ON);
-                    this.qsWorld.setStatic(location.getWorld(), false);
-                }
-            }
+        if (powerOn) {
+            this.qsWorld.setStatic(location.getWorld(), true);
+            location.getBlock().setType(Material.REDSTONE_LAMP_ON);
+            this.qsWorld.setStatic(location.getWorld(), false);
+        } else {
+            this.getLocation().getBlock().setType(Material.REDSTONE_LAMP_OFF);
+        }
     }
+
 
     @Override
     public boolean isValid() {

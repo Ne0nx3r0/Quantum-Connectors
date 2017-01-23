@@ -1,8 +1,8 @@
 package com.ne0nx3r0.quantum.circuits;
 
-import com.ne0nx3r0.quantum.api.Receiver;
-import com.ne0nx3r0.quantum.receiver.ReceiverRegistry;
-import com.ne0nx3r0.quantum.receiver.base.AbstractReceiver;
+import com.ne0nx3r0.quantum.api.QuantumConnectorsAPI;
+import com.ne0nx3r0.quantum.api.receiver.AbstractReceiver;
+import com.ne0nx3r0.quantum.interfaces.Receiver;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -44,7 +44,7 @@ public class Circuit implements ConfigurationSerializable {
             String type = (String) receiverMap.get("type");
             try {
 
-                Constructor<? extends AbstractReceiver> receiverConstructor = ReceiverRegistry.getReceiverInstance(type);
+                Constructor<? extends AbstractReceiver> receiverConstructor = QuantumConnectorsAPI.getRegistry().getReceiverInstance(type);
                 if (receiverConstructor == null) {
                     System.out.println("There is no receiver registered with this type: " + type);
                     continue;
@@ -64,7 +64,7 @@ public class Circuit implements ConfigurationSerializable {
     }
 
     public void addReceiver(Class<? extends AbstractReceiver> receiverClass, Location loc, int delay) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        receivers.put(loc, ReceiverRegistry.instantiatFrom(receiverClass, loc, delay));
+        receivers.put(loc, QuantumConnectorsAPI.getRegistry().instantiateFrom(receiverClass, loc, delay));
     }
 
     public List<Receiver> getReceivers() {
