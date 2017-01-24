@@ -9,7 +9,7 @@ addons:
 deploy:
   provider: releases
   file:
-  - "$TRAVIS_BUILD_DIR/QuantumApi/target/*.jar"
+  - "./QuantumApi/target/QuantumAPI.jar"
   - "$TRAVIS_BUILD_DIR/QuantumPlugin/target/*.jar"
   skip_cleanup: true
   on:
