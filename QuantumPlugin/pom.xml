@@ -38,7 +38,6 @@
                     <!-- get all project dependencies -->
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
-                        <ref></ref>
                     </descriptorRefs>
                 </configuration>
                 <executions>
