@@ -12,7 +12,7 @@ deploy:
   - "./QuantumAPI/target/QuantumAPI.jar"
   - "./QuantumAPI/target/QuantumAPI-sources.jar"
   - "./QuantumPlugin/target/QuantumPlugin.jar"
-  - "./QuantumPlugin/target/QuantumPlugin-with-dependencies.jar"
+  - "./QuantumPlugin/target/QuantumPlugin-jar-with-dependencies.jar"
   skip_cleanup: true
   on:
     tags: true
