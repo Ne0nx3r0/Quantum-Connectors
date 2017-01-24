@@ -4,6 +4,7 @@ import com.ne0nx3r0.quantum.api.IRegistry;
 import com.ne0nx3r0.quantum.api.QuantumConnectorsAPI;
 import com.ne0nx3r0.quantum.api.receiver.AbstractReceiver;
 import com.ne0nx3r0.quantum.api.receiver.Receiver;
+import com.ne0nx3r0.quantum.impl.receiver.CompatReceiver;
 import com.ne0nx3r0.quantum.impl.receiver.base.Registry;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -17,6 +18,7 @@ import java.util.*;
 
 public class Circuit implements ConfigurationSerializable {
 
+    private Set<Receiver> invalidReceivers = new HashSet<>();
     private Map<Location, Receiver> receivers = new HashMap<>();
     private UUID playerUUID;
     private CircuitType circuitTypes;
@@ -48,6 +50,10 @@ public class Circuit implements ConfigurationSerializable {
 
                 Constructor<? extends AbstractReceiver> receiverConstructor = (receiverIRegistry instanceof Registry) ? ((Registry<AbstractReceiver>) receiverIRegistry).getInstance(type) : null;
                 if (receiverConstructor == null) {
+
+                    Receiver receiver = new CompatReceiver((HashMap<String, Object>) receiverMap);
+                    invalidReceivers.add(receiver);
+
                     System.out.println("There is no receiver registered with this type: " + type);
                     continue;
                 }
@@ -123,6 +129,9 @@ public class Circuit implements ConfigurationSerializable {
         List<Map<String, ?>> receiverMap = new ArrayList<>();
 
         for (Receiver receiver : receivers.values()) {
+            receiverMap.add(receiver.serialize());
+        }
+        for (Receiver receiver : invalidReceivers) {
             receiverMap.add(receiver.serialize());
         }
         map.put("receiver", receiverMap);

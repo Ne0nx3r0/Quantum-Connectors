@@ -57,7 +57,7 @@ local.properties
 # User-specific stuff:
 .idea/workspace.xml
 .idea/tasks.xml
-.idea
+.idea/
 QuantumConnectors.iml
 
 # Sensitive or high-churn files:
@@ -194,3 +194,4 @@ hs_err_pid*
 src/test/
 
 *.iml
+*/target/
