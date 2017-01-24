@@ -10,9 +10,8 @@ deploy:
   provider: releases
   api_key: 
   file:
-  - "QuantumAPI-*-sources.jar"
-  - "QuantumAPI-*.jar"
-  - "QuantumPlugin-*-jar-with-dependencies.jar"
+  - "QuantumAPI/target/*.jar"
+  - "QuantumPlugin/target/*.jar"
   skip_cleanup: true
   on:
     tags: true
