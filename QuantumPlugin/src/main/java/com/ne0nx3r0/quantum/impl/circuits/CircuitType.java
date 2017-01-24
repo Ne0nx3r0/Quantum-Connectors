@@ -3,7 +3,6 @@ package com.ne0nx3r0.quantum.impl.circuits;
 import com.ne0nx3r0.quantum.api.receiver.Receiver;
 import com.ne0nx3r0.quantum.impl.interfaces.ReceiverSetter;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -21,11 +20,10 @@ public enum CircuitType {
 
     static {
 
-        Arrays.asList(CircuitType.values()).forEach(c -> {
+        for (CircuitType c : CircuitType.values()) {
             BY_ID.put(c.id, c);
             BY_NAME.put(c.name, c);
-        });
-
+        }
     }
 
     public final int id;

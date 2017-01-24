@@ -5,10 +5,7 @@ import com.ne0nx3r0.quantum.api.QuantumExtension;
 import com.ne0nx3r0.quantum.impl.utils.MessageLogger;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashSet;
@@ -38,7 +35,12 @@ public class QuantumExtensionLoader {
 
         if (file.exists() && file.isDirectory()) {
 
-            File[] files = file.listFiles((dir, name) -> name.endsWith(".jar"));
+            File[] files = file.listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    return name.endsWith(".jar");
+                }
+            });
 
             for (File jar : files) {
                 String mainClass = null;

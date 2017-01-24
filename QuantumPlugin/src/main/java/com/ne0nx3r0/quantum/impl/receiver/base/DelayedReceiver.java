@@ -45,14 +45,17 @@ public class DelayedReceiver implements Receiver {
     }
 
     @Override
-    public void setActive(boolean powerOn) {
+    public void setActive(final boolean powerOn) {
 
-        Bukkit.getScheduler().runTaskLater(this.javaPlugin, () -> {
-            try {
-                receiver.setActive(powerOn);
-            } catch (ValueNotChangedException | ReceiverNotValidException ignored) {
+        Bukkit.getScheduler().runTaskLater(this.javaPlugin, new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    receiver.setActive(powerOn);
+                } catch (ValueNotChangedException | ReceiverNotValidException ignored) {
+                }
+
             }
-
         }, receiver.getDelay() * 20);
     }
 
