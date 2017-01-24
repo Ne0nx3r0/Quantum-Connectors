@@ -7,7 +7,11 @@
     <groupId>com.ne0nx3r0.quantum</groupId>
     <artifactId>QuantumConnectors</artifactId>
     <version>3.0</version>
-    <packaging>jar</packaging>
+    <modules>
+        <module>QuantumAPI</module>
+        <module>QuantumPlugin</module>
+    </modules>
+    <packaging>pom</packaging>
 
     <name>QuantumConnectors</name>
 
