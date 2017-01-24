@@ -9,9 +9,7 @@ addons:
 deploy:
   provider: releases
   file:
-  - "target/QuantumAPI-distribution.zip"
-  - "QuantumAPI/target/*.jar"
-  - "QuantumPlugin/target/*.jar"
+  - "*.jar"
   skip_cleanup: true
   on:
     tags: true
