@@ -29,7 +29,7 @@
 
 
     <build>
-        <finalName>${project.name}.jar</finalName>
+        <finalName>${project.name}</finalName>
 
         <plugins>
             <plugin>
