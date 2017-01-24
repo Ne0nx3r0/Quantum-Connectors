@@ -9,13 +9,12 @@ addons:
 deploy:
   provider: releases
   file:
-    - "target/QuantumAPI-distribution.zip"
-    - "QuantumAPI/target/*.jar"
-    - "QuantumPlugin/target/*.jar"
+  - "target/QuantumAPI-distribution.zip"
+  - "QuantumAPI/target/*.jar"
+  - "QuantumPlugin/target/*.jar"
   skip_cleanup: true
   on:
     tags: true
-    repo: "ysl3000/Quantum-Connectors"
   overwrite: true
   api-key:
     secure: gGEk1IBnMNoGtLiYhuwJqBTnd24+4wcRtasIjof5zfz9Fpd0qp6XLk82AZXYb5YX+J68vtik1s3EGrkl9FaV45fh+r9M0rWcA9UIotZxAFS5Pe6ziLtajY9BbDs2CX43yOQs6DE/w5w1LJbgJ9qhqRf0D+VA6V4LrMfwmWOJkJEErjjhEUXGfhoqGScQQFK7DKu+dc2HebvibKdjWiY8A+AB1QmrqoaRAkzBdtPrIgNv7aIKyQGMQBgYjhthtiQW1tv1/JX1R1pbPRzngKNQ+CDwH0+LWa4eiJjnwuq3HgX2qZV03QsSFHGNoGp7AENRO0YcJk7Smr/bWTfh5oNxA9lS5+0hHDWY0CnjoA/XZKa4WaXIM2f5pohrGMk9V2VPJ8huhoLyC5T8uZZEajxxaXzNq0Jwvs5i8Sjx30T26FtTEYEp79pIMqGjw/6wHmTOZM4oOFYLgHzSpBo1BppOM7ujU6oBb5cLVQBDQl2/Gsnzh3xLBwP7Ui4GxswQsxFMUVjfohj30Ro1Hl2ru2UOzc65gfODZPVeGc6Xq8L2P+S2HqoLvvqi7hiDcjjZY2RamJHANOcLEhw1BRNsNGaxJhv/fF6YPkl8JxOZmwhwrfo9+RsWnknKe2jzHA/OkddcdWDx/gb6IhutPXfW4xbcVPoqrgWM0CHUQl7A89kKpKc=
