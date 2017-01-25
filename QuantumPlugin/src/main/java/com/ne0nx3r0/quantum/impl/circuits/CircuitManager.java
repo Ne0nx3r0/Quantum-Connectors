@@ -42,7 +42,7 @@ public final class CircuitManager implements ICircuitManager {
         this.plugin = qc;
         this.circuitIRegistry = circuitIRegistry;
         this.receiverIRegistry = receiverIRegistry;
-        this.circuitLoader = new CircuitLoader(qc, worlds, this, messageLogger);
+        this.circuitLoader = new CircuitLoader(qc, worlds, this, messageLogger, circuitIRegistry);
 
         //Create a holder for pending circuits
         this.pendingCircuits = new HashMap<>();

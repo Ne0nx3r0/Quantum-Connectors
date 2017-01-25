@@ -2,12 +2,10 @@ package com.ne0nx3r0.quantum.impl.circuits;
 
 import com.ne0nx3r0.quantum.QuantumConnectors;
 import com.ne0nx3r0.quantum.api.IRegistry;
-import com.ne0nx3r0.quantum.api.QuantumConnectorsAPI;
 import com.ne0nx3r0.quantum.api.circuit.AbstractCircuit;
 import com.ne0nx3r0.quantum.api.circuit.Circuit;
 import com.ne0nx3r0.quantum.impl.interfaces.ICircuitLoader;
 import com.ne0nx3r0.quantum.impl.receiver.CompatCircuit;
-import com.ne0nx3r0.quantum.impl.receiver.base.Registry;
 import com.ne0nx3r0.quantum.impl.utils.MessageLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -26,17 +24,19 @@ import java.util.Map;
 
 public class CircuitLoader implements ICircuitLoader {
 
+    private final IRegistry<AbstractCircuit> circuitIRegistry;
     private Map<World, Map<Location, AbstractCircuit>> worlds;
     private Map<World, List<Circuit>> invalidCicuitsWorld = new HashMap<>();
     private CircuitManager circuitManager;
     private QuantumConnectors plugin;
     private MessageLogger messageLogger;
 
-    public CircuitLoader(QuantumConnectors plugin, Map<World, Map<Location, AbstractCircuit>> worlds, CircuitManager circuitManager, MessageLogger messageLogger) {
+    public CircuitLoader(QuantumConnectors plugin, Map<World, Map<Location, AbstractCircuit>> worlds, CircuitManager circuitManager, MessageLogger messageLogger, IRegistry<AbstractCircuit> circuitIRegistry) {
         this.plugin = plugin;
         this.worlds = worlds;
         this.circuitManager = circuitManager;
         this.messageLogger = messageLogger;
+        this.circuitIRegistry = circuitIRegistry;
     }
 
     public void saveAllWorlds() {
@@ -134,8 +134,7 @@ public class CircuitLoader implements ICircuitLoader {
 
             try {
 
-                IRegistry<AbstractCircuit> circuitRegistry = QuantumConnectorsAPI.getCircuitRegistry();
-                Constructor<? extends AbstractCircuit> circuitConstructor = (circuitRegistry instanceof Registry) ? ((Registry<AbstractCircuit>) circuitRegistry).getInstance(circuitType) : null;
+                Constructor<? extends AbstractCircuit> circuitConstructor = circuitIRegistry.getInstance(circuitType);
                 if (circuitConstructor == null) {
 
                     Circuit circuit = new CompatCircuit((HashMap<String, Object>) tempCircuitMap);
