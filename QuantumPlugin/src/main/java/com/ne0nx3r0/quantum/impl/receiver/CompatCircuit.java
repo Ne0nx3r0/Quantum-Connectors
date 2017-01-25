@@ -2,6 +2,7 @@ package com.ne0nx3r0.quantum.impl.receiver;
 
 import com.ne0nx3r0.quantum.api.circuit.Circuit;
 import com.ne0nx3r0.quantum.api.receiver.AbstractReceiver;
+import com.ne0nx3r0.quantum.api.receiver.CompatReceiver;
 import com.ne0nx3r0.quantum.api.receiver.Receiver;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -15,6 +16,7 @@ import java.util.*;
 public final class CompatCircuit implements Circuit {
 
     private HashMap<String, Object> circuit;
+
 
     public CompatCircuit(HashMap<String, Object> map) {
         this.circuit = map;
@@ -67,7 +69,7 @@ public final class CompatCircuit implements Circuit {
     }
 
     @Override
-    public List<Receiver> getInValidReceivers() {
+    public List<CompatReceiver> getInValidReceivers() {
         return null;
     }
 

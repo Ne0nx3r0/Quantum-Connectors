@@ -3,7 +3,7 @@ package com.ne0nx3r0.quantum.impl;
 import com.ne0nx3r0.quantum.QuantumConnectors;
 import com.ne0nx3r0.quantum.api.circuit.AbstractCircuit;
 import com.ne0nx3r0.quantum.api.receiver.AbstractReceiver;
-import com.ne0nx3r0.quantum.api.receiver.Receiver;
+import com.ne0nx3r0.quantum.api.receiver.CompatReceiver;
 import com.ne0nx3r0.quantum.impl.circuits.CircuitManager;
 import com.ne0nx3r0.quantum.impl.utils.MessageLogger;
 import org.bukkit.ChatColor;
@@ -134,7 +134,7 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
                 AbstractCircuit pendingCircuit = null;
 
                 List<AbstractReceiver> validReceivers = new ArrayList<>();
-                List<Receiver> invalidReceiver = new ArrayList<>();
+                List<CompatReceiver> invalidReceiver = new ArrayList<>();
 
                 int lastDelay = 0;
 

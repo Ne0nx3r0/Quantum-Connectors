@@ -76,8 +76,8 @@ public class Registry<T extends IValidMaterials> implements IRegistry<T> {
         return typeMap.get(uniqueKey);
     }
 
-    public final T getObject(Class<? extends T> receiver) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        Constructor<? extends T> constructor = receiver.getConstructor();
+    public final T getObject(Class<? extends T> clazz) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        Constructor<? extends T> constructor = clazz.getConstructor();
 
         if (constructor != null) {
             return constructor.newInstance();

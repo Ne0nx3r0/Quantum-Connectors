@@ -2,6 +2,7 @@ package com.ne0nx3r0.quantum.api.circuit;
 
 import com.ne0nx3r0.quantum.api.IValidMaterials;
 import com.ne0nx3r0.quantum.api.receiver.AbstractReceiver;
+import com.ne0nx3r0.quantum.api.receiver.CompatReceiver;
 import com.ne0nx3r0.quantum.api.receiver.Receiver;
 import org.bukkit.Location;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -30,7 +31,7 @@ public interface Circuit extends IValidMaterials, ConfigurationSerializable {
 
     int getReceiversCount();
 
-    List<Receiver> getInValidReceivers();
+    List<CompatReceiver> getInValidReceivers();
 
     int getWholeReceiverCount();
 

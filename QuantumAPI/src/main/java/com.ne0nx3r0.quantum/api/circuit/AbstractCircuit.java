@@ -27,12 +27,17 @@ public abstract class AbstractCircuit implements Circuit {
 
     protected final IQuantumConnectorsAPI api = QuantumConnectorsAPI.getAPI();
 
-    protected List<Receiver> invalidReceivers = new ArrayList<>();
+    protected List<CompatReceiver> invalidReceivers = new ArrayList<>();
     protected Map<Location, AbstractReceiver> receivers = new HashMap<>();
     protected UUID playerUUID;
     protected Location location;
     protected int delay;
 
+    /**
+     * only use to getValidMaterials
+     */
+    public AbstractCircuit() {
+    }
 
     public AbstractCircuit(UUID playerUUID, int delay) {
         this.playerUUID = playerUUID;
@@ -57,7 +62,7 @@ public abstract class AbstractCircuit implements Circuit {
                 Constructor<? extends AbstractReceiver> receiverConstructor = receiverIRegistry.getInstance(type);
                 if (receiverConstructor == null) {
 
-                    Receiver receiver = new CompatReceiver((HashMap<String, Object>) receiverMap);
+                    CompatReceiver receiver = new CompatReceiver((HashMap<String, Object>) receiverMap);
                     invalidReceivers.add(receiver);
 
                     System.out.println("There is no receiver registered with this type: " + type);
@@ -101,11 +106,11 @@ public abstract class AbstractCircuit implements Circuit {
     }
 
 
-    public void addInvalidReceiver(Receiver... receivers) {
+    public void addInvalidReceiver(CompatReceiver... receivers) {
         addInvalidReceiver(Arrays.asList(receivers));
     }
 
-    public void addInvalidReceiver(Collection<Receiver> receivers) {
+    public void addInvalidReceiver(Collection<CompatReceiver> receivers) {
         invalidReceivers.addAll(receivers);
     }
 
@@ -121,7 +126,7 @@ public abstract class AbstractCircuit implements Circuit {
     }
 
     @Override
-    public List<Receiver> getInValidReceivers() {
+    public List<CompatReceiver> getInValidReceivers() {
         return new ArrayList<>(invalidReceivers);
     }
 
@@ -174,7 +179,7 @@ public abstract class AbstractCircuit implements Circuit {
         for (Receiver receiver : receivers.values()) {
             receiverMap.add(receiver.serialize());
         }
-        for (Receiver receiver : invalidReceivers) {
+        for (CompatReceiver receiver : invalidReceivers) {
             receiverMap.add(receiver.serialize());
         }
         map.put("receiver", receiverMap);

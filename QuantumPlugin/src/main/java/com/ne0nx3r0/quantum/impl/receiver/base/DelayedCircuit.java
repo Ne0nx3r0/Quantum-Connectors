@@ -2,6 +2,7 @@ package com.ne0nx3r0.quantum.impl.receiver.base;
 
 import com.ne0nx3r0.quantum.api.circuit.Circuit;
 import com.ne0nx3r0.quantum.api.receiver.AbstractReceiver;
+import com.ne0nx3r0.quantum.api.receiver.CompatReceiver;
 import com.ne0nx3r0.quantum.api.receiver.Receiver;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -71,7 +72,7 @@ public class DelayedCircuit implements Circuit {
     }
 
     @Override
-    public List<Receiver> getInValidReceivers() {
+    public List<CompatReceiver> getInValidReceivers() {
         return circuit.getInValidReceivers();
     }
 
