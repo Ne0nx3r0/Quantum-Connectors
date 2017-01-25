@@ -39,7 +39,7 @@ public abstract class AbstractCircuit implements Circuit {
     public AbstractCircuit() {
     }
 
-    public AbstractCircuit(UUID playerUUID, int delay) {
+    public AbstractCircuit(UUID playerUUID, Integer delay) {
         this.playerUUID = playerUUID;
         this.delay = delay;
     }
