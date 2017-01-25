@@ -1,16 +1,13 @@
 package com.ne0nx3r0.quantum.impl.circuits;
 
 import com.ne0nx3r0.quantum.QuantumConnectors;
+import com.ne0nx3r0.quantum.api.IRegistry;
 import com.ne0nx3r0.quantum.api.QuantumConnectorsAPI;
+import com.ne0nx3r0.quantum.api.circuit.AbstractCircuit;
 import com.ne0nx3r0.quantum.api.receiver.AbstractKeepAliveReceiver;
-import com.ne0nx3r0.quantum.api.receiver.Receiver;
-import com.ne0nx3r0.quantum.api.receiver.ReceiverNotValidException;
-import com.ne0nx3r0.quantum.api.receiver.ValueNotChangedException;
-import com.ne0nx3r0.quantum.api.util.ValidMaterials;
-import com.ne0nx3r0.quantum.impl.ConfigConverter;
+import com.ne0nx3r0.quantum.api.receiver.AbstractReceiver;
 import com.ne0nx3r0.quantum.impl.interfaces.ICircuitManager;
-import com.ne0nx3r0.quantum.impl.interfaces.ReceiverSetter;
-import com.ne0nx3r0.quantum.impl.receiver.base.DelayedReceiver;
+import com.ne0nx3r0.quantum.impl.receiver.base.DelayedCircuit;
 import com.ne0nx3r0.quantum.impl.utils.MessageLogger;
 import com.ne0nx3r0.quantum.impl.utils.Normalizer;
 import org.bukkit.Location;
@@ -18,39 +15,37 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.material.MaterialData;
-import org.bukkit.material.Openable;
-import org.bukkit.material.Redstone;
 
-import java.io.File;
-import java.util.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public final class CircuitManager implements ICircuitManager {
 
-    private final ReceiverSetter recieverSetter = new Adapter();
-
     private MessageLogger messageLogger;
     // Temporary Holders for circuit creation
-    private Map<String, Circuit> pendingCircuits;
+    private Map<String, AbstractCircuit> pendingCircuits;
     // Allow circuitTypes/circuits
     private QuantumConnectors plugin;
     // Lookup/Storage for circuits, and subsequently their receivers
-    private Map<World, Map<Location, Circuit>> worlds = new HashMap<>();
+    private Map<World, Map<Location, AbstractCircuit>> worlds = new HashMap<>();
     private CircuitLoader circuitLoader;
+    private IRegistry<AbstractCircuit> circuitIRegistry;
+    private IRegistry<AbstractReceiver> receiverIRegistry;
 
     // Main
-    public CircuitManager(MessageLogger messageLogger, final QuantumConnectors qc) {
+    public CircuitManager(MessageLogger messageLogger, final QuantumConnectors qc, IRegistry<AbstractCircuit> circuitIRegistry, IRegistry<AbstractReceiver> receiverIRegistry) {
         this.messageLogger = messageLogger;
         this.plugin = qc;
+        this.circuitIRegistry = circuitIRegistry;
+        this.receiverIRegistry = receiverIRegistry;
         this.circuitLoader = new CircuitLoader(qc, worlds, this, messageLogger);
 
         //Create a holder for pending circuits
         this.pendingCircuits = new HashMap<>();
-
-        //Convert circuits.yml to new structure
-        if (new File(plugin.getDataFolder(), "circuits.yml").exists()) {
-            new ConfigConverter(plugin, this.messageLogger).convertOldCircuitsYml();
-        }
 
         //Init any loaded worlds
         circuitLoader.loadWorlds();
@@ -60,39 +55,37 @@ public final class CircuitManager implements ICircuitManager {
         return QuantumConnectorsAPI.getReceiverRegistry().isValid(block);
     }
 
-    // Sender/Receiver_old checks
     public boolean isValidSender(Block block) {
-        return ValidMaterials.validSenders.contains(block.getType());
+        return this.circuitIRegistry.isValid(block);
+    }
+
+    public String getValidSendersAsString() {
+        return String.join(", ", circuitIRegistry.getNames());
     }
 
     public boolean shouldLeaveReceiverOn(Block block) {
         return AbstractKeepAliveReceiver.keepAlives.contains(block);
     }
 
-    public String getValidSendersString() {
-        return getValidString(ValidMaterials.validSenders);
+    public String getValidSendersMaterialsAsString() {
+        return getValidString(circuitIRegistry.getMaterials());
     }
 
-    private String getValidString(List<Material> materials) {
+    public String getValidReceiversMaterialsAsString() {
+        return getValidString(receiverIRegistry.getMaterials());
+    }
+
+    private String getValidString(Set<Material> materials) {
         return String.join(", ", Normalizer.normalizeEnumNames(materials, Normalizer.NORMALIZER));
     }
 
-    public String getValidReceiversString() {
-        return getValidString(ValidMaterials.validReceivers);
-    }
 
-    // Circuit (sender) CRUD
-    public void addCircuit(Location circuitLocation, Circuit newCircuit) {
-        //Notably circuits are now created from a temporary copy, rather than piecemeal here.
-        worlds.get(circuitLocation.getWorld()).put(circuitLocation, newCircuit);
-    }
-
-    public void addCircuit(Circuit pc) {
+    public void addCircuit(AbstractCircuit pc) {
         worlds.get(pc.getLocation().getWorld())
                 .put(pc.getLocation(), pc);
     }
 
-    public Circuit getCircuit(Location circuitLocation) {
+    public AbstractCircuit getCircuit(Location circuitLocation) {
         return worlds.get(circuitLocation.getWorld()).get(circuitLocation);
     }
 
@@ -114,68 +107,31 @@ public final class CircuitManager implements ICircuitManager {
 
     // TODO: 23.01.2017 try to remove magic numbers
     public void activateCircuit(Location lSender, int oldCurrent, int newCurrent, int chain) {
-        Circuit circuit = getCircuit(lSender);
-        List<Receiver> receivers = new ArrayList<>(circuit.getReceivers());
+        AbstractCircuit circuit = getCircuit(lSender);
 
-        for (Receiver receiver : receivers) {
-
-
-            if (isValidReceiver(receiver.getLocation().getBlock())) {
-
-                int receiverOldCurrent = getBlockCurrent(receiver.getLocation().getBlock());
-                circuit.getCircuitType().calculate(recieverSetter, receiver, oldCurrent, newCurrent);
-
-                if (receiver.getLocation().getBlock().getType() == Material.TNT) { // TnT is one time use!
-                    circuit.delReceiver(receiver);
-                }
-
-                if (chain <= QuantumConnectors.MAX_CHAIN_LINKS - 2 && circuitExists(receiver.getLocation())) {
-                    if (QuantumConnectors.MAX_CHAIN_LINKS > 0) { //allow zero to be infinite
-                        chain++;
-                    }
-                    activateCircuit(receiver.getLocation(), receiverOldCurrent, getBlockCurrent(receiver.getLocation().getBlock()), chain);
-                }
-            } else {
-                circuit.delReceiver(receiver);
-            }
-        }
-    }
-
-    // TODO: 19.01.2017 remove and write method in receiver if necessary
-    public int getBlockCurrent(Block b) {
-        Material material = b.getType();
-        MaterialData md = b.getState().getData();
-        if (md instanceof Redstone) {
-            return ((Redstone) md).isPowered() ? 15 : 0;
-        } else if (md instanceof Openable) {
-            return ((Openable) md).isOpen() ? 15 : 0;
-        } else if (ValidMaterials.LAMP.contains(material)) {
-            return AbstractKeepAliveReceiver.keepAlives.contains(b) ? 15 : 0;
-        }
-
-        return b.getBlockPower();
-    }
-
-    private void setReceiver(Receiver receiver, boolean on) {
-        if (receiver.getDelay() > 0) {
-            new DelayedReceiver(this.plugin, receiver).setActive(on);
+        if (circuit.getDelay() > 0) {
+            new DelayedCircuit(plugin, circuit).actvate(oldCurrent, newCurrent, chain);
         } else {
-            try {
-                receiver.setActive(on);
-            } catch (ValueNotChangedException | ReceiverNotValidException ignored) {
-            }
+            circuit.actvate(oldCurrent, newCurrent, chain);
         }
     }
 
-    // Temporary circuit stuff
-// I really don't know what order this deserves among the existing class methods
-    public Circuit addPendingCircuit(Player player, CircuitType type, int delay) {
-        Circuit pc = new Circuit(player.getUniqueId(), type, delay);
+
+    public AbstractCircuit addPendingCircuit(Player player, String type, int delay) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+
+        Class<? extends AbstractCircuit> clazz = circuitIRegistry.getFromUniqueKey(type);
+        if (clazz == null) return null;
+
+        Constructor<? extends AbstractCircuit> constructor = clazz.getConstructor(UUID.class, Integer.class);
+
+        if (constructor == null) return null;
+
+        AbstractCircuit pc = constructor.newInstance(player.getUniqueId(), delay);
         pendingCircuits.put(player.getName(), pc);
         return pc;
     }
 
-    public Circuit getPendingCircuit(Player player) {
+    public AbstractCircuit getPendingCircuit(Player player) {
         return pendingCircuits.get(player.getName());
     }
 
@@ -189,11 +145,7 @@ public final class CircuitManager implements ICircuitManager {
 
     //Circuit Types
     public boolean isValidCircuitType(String type) {
-        return CircuitType.getByName(type) != null;
-    }
-
-    public CircuitType getCircuitType(String sType) {
-        return CircuitType.getByName(sType);
+        return circuitIRegistry.getFromUniqueKey(type) != null;
     }
 
     public CircuitLoader getCircuitLoader() {
@@ -203,19 +155,5 @@ public final class CircuitManager implements ICircuitManager {
     public Set<Location> circuitLocations(World w) {
         return worlds.get(w).keySet();
     }
-
-
-    private class Adapter implements ReceiverSetter {
-        @Override
-        public void setReceiver(Receiver receiver, boolean power) {
-            CircuitManager.this.setReceiver(receiver, power);
-        }
-
-        @Override
-        public int getBlockCurrent(Block block) {
-            return CircuitManager.this.getBlockCurrent(block);
-        }
-    }
-
 
 }

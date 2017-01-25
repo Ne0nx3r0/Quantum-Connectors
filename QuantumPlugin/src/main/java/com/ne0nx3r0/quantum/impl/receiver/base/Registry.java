@@ -11,6 +11,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Registry<T extends IValidMaterials> implements IRegistry<T> {
 
@@ -45,6 +46,16 @@ public class Registry<T extends IValidMaterials> implements IRegistry<T> {
         }
     }
 
+    @Override
+    public Set<Material> getMaterials() {
+        return typeMap.getMaterials();
+    }
+
+    @Override
+    public Set<String> getNames() {
+        return typeMap.getStrings();
+    }
+
 
     public void unregisterAll() {
         typeMap.clear();
@@ -60,6 +71,11 @@ public class Registry<T extends IValidMaterials> implements IRegistry<T> {
         return typeMap.contains(block.getType());
     }
 
+    @Override
+    public Class<? extends T> getFromUniqueKey(String uniqueKey) {
+        return typeMap.get(uniqueKey);
+    }
+
     public final T getObject(Class<? extends T> receiver) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         Constructor<? extends T> constructor = receiver.getConstructor();
 
@@ -69,6 +85,7 @@ public class Registry<T extends IValidMaterials> implements IRegistry<T> {
         return null;
     }
 
+    @Override
     public final Constructor<? extends T> getInstance(String type) throws NoSuchMethodException {
         Class<? extends T> clazz = typeMap.get(type);
 
@@ -89,6 +106,7 @@ public class Registry<T extends IValidMaterials> implements IRegistry<T> {
         return null;
     }
 
+    @Override
     public final T instantiateFrom(Class<? extends T> clazz, Location location, int delay) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         return clazz.getConstructor(Location.class, Integer.class).newInstance(location, delay);
     }

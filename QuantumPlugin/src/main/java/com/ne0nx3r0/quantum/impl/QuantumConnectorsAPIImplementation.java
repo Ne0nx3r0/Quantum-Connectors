@@ -5,6 +5,7 @@ import com.ne0nx3r0.quantum.api.IRegistry;
 import com.ne0nx3r0.quantum.api.circuit.AbstractCircuit;
 import com.ne0nx3r0.quantum.api.receiver.AbstractReceiver;
 import com.ne0nx3r0.quantum.api.receiver.ReceiverState;
+import com.ne0nx3r0.quantum.impl.circuits.CircuitManager;
 import com.ne0nx3r0.quantum.impl.nmswrapper.QSWorld;
 import com.ne0nx3r0.quantum.impl.receiver.base.Registry;
 import com.ne0nx3r0.quantum.impl.utils.SourceBlockUtil;
@@ -15,18 +16,23 @@ import org.bukkit.block.Block;
 
 public class QuantumConnectorsAPIImplementation implements IQuantumConnectorsAPI {
 
+    private final int maxChainLinks;
+    private final CircuitManager circuitManager;
     private Registry<AbstractReceiver> receiverRegistry;
     private Registry<AbstractCircuit> circuitRegistry;
     private SourceBlockUtil sourceBlockUtil;
     private QSWorld qsWorld;
     private VariantWrapper variantWrapper;
 
-    public QuantumConnectorsAPIImplementation(Registry<AbstractReceiver> receiverRegistry, Registry<AbstractCircuit> circuitRegistry, SourceBlockUtil sourceBlockUtil, QSWorld qsWorld, VariantWrapper variantWrapper) {
+    public QuantumConnectorsAPIImplementation(Registry<AbstractReceiver> receiverRegistry, Registry<AbstractCircuit> circuitRegistry, SourceBlockUtil sourceBlockUtil, QSWorld qsWorld, VariantWrapper variantWrapper, int maxChainLinks,
+                                              CircuitManager circuitManager) {
         this.receiverRegistry = receiverRegistry;
         this.circuitRegistry = circuitRegistry;
         this.sourceBlockUtil = sourceBlockUtil;
         this.qsWorld = qsWorld;
         this.variantWrapper = variantWrapper;
+        this.maxChainLinks = maxChainLinks;
+        this.circuitManager = circuitManager;
     }
 
     @Override
@@ -57,6 +63,21 @@ public class QuantumConnectorsAPIImplementation implements IQuantumConnectorsAPI
     @Override
     public ReceiverState getState(Block block) {
         return variantWrapper.getState(block);
+    }
+
+    @Override
+    public boolean circuitExists(Location location) {
+        return circuitManager.circuitExists(location);
+    }
+
+    @Override
+    public void activateCircuit(Location location, int oldCurrent, int newCurrent, int chain) {
+        circuitManager.activateCircuit(location, oldCurrent, newCurrent, chain);
+    }
+
+    @Override
+    public int getMaxChainLinks() {
+        return maxChainLinks;
     }
 
     public void unregisterAll() {

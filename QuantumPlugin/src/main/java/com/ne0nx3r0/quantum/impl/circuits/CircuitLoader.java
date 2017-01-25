@@ -1,7 +1,13 @@
 package com.ne0nx3r0.quantum.impl.circuits;
 
 import com.ne0nx3r0.quantum.QuantumConnectors;
+import com.ne0nx3r0.quantum.api.IRegistry;
+import com.ne0nx3r0.quantum.api.QuantumConnectorsAPI;
+import com.ne0nx3r0.quantum.api.circuit.AbstractCircuit;
+import com.ne0nx3r0.quantum.api.circuit.Circuit;
 import com.ne0nx3r0.quantum.impl.interfaces.ICircuitLoader;
+import com.ne0nx3r0.quantum.impl.receiver.CompatCircuit;
+import com.ne0nx3r0.quantum.impl.receiver.base.Registry;
 import com.ne0nx3r0.quantum.impl.utils.MessageLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -11,6 +17,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,12 +26,13 @@ import java.util.Map;
 
 public class CircuitLoader implements ICircuitLoader {
 
-    private Map<World, Map<Location, Circuit>> worlds;
+    private Map<World, Map<Location, AbstractCircuit>> worlds;
+    private Map<World, List<Circuit>> invalidCicuitsWorld = new HashMap<>();
     private CircuitManager circuitManager;
     private QuantumConnectors plugin;
     private MessageLogger messageLogger;
 
-    public CircuitLoader(QuantumConnectors plugin, Map<World, Map<Location, Circuit>> worlds, CircuitManager circuitManager, MessageLogger messageLogger) {
+    public CircuitLoader(QuantumConnectors plugin, Map<World, Map<Location, AbstractCircuit>> worlds, CircuitManager circuitManager, MessageLogger messageLogger) {
         this.plugin = plugin;
         this.worlds = worlds;
         this.circuitManager = circuitManager;
@@ -53,12 +62,16 @@ public class CircuitLoader implements ICircuitLoader {
             if (QuantumConnectors.VERBOSE_LOGGING)
                 messageLogger.log(messageLogger.getMessage("saving").replace("%file", ymlFile.getName()));
 
-            Map<Location, Circuit> currentWorldCircuits = worlds.get(world);
+            Map<Location, AbstractCircuit> currentWorldCircuits = worlds.get(world);
+            List<Circuit> currentInvalidCircuits = invalidCicuitsWorld.get(world);
 
             List<Map<String, Object>> mapList = new ArrayList<>();
 
-            for (Map.Entry<Location, Circuit> entry : currentWorldCircuits.entrySet()) {
+            for (Map.Entry<Location, AbstractCircuit> entry : currentWorldCircuits.entrySet()) {
                 mapList.add(entry.getValue().serialize());
+            }
+            for (Circuit invalidCircuit : currentInvalidCircuits) {
+                mapList.add(invalidCircuit.serialize());
             }
 
             yml.set("fileVersion", "3");
@@ -86,7 +99,10 @@ public class CircuitLoader implements ICircuitLoader {
 
     public void loadWorld(World world) {
         //at least create a blank holder
-        worlds.put(world, new HashMap<Location, Circuit>());
+        Map<Location, AbstractCircuit> worldCircuits = new HashMap<>();
+        worlds.put(world, worldCircuits);
+        List<Circuit> invalidCircuits = new ArrayList<>();
+        invalidCicuitsWorld.put(world, invalidCircuits);
 
         File ymlFile = new File(plugin.getDataFolder(), world.getName() + ".circuits.yml");
 
@@ -104,47 +120,43 @@ public class CircuitLoader implements ICircuitLoader {
         List<Map<?, ?>> tempCircuits = yml.getMapList("circuits");
 
 
-        System.out.println("Debug: Anzahl Schaltungen " + tempCircuits.size());
-
         if (tempCircuits.size() == 0) {
             messageLogger.log(messageLogger.getMessage("loading_no_circuits").replace("%file%", ymlFile.getName()));
             return;
         }
 
-        Map<Location, Circuit> worldCircuits = new HashMap<>();
+
         for (Map<?, ?> tempCircuitObj : tempCircuits) {
 
             Map<String, ?> tempCircuitMap = (Map<String, ?>) tempCircuitObj;
 
-            //dummy value of # for owners
-            Circuit tempCircuit = new Circuit(tempCircuitMap);
+            String circuitType = (String) tempCircuitMap.get("type");
 
-            // Verify there is at least one valid receiver
-            if (!tempCircuit.getReceivers().isEmpty()) {
+            try {
 
+                IRegistry<AbstractCircuit> circuitRegistry = QuantumConnectorsAPI.getCircuitRegistry();
+                Constructor<? extends AbstractCircuit> circuitConstructor = (circuitRegistry instanceof Registry) ? ((Registry<AbstractCircuit>) circuitRegistry).getInstance(circuitType) : null;
+                if (circuitConstructor == null) {
 
-                //Verify the sender is a valid type
-                if (circuitManager.isValidSender(tempCircuit.getLocation().getBlock())) {
-                    worldCircuits.put(tempCircuit.getLocation(), tempCircuit);
+                    Circuit circuit = new CompatCircuit((HashMap<String, Object>) tempCircuitMap);
+                    invalidCircuits.add(circuit);
+
+                    System.out.println("There is no receiver registered with this type: " + circuitType);
+                    continue;
                 }
-                //Invalid sender type
-                else {
-                    if (QuantumConnectors.VERBOSE_LOGGING)
-                        messageLogger.log(messageLogger.getMessage("circuit_removed_invalid")
-                                .replace("%world", world.getName())
-                                .replace("%block%", tempCircuit.getLocation().getBlock().getType().name()));
+
+                AbstractCircuit receiver = circuitConstructor.newInstance(tempCircuitMap);
+
+                if (receiver.isValid()) {
+                    worldCircuits.put(receiver.getLocation(), receiver);
                 }
-            }
-            // No valid receivers for this circuit
-            else {
-                if (QuantumConnectors.VERBOSE_LOGGING)
-                    messageLogger.log(messageLogger.getMessage("circuit_removed_no_receivers")
-                            .replace("%world%", world.getName()));
+
+            } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+                System.out.println(e.getMessage());
+                continue;
             }
         }
+        System.out.println("Debug: Anzahl der geladenene Schaltungen in Welt " + world.getName() + ": " + worldCircuits.size());
 
-        worlds.put(world, worldCircuits);
     }
-
-
 }

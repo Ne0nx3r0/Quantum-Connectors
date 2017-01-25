@@ -45,4 +45,9 @@ public abstract class AbstractStateReceiver extends AbstractReceiver implements 
     public void setState(ReceiverState state) {
         api.setState(location.getBlock(), state);
     }
+
+    @Override
+    public int getBlockCurrent() {
+        return getState().ordinal();
+    }
 }

@@ -2,10 +2,7 @@ package com.ne0nx3r0.quantum.impl.receiver.base;
 
 import org.bukkit.Material;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class QuantumMap<T> {
 
@@ -45,6 +42,15 @@ public class QuantumMap<T> {
             }
         }
         return success;
+    }
+
+
+    public Set<Material> getMaterials() {
+        return new HashSet<>(materialMap.keySet());
+    }
+
+    public Set<String> getStrings() {
+        return new HashSet<>(stringMap.keySet());
     }
 
 

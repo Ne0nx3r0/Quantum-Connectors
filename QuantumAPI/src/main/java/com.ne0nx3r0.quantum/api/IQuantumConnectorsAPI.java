@@ -20,4 +20,10 @@ public interface IQuantumConnectorsAPI {
     void setState(Block block, ReceiverState receiverState);
 
     ReceiverState getState(Block block);
+
+    boolean circuitExists(Location location);
+
+    void activateCircuit(Location location, int oldCurrent, int newCurrent, int chain);
+
+    int getMaxChainLinks();
 }

@@ -1,18 +1,20 @@
 package com.ne0nx3r0.quantum.impl;
 
 import com.ne0nx3r0.quantum.QuantumConnectors;
-import com.ne0nx3r0.quantum.impl.circuits.Circuit;
+import com.ne0nx3r0.quantum.api.circuit.AbstractCircuit;
+import com.ne0nx3r0.quantum.api.receiver.AbstractReceiver;
+import com.ne0nx3r0.quantum.api.receiver.Receiver;
 import com.ne0nx3r0.quantum.impl.circuits.CircuitManager;
-import com.ne0nx3r0.quantum.impl.circuits.CircuitType;
 import com.ne0nx3r0.quantum.impl.utils.MessageLogger;
-import com.ne0nx3r0.quantum.impl.utils.Normalizer;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class QuantumConnectorsCommandExecutor implements CommandExecutor {
     private QuantumConnectors plugin;
@@ -49,7 +51,7 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
 
             messageLogger.msg(player, ChatColor.YELLOW +
                     messageLogger.getMessage("available_circuits") + ChatColor.WHITE +
-                    Normalizer.normalizeEnumNames(Arrays.asList(CircuitType.values()), Normalizer.NORMALIZER));
+                    circuitManager.getValidSendersAsString());
         }
 
 // Command was: "/qc cancel" or "/qc abort"
@@ -74,7 +76,7 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
 
             //They typed "/qc <circuit>"
             if (circuitManager.hasPendingCircuit(player)) {
-                Circuit pc = circuitManager.getPendingCircuit(player);
+                AbstractCircuit pc = circuitManager.getPendingCircuit(player);
                 //They also setup a sender
                 if (pc.getLocation() != null) {
                     //Finally, they also setup at least one receiver
@@ -84,7 +86,7 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
                         circuitManager.removePendingCircuit(player);
 
                         messageLogger.msg(player, messageLogger.getMessage("circuit_created")
-                                .replace("%circuit%", pc.getCircuitType().name));
+                                .replace("%circuit%", pc.getType()));
                     }
                     //They have not setup at least one receiver
                     else {
@@ -129,23 +131,48 @@ public class QuantumConnectorsCommandExecutor implements CommandExecutor {
                 String sDelayMsg = " (" + args[0] + " " + delay + "s delay)";
 
 
-                if (!circuitManager.hasPendingCircuit(player)) {
-                    circuitManager.addPendingCircuit(
-                            player,
-                            circuitManager.getCircuitType(args[0]), delay);
+                AbstractCircuit pendingCircuit = null;
 
-                    messageLogger.msg(player, messageLogger.getMessage("circuit_ready")
-                            .replace("%circuit%", args[0].toUpperCase())
-                            .replace("%delay%", Double.toString(delay)));
-                } else {
+                List<AbstractReceiver> validReceivers = new ArrayList<>();
+                List<Receiver> invalidReceiver = new ArrayList<>();
 
-                    Circuit pendingCircuit = circuitManager.getPendingCircuit(player);
-                    pendingCircuit.setCircuitType(circuitManager.getCircuitType(args[0]));
-                    pendingCircuit.setDelay(delay);
+                int lastDelay = 0;
 
-                    messageLogger.msg(player, messageLogger.getMessage("circuit_changed")
-                            .replace("%circuit%", args[0].toUpperCase())
-                            .replace("%delay%", Long.toString(delay)));
+                if (circuitManager.hasPendingCircuit(player)) {
+                    pendingCircuit = circuitManager.getPendingCircuit(player);
+
+                    validReceivers = pendingCircuit.getReceivers();
+                    invalidReceiver = pendingCircuit.getInValidReceivers();
+                    lastDelay = pendingCircuit.getDelay();
+
+                    circuitManager.removePendingCircuit(player);
+                }
+
+                if (delay != 0) {
+                    lastDelay = delay;
+                }
+
+                try {
+                    AbstractCircuit abstractCircuit = circuitManager.addPendingCircuit(
+                            player, args[0], lastDelay);
+
+                    abstractCircuit.addReceiver(validReceivers);
+                    abstractCircuit.addInvalidReceiver(invalidReceiver);
+
+                } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+                    e.printStackTrace();
+                } finally {
+
+                    if (pendingCircuit == null) {
+
+                        messageLogger.msg(player, messageLogger.getMessage("circuit_ready")
+                                .replace("%circuit%", args[0].toUpperCase())
+                                .replace("%delay%", Integer.toString(delay)));
+                    } else {
+                        messageLogger.msg(player, messageLogger.getMessage("circuit_changed")
+                                .replace("%circuit%", args[0].toUpperCase())
+                                .replace("%delay%", Long.toString(delay)));
+                    }
                 }
             }
 

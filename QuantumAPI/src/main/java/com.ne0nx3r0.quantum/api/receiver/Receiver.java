@@ -22,5 +22,7 @@ public interface Receiver extends ConfigurationSerializable {
 
     boolean isValid();
 
+    int getBlockCurrent();
+
 
 }

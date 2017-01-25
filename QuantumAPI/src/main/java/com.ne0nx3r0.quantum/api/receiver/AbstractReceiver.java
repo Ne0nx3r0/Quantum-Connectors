@@ -41,6 +41,10 @@ public abstract class AbstractReceiver implements Receiver, IValidMaterials {
         this.delay = (Integer) map.get("delay");
     }
 
+    @Override
+    public int getBlockCurrent() {
+        return location.getBlock().getBlockPower();
+    }
 
     @Override
     public Location getLocation() {

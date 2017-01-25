@@ -1,8 +1,5 @@
-package com.ne0nx3r0.quantum.impl.receiver;
+package com.ne0nx3r0.quantum.api.receiver;
 
-import com.ne0nx3r0.quantum.api.receiver.Receiver;
-import com.ne0nx3r0.quantum.api.receiver.ReceiverNotValidException;
-import com.ne0nx3r0.quantum.api.receiver.ValueNotChangedException;
 import org.bukkit.Location;
 
 import java.util.HashMap;
@@ -11,7 +8,7 @@ import java.util.Map;
 /**
  * Created by Yannick on 24.01.2017.
  */
-public class CompatReceiver implements Receiver {
+public final class CompatReceiver implements Receiver {
 
     private HashMap<String, Object> receiver;
 
@@ -57,6 +54,11 @@ public class CompatReceiver implements Receiver {
     @Override
     public boolean isValid() {
         return false;
+    }
+
+    @Override
+    public int getBlockCurrent() {
+        return 0;
     }
 
     @Override

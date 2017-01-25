@@ -2,11 +2,11 @@ package com.ne0nx3r0.quantum.impl.listeners;
 
 import com.ne0nx3r0.quantum.QuantumConnectors;
 import com.ne0nx3r0.quantum.api.IQuantumConnectorsAPI;
+import com.ne0nx3r0.quantum.api.circuit.Circuit;
 import com.ne0nx3r0.quantum.api.receiver.AbstractKeepAliveReceiver;
 import com.ne0nx3r0.quantum.api.receiver.AbstractReceiver;
 import com.ne0nx3r0.quantum.api.receiver.ReceiverState;
 import com.ne0nx3r0.quantum.api.util.ValidMaterials;
-import com.ne0nx3r0.quantum.impl.circuits.Circuit;
 import com.ne0nx3r0.quantum.impl.circuits.CircuitManager;
 import com.ne0nx3r0.quantum.impl.receiver.base.Registry;
 import com.ne0nx3r0.quantum.impl.utils.MessageLogger;
@@ -94,7 +94,7 @@ public class QuantumConnectorsPlayerListener implements Listener {
                 //Invalid sender
                 else {
                     messageLogger.msg(player, ChatColor.RED + "Invalid sender!");
-                    messageLogger.msg(player, ChatColor.YELLOW + "Senders: " + ChatColor.WHITE + circuitManager.getValidSendersString());
+                    messageLogger.msg(player, ChatColor.YELLOW + "Senders: " + ChatColor.WHITE + circuitManager.getValidSendersMaterialsAsString());
 
                 }
             }
@@ -168,7 +168,7 @@ public class QuantumConnectorsPlayerListener implements Listener {
                 //Player clicked an invalid receiver block
                 else {
                     messageLogger.msg(player, ChatColor.RED + "Invalid receiver!");
-                    messageLogger.msg(player, ChatColor.YELLOW + "Receivers: " + ChatColor.WHITE + circuitManager.getValidReceiversString());
+                    messageLogger.msg(player, ChatColor.YELLOW + "Receivers: " + ChatColor.WHITE + circuitManager.getValidReceiversMaterialsAsString());
                     messageLogger.msg(player, "('/qc done' to finish circuit, or '/qc cancel' to void it)");
 
                 }

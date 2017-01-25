@@ -31,16 +31,14 @@ import java.util.Set;
 
 public class QuantumConnectors extends JavaPlugin {
 
-    // Configurables
-    public static int MAX_CHAIN_LINKS = 3;
     public static int MAX_DELAY_TIME = 10;//in seconds
     public static int MAX_RECEIVERS_PER_CIRCUIT = 20;
     public static boolean VERBOSE_LOGGING = false;
     private static int AUTOSAVE_INTERVAL = 30;//specified here in minutes
     private static int AUTO_SAVE_ID = -1;
-
-
     public String apiVersion;
+    // Configurables
+    private int MAX_CHAIN_LINKS = 3;
     private Registry<AbstractReceiver> receiverRegistry;
     private Registry<AbstractCircuit> circuitRegistry;
     private QuantumConnectorsAPIImplementation api;
@@ -91,12 +89,15 @@ public class QuantumConnectors extends JavaPlugin {
 
         this.receiverRegistry = new Registry<>();
         this.circuitRegistry = new Registry<>();
+
+        this.circuitManager = new CircuitManager(messageLogger, this, this.circuitRegistry, this.receiverRegistry);
+
         this.sourceBlockUtil = new SourceBlockUtil();
         this.classRegistry = new ClassRegistry();
         this.apiVersion = this.classRegistry.getApiVersion();
         this.qsWorld = new QSWorld(this.classRegistry);
         this.variantWrapper = new VariantWrapper();
-        this.api = new QuantumConnectorsAPIImplementation(this.receiverRegistry, this.circuitRegistry, this.sourceBlockUtil, qsWorld, variantWrapper);
+        this.api = new QuantumConnectorsAPIImplementation(this.receiverRegistry, this.circuitRegistry, this.sourceBlockUtil, this.qsWorld, this.variantWrapper, MAX_CHAIN_LINKS, this.circuitManager);
 
         QuantumConnectorsAPI.setApi(this.api);
 
@@ -109,11 +110,6 @@ public class QuantumConnectors extends JavaPlugin {
         this.loader.load();
         this.loader.enable();
 
-
-        // TODO: 23.01.2017 should be loaded by extensionloader
-
-        //Create a circuit manager
-        this.circuitManager = new CircuitManager(messageLogger, this);
 
         this.worldListener = new QuantumConnectorsWorldListener(this.circuitManager.getCircuitLoader());
         this.blockListener = new QuantumConnectorsBlockListener(this, circuitManager, messageLogger, sourceBlockUtil);
